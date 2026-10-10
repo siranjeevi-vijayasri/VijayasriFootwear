@@ -36,16 +36,41 @@
     }
   }
 
-  // Thumbnail clicks change the main image for that product only.
+  // Full-screen image viewer: tap a catalogue photo, then pinch to zoom on mobile.
+  let imageViewer = document.getElementById('imageViewer');
+  if (!imageViewer) {
+    imageViewer = document.createElement('div');
+    imageViewer.id = 'imageViewer';
+    imageViewer.className = 'image-viewer';
+    imageViewer.hidden = true;
+    imageViewer.setAttribute('role', 'dialog');
+    imageViewer.setAttribute('aria-modal', 'true');
+    imageViewer.setAttribute('aria-label', 'Product image viewer');
+    imageViewer.innerHTML = '<button type="button" class="image-viewer-close" aria-label="Close image">×</button><div class="image-viewer-hint">Pinch to zoom · Tap × to close</div><img class="image-viewer-photo" alt="Zoomed product image">';
+    document.body.appendChild(imageViewer);
+  }
+  const viewerPhoto = imageViewer.querySelector('.image-viewer-photo');
+  const closeViewer = () => { imageViewer.hidden = true; viewerPhoto.removeAttribute('src'); document.body.classList.remove('image-viewer-open'); };
   grid.addEventListener('click', event => {
     const thumb = event.target.closest('[data-gallery-target]');
-    if (!thumb) return;
-    const main = grid.querySelector(`[data-gallery-main="${thumb.dataset.galleryTarget}"]`);
-    if (!main) return;
-    main.src = thumb.dataset.galleryUrl;
-    const gallery = thumb.closest('.gallery-thumbs');
-    gallery?.querySelectorAll('.gallery-thumb').forEach(button => button.classList.toggle('active', button === thumb));
+    if (thumb) {
+      const main = grid.querySelector(`[data-gallery-main="${thumb.dataset.galleryTarget}"]`);
+      if (!main) return;
+      main.src = thumb.dataset.galleryUrl;
+      const gallery = thumb.closest('.gallery-thumbs');
+      gallery?.querySelectorAll('.gallery-thumb').forEach(button => button.classList.toggle('active', button === thumb));
+      return;
+    }
+    const mainImage = event.target.closest('[data-gallery-main]');
+    if (mainImage && mainImage.src) {
+      viewerPhoto.src = mainImage.src;
+      viewerPhoto.alt = mainImage.alt || 'Product image';
+      imageViewer.hidden = false;
+      document.body.classList.add('image-viewer-open');
+    }
   });
+  imageViewer.addEventListener('click', event => { if (event.target === imageViewer || event.target.closest('.image-viewer-close')) closeViewer(); });
+  document.addEventListener('keydown', event => { if (event.key === 'Escape' && !imageViewer.hidden) closeViewer(); });
 
   document.getElementById('search')?.addEventListener('input', render);
   document.getElementById('filters')?.addEventListener('click', event => {

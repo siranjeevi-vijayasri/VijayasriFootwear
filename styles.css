@@ -13,3 +13,14 @@
 .contact-actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
 .contact-whatsapp{color:#fff;border-color:rgba(255,255,255,.7)}
 @media(max-width:760px){.contact-actions{align-items:stretch}.contact-actions .btn{justify-content:center;text-align:center}}
+
+
+/* Mobile-friendly full-screen product photo viewer */
+.gallery-main img{cursor:zoom-in;touch-action:manipulation}
+.image-viewer[hidden]{display:none!important}
+.image-viewer{position:fixed;inset:0;z-index:9999;background:rgba(8,14,10,.96);display:flex;align-items:center;justify-content:center;padding:58px 12px 22px;overscroll-behavior:contain}
+.image-viewer-photo{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;touch-action:pinch-zoom;user-select:none;-webkit-user-select:none}
+.image-viewer-close{position:absolute;right:14px;top:12px;width:44px;height:44px;border:0;border-radius:50%;background:#fff;color:#153b2d;font-size:32px;line-height:1;cursor:pointer;z-index:2}
+.image-viewer-hint{position:absolute;top:20px;left:12px;color:#fff;font-size:12px;opacity:.9;pointer-events:none}
+body.image-viewer-open{overflow:hidden}
+@media(max-width:650px){.image-viewer{padding:62px 6px 18px}.image-viewer-photo{max-width:100%;max-height:100%;touch-action:pinch-zoom}.image-viewer-hint{font-size:11px;top:25px}}
