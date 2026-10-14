@@ -90,11 +90,21 @@
 
   function reset() {
     el('productForm').reset();
+    syncBrandField('');
     el('productId').value = '';
     el('formTitle').textContent = 'Add a product';
     el('published').checked = false;
   }
 
+  const brandSelect = el('brand');
+  const customBrand = el('customBrand');
+  function syncBrandField(value = brandSelect.value) {
+    const isOther = value === 'Other';
+    customBrand.style.display = isOther ? 'block' : 'none';
+    customBrand.required = isOther;
+    if (!isOther) customBrand.value = '';
+  }
+  brandSelect.addEventListener('change', () => syncBrandField());
   el('resetForm').addEventListener('click', reset);
 
   el('productRows').addEventListener('click', async event => {
@@ -104,7 +114,15 @@
       const product = all.find(item => item.id === edit.dataset.edit);
       if (!product) return;
       el('productId').value = product.id;
-      el('brand').value = product.brand || '';
+      const knownBrands = [...brandSelect.options].map(option => option.value);
+      if (knownBrands.includes(product.brand || '')) {
+        brandSelect.value = product.brand || '';
+        customBrand.value = '';
+      } else {
+        brandSelect.value = 'Other';
+        customBrand.value = product.brand || '';
+      }
+      syncBrandField();
       el('name').value = product.name || '';
       el('model').value = product.model || '';
       const categoryParts = String(product.category || '').split(' - ');
@@ -133,16 +151,29 @@
 
   async function collectImageUrls() {
     const urls = parseImageUrls(el('imageUrl').value);
-    const file = el('imageFile').files[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) throw new Error('Image must be 5 MB or smaller.');
-      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) throw new Error('Use JPG, PNG or WebP images.');
-      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-      const path = `${adminId}/${Date.now()}-${safeName}`;
-      const { error } = await client.storage.from('product-images').upload(path, file, { upsert: false, contentType: file.type });
-      if (error) throw error;
-      const { data } = client.storage.from('product-images').getPublicUrl(path);
-      if (data?.publicUrl) urls.push(data.publicUrl);
+    const files = Array.from(el('imageFile').files || []);
+    const maxBytes = 5 * 1024 * 1024;
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    for (const file of files) {
+      if (file.size > maxBytes) throw new Error(`"${file.name}" is larger than 5 MB. Please resize it and try again.`);
+      if (!allowedTypes.includes(file.type)) throw new Error(`"${file.name}" is not a supported image. Use JPG, PNG or WebP.`);
+    }
+    if (files.length) {
+      say(`Uploading ${files.length} image(s)…`);
+      for (let index = 0; index < files.length; index++) {
+        const file = files[index];
+        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const path = `${adminId}/${Date.now()}-${index}-${safeName}`;
+        const { error } = await client.storage.from('product-images').upload(path, file, {
+          upsert: false, contentType: file.type, cacheControl: '3600'
+        });
+        if (error) {
+          throw new Error(`Could not upload "${file.name}". Check that the Supabase "product-images" bucket exists, is public for display, and its upload policy allows admins. Details: ${error.message}`);
+        }
+        const { data } = client.storage.from('product-images').getPublicUrl(path);
+        if (data?.publicUrl) urls.push(data.publicUrl);
+        else throw new Error(`Upload succeeded for "${file.name}", but a public image URL could not be created.`);
+      }
     }
     const uniqueUrls = [...new Set(urls)];
     for (const url of uniqueUrls) {
@@ -159,7 +190,7 @@
       say('Saving product…');
       const imageUrls = await collectImageUrls();
       const payload = {
-        brand: el('brand').value.trim(),
+        brand: (el('brand').value === 'Other' ? el('customBrand').value : el('brand').value).trim(),
         name: el('name').value.trim(),
         model: el('model').value.trim() || null,
         // Store both choices in the existing category column; no database migration needed.
@@ -204,7 +235,12 @@
       if (!response.ok) throw new Error(result.error || 'Import failed');
       const product = result.product || {};
       if (product.name && !el('name').value) el('name').value = product.name;
-      if (product.brand && !el('brand').value) el('brand').value = product.brand;
+      if (product.brand && !el('brand').value) {
+        const knownBrands = [...brandSelect.options].map(option => option.value);
+        if (knownBrands.includes(product.brand)) brandSelect.value = product.brand;
+        else { brandSelect.value = 'Other'; customBrand.value = product.brand; }
+        syncBrandField();
+      }
       if (product.price != null && !el('price').value) el('price').value = product.price;
       if (product.mrp != null && !el('mrp').value) el('mrp').value = product.mrp;
       if (product.image_url) el('imageUrl').value = product.image_url;

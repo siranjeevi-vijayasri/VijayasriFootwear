@@ -46,11 +46,26 @@
     imageViewer.setAttribute('role', 'dialog');
     imageViewer.setAttribute('aria-modal', 'true');
     imageViewer.setAttribute('aria-label', 'Product image viewer');
-    imageViewer.innerHTML = '<button type="button" class="image-viewer-close" aria-label="Close image">×</button><div class="image-viewer-hint">Pinch to zoom · Tap × to close</div><img class="image-viewer-photo" alt="Zoomed product image">';
+    imageViewer.innerHTML = '<button type="button" class="image-viewer-close" aria-label="Close image">×</button><div class="image-viewer-hint">Mouse wheel or + / − to zoom · Drag to inspect · Esc to close</div><div class="image-viewer-controls" aria-label="Image zoom controls"><button type="button" data-zoom="out" aria-label="Zoom out">−</button><button type="button" data-zoom="reset" aria-label="Reset zoom">Reset</button><button type="button" data-zoom="in" aria-label="Zoom in">+</button></div><img class="image-viewer-photo" alt="Zoomed product image">';
     document.body.appendChild(imageViewer);
   }
   const viewerPhoto = imageViewer.querySelector('.image-viewer-photo');
-  const closeViewer = () => { imageViewer.hidden = true; viewerPhoto.removeAttribute('src'); document.body.classList.remove('image-viewer-open'); };
+  let zoomScale = 1, panX = 0, panY = 0, dragging = false, dragStartX = 0, dragStartY = 0, dragOriginX = 0, dragOriginY = 0;
+  const applyZoom = () => { viewerPhoto.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomScale})`; viewerPhoto.style.cursor = zoomScale > 1 ? (dragging ? 'grabbing' : 'grab') : 'zoom-in'; };
+  const resetZoom = () => { zoomScale = 1; panX = 0; panY = 0; dragging = false; applyZoom(); };
+  const changeZoom = delta => { zoomScale = Math.max(1, Math.min(5, +(zoomScale + delta).toFixed(2))); if (zoomScale === 1) { panX = 0; panY = 0; } applyZoom(); };
+  const closeViewer = () => { imageViewer.hidden = true; viewerPhoto.removeAttribute('src'); resetZoom(); document.body.classList.remove('image-viewer-open'); };
+  imageViewer.querySelectorAll('[data-zoom]').forEach(button => button.addEventListener('click', () => { const action = button.dataset.zoom; if (action === 'in') changeZoom(0.5); else if (action === 'out') changeZoom(-0.5); else resetZoom(); }));
+  imageViewer.addEventListener('wheel', event => {
+    if (imageViewer.hidden) return;
+    event.preventDefault();
+    changeZoom(event.deltaY < 0 ? 0.25 : -0.25);
+  }, { passive: false });
+  viewerPhoto.addEventListener('pointerdown', event => { if (event.pointerType !== 'mouse' || zoomScale <= 1) return; dragging = true; dragStartX = event.clientX; dragStartY = event.clientY; dragOriginX = panX; dragOriginY = panY; viewerPhoto.setPointerCapture?.(event.pointerId); applyZoom(); });
+  viewerPhoto.addEventListener('pointermove', event => { if (!dragging) return; panX = dragOriginX + event.clientX - dragStartX; panY = dragOriginY + event.clientY - dragStartY; applyZoom(); });
+  const stopDragging = () => { if (dragging) { dragging = false; applyZoom(); } };
+  viewerPhoto.addEventListener('pointerup', stopDragging); viewerPhoto.addEventListener('pointercancel', stopDragging);
+  imageViewer.addEventListener('dblclick', event => { if (event.target === viewerPhoto) { if (zoomScale > 1) resetZoom(); else changeZoom(1); } });
   grid.addEventListener('click', event => {
     const thumb = event.target.closest('[data-gallery-target]');
     if (thumb) {
@@ -63,6 +78,7 @@
     }
     const mainImage = event.target.closest('[data-gallery-main]');
     if (mainImage && mainImage.src) {
+      resetZoom();
       viewerPhoto.src = mainImage.src;
       viewerPhoto.alt = mainImage.alt || 'Product image';
       imageViewer.hidden = false;
@@ -70,7 +86,13 @@
     }
   });
   imageViewer.addEventListener('click', event => { if (event.target === imageViewer || event.target.closest('.image-viewer-close')) closeViewer(); });
-  document.addEventListener('keydown', event => { if (event.key === 'Escape' && !imageViewer.hidden) closeViewer(); });
+  document.addEventListener('keydown', event => {
+    if (imageViewer.hidden) return;
+    if (event.key === 'Escape') closeViewer();
+    else if (event.key === '+' || event.key === '=') changeZoom(0.5);
+    else if (event.key === '-' || event.key === '_') changeZoom(-0.5);
+    else if (event.key === '0') resetZoom();
+  });
 
   document.getElementById('search')?.addEventListener('input', render);
   document.getElementById('filters')?.addEventListener('click', event => {

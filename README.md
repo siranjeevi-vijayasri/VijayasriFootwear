@@ -46,3 +46,12 @@ In VJSManage, paste a product page URL and choose **Fetch product details and im
 
 ## Limitations
 This package does not contain a live database or credentials, and no merchant product pages are preloaded. Real product images enter the catalogue after an admin imports a supported product URL or uploads an approved image and publishes the product. Prices should be checked and set by the shop owner.
+
+
+## Admin inventory update
+- Choose a common footwear brand from the Brand dropdown, or choose **Other** to type a brand not listed.
+- Use **Upload product images** to select multiple JPG, PNG, or WebP files in one action. Each file must be 5 MB or smaller.
+- Multi-image upload uses the existing public Supabase Storage bucket `product-images` and its admin-only upload policy. If this ZIP is a fresh deployment, run `supabase/schema.sql` in Supabase SQL Editor to create/confirm the bucket and policies.
+- Product image URLs can still be pasted as comma-separated or newline-separated links.
+- On desktop/laptop, open a product image to use the zoom controls; use the mouse wheel, double-click, or `+`, `-`, and `0` keys to zoom/reset.
+- Keep your currently working `config.js` when deploying if it contains your real Supabase URL and publishable/anon key; the template file in this ZIP uses placeholders.
