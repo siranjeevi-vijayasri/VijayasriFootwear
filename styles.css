@@ -44,3 +44,31 @@ body.image-viewer-open{overflow:hidden}
   .image-viewer { padding: 58px 24px 76px; }
   .image-viewer-photo { max-width: calc(100vw - 48px); max-height: calc(100vh - 130px); }
 }
+
+
+/* Vijayadashami seasonal catalogue theme */
+:root{--green:#702c26;--lime:#f3c66a;--cream:#fff8ed;--ink:#33231f;--muted:#78645b;--line:#ead8c7}
+.topline{background:#702c26;color:#fff4df;letter-spacing:.025em}
+.hero{background:linear-gradient(120deg,#fff8ed 55%,#f8e8cf 55%)}
+.hero h1 em{color:#a45c23}
+.visual-circle{background:#f3c66a}
+.visual-card{border:1px solid #f0dfc6}
+.round-stamp{background:#702c26;color:#f3c66a;border-color:#fff8ed}
+.btn-green{background:#702c26}
+.btn-green:hover{background:#54201c}
+.btn-outline{border-color:#d8bca3;color:#702c26}
+.eyebrow{color:#a45c23}
+.filter.active,.filter:hover{background:#702c26;border-color:#702c26}
+.product-card{box-shadow:0 5px 18px rgba(112,44,38,.045)}
+.about{background:#f7ead7}
+.contact{background:#702c26}
+.contact .eyebrow{color:#f3c66a}
+.catalogue-filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr)) auto;align-items:end;gap:12px;padding:18px;background:#fffdf8;border:1px solid #ead8c7;border-radius:18px}
+.catalogue-filter-field{display:flex;flex-direction:column;gap:7px;min-width:0}
+.catalogue-filter-field span{font-size:11px;font-weight:800;letter-spacing:.04em;color:#78645b}
+.catalogue-filter-field select{width:100%;min-width:0;border:1px solid #e2d0bd;background:#fff8ed;color:#33231f;border-radius:10px;padding:12px 10px;font:inherit;font-size:13px}
+.catalogue-filter-field select:disabled{opacity:.55;background:#f5efe7}
+.filter-reset{border:1px solid #d8bca3;background:transparent;color:#702c26;border-radius:10px;padding:12px 14px;font-size:12px;font-weight:750;cursor:pointer;white-space:nowrap}
+.filter-note{font-size:11px;color:#78645b;margin:10px 2px 24px}
+@media(max-width:900px){.catalogue-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.filter-reset{min-height:42px}}
+@media(max-width:480px){.catalogue-filters{grid-template-columns:1fr 1fr;gap:10px;padding:12px}.catalogue-filter-field select{font-size:12px;padding:11px 8px}.filter-reset{grid-column:1/-1}}
