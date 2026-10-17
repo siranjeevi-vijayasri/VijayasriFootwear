@@ -72,3 +72,7 @@ body.image-viewer-open{overflow:hidden}
 .filter-note{font-size:11px;color:#78645b;margin:10px 2px 24px}
 @media(max-width:900px){.catalogue-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.filter-reset{min-height:42px}}
 @media(max-width:480px){.catalogue-filters{grid-template-columns:1fr 1fr;gap:10px;padding:12px}.catalogue-filter-field select{font-size:12px;padding:11px 8px}.filter-reset{grid-column:1/-1}}
+
+/* Keep the secondary contact action readable on the dark festive section */
+.contact .btn-outline{color:#fff8ed;border-color:#f3c66a;background:transparent}
+.contact .btn-outline:hover{background:rgba(255,248,237,.1)}
