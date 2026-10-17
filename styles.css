@@ -346,3 +346,67 @@ footer{background:#41161d;color:#ead5c7;padding:22px clamp(18px,8vw,120px);font-
   .festival-art.festival-reference-art{width:min(100%,360px);justify-self:center}
   .festival-reference-art img{max-height:240px;width:100%;object-fit:contain}
 }
+
+
+/* Two-artwork Vijayadashami layout: Dussehra visual left, copy on right */
+.festival-hero{
+  grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);
+  gap:clamp(20px,4vw,54px);
+  padding:clamp(26px,3.6vw,48px) clamp(22px,6vw,88px);
+  min-height:0;
+}
+.festival-dussehra-art{
+  display:block!important;
+  width:100%;
+  max-width:620px;
+  min-width:0;
+  min-height:0;
+  height:auto;
+  justify-self:stretch;
+  align-self:center;
+  overflow:hidden;
+  border:1px solid #ead8c7;
+  border-radius:6px;
+  background:#fff1d9;
+  box-shadow:0 14px 36px rgba(95,28,37,.10);
+}
+.festival-dussehra-art img{
+  display:block;
+  width:100%;
+  height:auto;
+  max-height:390px;
+  object-fit:contain;
+}
+.festival-copy{position:relative;z-index:2}
+.festival-copy h1{font-size:clamp(42px,5.2vw,70px)}
+.festival-greeting{
+  padding:clamp(18px,3vw,38px) clamp(18px,6vw,88px);
+  background:#5f1c25;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  border-top:1px solid #d8ae5d;
+  border-bottom:1px solid #d8ae5d;
+}
+.festival-greeting img{
+  display:block;
+  width:min(100%,1100px);
+  height:auto;
+  max-height:430px;
+  object-fit:contain;
+  border:1px solid rgba(230,182,90,.45);
+}
+@media(max-width:760px){
+  .festival-hero{grid-template-columns:minmax(0,1fr);gap:20px;padding:24px 20px 30px}
+  .festival-dussehra-art{width:min(100%,600px);justify-self:center;grid-row:1}
+  .festival-dussehra-art img{max-height:270px;width:100%;object-fit:contain}
+  .festival-copy{grid-row:2;text-align:center;margin-inline:auto}
+  .festival-copy .eyebrow{justify-content:center}
+  .festival-copy h1{font-size:clamp(39px,10vw,58px)}
+  .festival-greeting{padding:14px 12px}
+  .festival-greeting img{max-height:260px}
+}
+@media(max-width:380px){
+  .festival-hero{padding-inline:14px}
+  .festival-greeting img{max-height:220px}
+}
