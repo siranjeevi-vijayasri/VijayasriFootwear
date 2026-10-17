@@ -76,3 +76,151 @@ body.image-viewer-open{overflow:hidden}
 /* Keep the secondary contact action readable on the dark festive section */
 .contact .btn-outline{color:#fff8ed;border-color:#f3c66a;background:transparent}
 .contact .btn-outline:hover{background:rgba(255,248,237,.1)}
+
+
+/* Full Vijayadashami visual redesign — new editorial layout, not a colour-only override */
+:root{
+  --green:#70232d;
+  --lime:#e6b65a;
+  --cream:#fff8eb;
+  --ink:#2f2020;
+  --muted:#786765;
+  --line:#ead8c7;
+  --festival-red:#7b242c;
+  --festival-saffron:#d98a32;
+  --festival-ivory:#fff8eb;
+  --festival-leaf:#485b3d;
+}
+body{background:#fffaf2;color:var(--ink)}
+.topline{background:#5f1c25;color:#fff2d7;padding:11px 16px;font-size:11px;letter-spacing:.1em}
+.header{height:auto;min-height:88px;padding:15px clamp(18px,6vw,88px);background:#fffaf2;border-bottom:1px solid #eadcc8}
+.identity img{border-radius:0}
+.identity b{font-family:Georgia,"Times New Roman",serif;font-size:19px;letter-spacing:-.02em}
+.identity small{letter-spacing:.08em;text-transform:uppercase;font-size:9px}
+.header nav a{font-size:12px}
+.header nav a:hover,.text-link:hover{color:var(--festival-saffron)}
+.btn{border-radius:4px;letter-spacing:.015em}
+.btn-green{background:#70232d;color:#fff8eb}
+.btn-green:hover{background:#511820}
+.btn-outline{border-color:#bca28d;color:#70232d}
+.festival-hero{
+  position:relative;overflow:hidden;display:grid;grid-template-columns:1.02fr .98fr;gap:clamp(24px,5vw,76px);
+  align-items:center;min-height:590px;padding:clamp(52px,7vw,100px) clamp(22px,9vw,140px);
+  background:#fff8eb;
+}
+.festival-hero:before{content:"";position:absolute;inset:14px;border:1px solid #ead8c7;pointer-events:none}
+.festival-hero:after{content:"";position:absolute;left:0;bottom:0;width:100%;height:7px;background:repeating-linear-gradient(90deg,#70232d 0 22px,#e6b65a 22px 30px,#485b3d 30px 38px,#fff8eb 38px 46px)}
+.festival-copy{position:relative;z-index:2;max-width:590px}
+.festival-copy .eyebrow{display:inline-flex;align-items:center;gap:10px;color:#8b3434;letter-spacing:.14em;line-height:1.8}
+.festival-copy .eyebrow:before{content:"";display:inline-block;width:27px;height:1px;background:#d98a32}
+.festival-overline{margin:24px 0 0;color:#a16b32;font-family:Georgia,"Times New Roman",serif;font-size:clamp(18px,2vw,25px);font-style:italic}
+.festival-copy h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(48px,6.5vw,86px);line-height:.98;letter-spacing:-.055em;font-weight:500;margin:12px 0 23px;color:#70232d}
+.festival-copy h1 em{font-weight:500;color:#485b3d;font-style:italic}
+.festival-description{max-width:470px;color:#786765;font-size:15px;line-height:1.9}
+.festival-hero .hero-actions{align-items:center;gap:25px;margin:30px 0}
+.festival-hero .btn{padding:15px 19px}
+.text-link{font-size:13px;font-weight:700;color:#70232d;text-decoration:none;border-bottom:1px solid #d7bda0;padding:0 0 5px}
+.festival-trust{display:flex;align-items:center;flex-wrap:wrap;gap:12px;color:#786765;font-size:10px;letter-spacing:.025em}
+.festival-trust i{width:4px;height:4px;background:#d98a32;border-radius:50%}
+.festival-art{min-height:410px;position:relative;display:grid;place-items:center;isolation:isolate}
+.festival-art-frame{position:absolute;width:min(100%,410px);height:390px;border-radius:48% 48% 5px 5px;background:#f4e5cd;border:1px solid #dfc59e;box-shadow:inset 0 0 0 9px #f4e5cd,inset 0 0 0 10px #d9b879}
+.festival-sun{position:absolute;width:240px;height:240px;border-radius:50%;background:#e6b65a;opacity:.46;top:44px;left:50%;transform:translateX(-50%)}
+.festival-lamp{position:absolute;z-index:2;top:105px;width:180px;height:220px;display:flex;align-items:center;flex-direction:column}
+.lamp-flame{position:relative;width:42px;height:65px;margin-bottom:-2px;background:radial-gradient(ellipse at 50% 68%,#fff6bd 0 15%,#f5b83e 17% 48%,#d97925 51% 70%,transparent 72%);clip-path:ellipse(35% 50% at 50% 50%);filter:drop-shadow(0 0 12px #e6a33c)}
+.lamp-bowl{width:130px;height:48px;border-radius:8px 8px 65px 65px;background:linear-gradient(90deg,#9a5b21,#f2cf79 25%,#b8752a 48%,#f6d98a 70%,#8e4c1b);border-bottom:7px solid #8b4e1e;box-shadow:0 8px 16px #6e3e251c}
+.lamp-stem{width:34px;height:76px;background:linear-gradient(90deg,#8e4c1b,#f2cf79 38%,#b8752a 70%,#f6d98a);clip-path:polygon(32% 0,68% 0,82% 75%,100% 85%,100% 100%,0 100%,0 85%,18% 75%)}
+.lamp-base{width:105px;height:19px;border-radius:50%;background:linear-gradient(90deg,#8e4c1b,#f2cf79 30%,#b8752a 70%,#f6d98a);box-shadow:0 7px 0 #9b5a25}
+.festival-flower{position:absolute;z-index:3;color:#d98a32;font-size:76px;text-shadow:0 3px 0 #f6d69a}
+.flower-one{left:7%;top:19%;transform:rotate(-16deg)}
+.flower-two{right:5%;bottom:24%;font-size:60px;transform:rotate(18deg);color:#b94c37}
+.festival-art-caption{position:absolute;bottom:30px;z-index:4;display:flex;flex-direction:column;align-items:center;gap:7px;color:#70232d;text-align:center}
+.festival-art-caption span{font-family:Georgia,"Times New Roman",serif;font-size:20px}
+.festival-art-caption b{font-size:8px;letter-spacing:.17em}
+.festival-seal{position:absolute;right:1%;top:10%;z-index:4;width:86px;height:86px;display:grid;place-content:center;text-align:center;border-radius:50%;background:#70232d;color:#fff0cf;border:3px double #e6b65a;font-family:Georgia,"Times New Roman",serif;font-size:12px;line-height:1.4;transform:rotate(9deg)}
+.section{padding:clamp(54px,7vw,90px) clamp(18px,8vw,120px)}
+.section-head{margin-bottom:30px}
+.section h2{font-family:Georgia,"Times New Roman",serif;font-weight:500;letter-spacing:-.035em;color:#70232d}
+.eyebrow{color:#a16b32;letter-spacing:.15em}
+.catalogue{background:#fffdf8}
+.catalogue .section-head p{margin-bottom:0}
+.search-wrap input{border-radius:4px;border-color:#e2d2be;background:#fffaf2;padding:14px 15px}
+.catalogue-filters{border:1px solid #e5d2b8;border-radius:4px;background:#f8edda;padding:20px}
+.catalogue-filter-field span{color:#70232d;letter-spacing:.08em;text-transform:uppercase}
+.catalogue-filter-field select{border-radius:3px;background:#fffdf8;border-color:#dfc9aa}
+.filter-reset{border-radius:3px;background:#70232d;color:#fff8eb;border-color:#70232d}
+.filter-reset:hover{background:#511820}
+.filter-note{font-size:12px;margin:12px 2px 26px}
+.product-grid{gap:20px}
+.product-card{border-radius:3px;border:1px solid #eadfce;box-shadow:none;transition:transform .18s ease,border-color .18s ease}
+.product-card:hover{transform:translateY(-3px);border-color:#d4ad75}
+.product-image{background:#f5eee2}
+.product-gallery .gallery-main{background:#f5eee2}
+.product-info{padding:17px}
+.product-brand{color:#a16b32;letter-spacing:.16em}
+.product-name{font-family:Georgia,"Times New Roman",serif;font-size:16px;font-weight:600;color:#3b2927}
+.product-meta{line-height:1.7}
+.product-price{color:#70232d}
+.product-info .btn{margin-top:8px}
+.loading,.empty-hint{border-radius:3px;border-color:#dfc9aa;background:#fffaf2}
+.about{background:#f2e4cc;border-top:1px solid #e3cba5;border-bottom:1px solid #e3cba5}
+.about .eyebrow{color:#8b3434}
+.about p{color:#65504a}
+.contact{background:#5f1c25;color:#fff8eb;position:relative;overflow:hidden}
+.contact:after{content:"";position:absolute;right:-45px;top:-75px;width:240px;height:240px;border:1px solid #d8ae5d;border-radius:50%;box-shadow:0 0 0 14px #5f1c25,0 0 0 15px #d8ae5d,0 0 0 30px #5f1c25,0 0 0 31px #d8ae5d;opacity:.3;pointer-events:none}
+.contact h2{color:#fff0d0}
+.contact p{color:#f1dcd3}
+.contact .eyebrow{color:#e6b65a}
+.contact .btn-light{background:#e6b65a;color:#4b2023}
+.contact .btn-outline{color:#fff8eb;border-color:#e6b65a;background:transparent}
+.contact .btn-outline:hover{background:rgba(255,248,237,.1)}
+footer{background:#41161d;color:#ead5c7;padding:22px clamp(18px,8vw,120px);font-size:11px;letter-spacing:.05em}
+@media(max-width:900px){
+ .festival-hero{padding:58px 34px;gap:20px;min-height:0}
+ .festival-art{min-height:360px}
+ .festival-art-frame{height:340px}
+ .festival-sun{width:200px;height:200px}
+ .festival-lamp{top:82px;transform:scale(.88)}
+ .festival-art-caption{bottom:22px}
+ .festival-copy h1{font-size:clamp(48px,6vw,68px)}
+ .product-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:650px){
+ .topline{font-size:10px;line-height:1.6}
+ .header{padding:13px 18px;gap:12px}
+ .header nav{gap:10px;overflow-x:auto;justify-content:flex-start}
+ .header nav a{white-space:nowrap;font-size:11px}
+ .header>.btn{margin-left:auto}
+ .festival-hero{grid-template-columns:1fr;padding:48px 25px 56px;gap:18px}
+ .festival-hero:before{inset:8px}
+ .festival-copy h1{font-size:clamp(49px,13vw,68px)}
+ .festival-description{font-size:14px}
+ .festival-hero .hero-actions{gap:16px;flex-wrap:wrap}
+ .festival-trust{gap:8px;font-size:9px}
+ .festival-art{min-height:335px;margin-top:2px}
+ .festival-art-frame{width:min(100%,340px);height:310px}
+ .festival-sun{width:190px;height:190px;top:32px}
+ .festival-lamp{top:68px;transform:scale(.8)}
+ .festival-seal{right:3%;top:7%;width:72px;height:72px;font-size:10px}
+ .festival-flower{font-size:58px}
+ .flower-one{top:18%;left:1%}
+ .flower-two{bottom:26%;right:1%;font-size:48px}
+ .festival-art-caption{bottom:20px}
+ .festival-art-caption span{font-size:17px}
+ .festival-art-caption b{font-size:7px;letter-spacing:.1em}
+ .section{padding:48px 18px}
+ .catalogue-filters{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:12px}
+ .catalogue-filter-field select{font-size:12px;padding:11px 8px}
+ .filter-reset{grid-column:1/-1;min-height:42px}
+ .product-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .product-info{padding:11px}
+ .product-name{font-size:14px}
+ .product-info .btn{font-size:10px;padding:11px 7px}
+ .contact{gap:24px}
+}
+@media(max-width:380px){
+ .header>.btn{font-size:10px;padding:10px}
+ .festival-hero{padding-inline:18px}
+ .festival-trust{max-width:250px}
+ .catalogue-filters{grid-template-columns:1fr}
+ .filter-reset{grid-column:auto}
+}
