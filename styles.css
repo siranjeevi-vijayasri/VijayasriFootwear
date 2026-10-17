@@ -306,3 +306,43 @@ footer{background:#41161d;color:#ead5c7;padding:22px clamp(18px,8vw,120px);font-
  .festival-hero .hero-actions{margin:17px 0;gap:14px}
  .festival-trust{font-size:9px;gap:7px}
 }
+
+
+/* User-provided Vijayadashami reference image: compact, aligned hero */
+.festival-hero{
+  display:grid;
+  grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);
+  gap:clamp(20px,4vw,52px);
+  align-items:center;
+  padding:clamp(28px,4vw,52px) clamp(22px,7vw,100px) clamp(32px,4vw,48px);
+}
+.festival-copy{text-align:left;margin:0;max-width:620px}
+.festival-copy .eyebrow{justify-content:flex-start}
+.festival-art.festival-reference-art{
+  display:block!important;
+  height:auto;
+  min-height:0;
+  width:100%;
+  max-width:460px;
+  justify-self:end;
+  margin:0;
+  overflow:hidden;
+  border-radius:8px;
+  background:#f5eee2;
+}
+.festival-reference-art img{
+  display:block;
+  width:100%;
+  height:auto;
+  max-height:390px;
+  object-fit:contain;
+  object-position:center;
+  border-radius:8px;
+}
+@media(max-width:650px){
+  .festival-hero{grid-template-columns:minmax(0,1fr);gap:20px;padding:28px 22px 32px}
+  .festival-copy{text-align:center;margin:0 auto}
+  .festival-copy .eyebrow{justify-content:center}
+  .festival-art.festival-reference-art{width:min(100%,360px);justify-self:center}
+  .festival-reference-art img{max-height:240px;width:100%;object-fit:contain}
+}
