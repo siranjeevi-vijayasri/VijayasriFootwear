@@ -224,3 +224,59 @@ footer{background:#41161d;color:#ead5c7;padding:22px clamp(18px,8vw,120px);font-
  .catalogue-filters{grid-template-columns:1fr}
  .filter-reset{grid-column:auto}
 }
+
+
+/* Hero artwork alignment and first-screen height correction */
+.festival-hero{
+  min-height:0;
+  grid-template-columns:minmax(0,1.04fr) minmax(0,.96fr);
+  align-items:center;
+  padding-top:clamp(42px,5.5vw,72px);
+  padding-bottom:clamp(48px,6vw,78px);
+}
+.festival-copy{min-width:0}
+.festival-art{
+  width:100%;
+  min-width:0;
+  min-height:350px;
+  height:350px;
+  align-self:center;
+}
+.festival-art-frame{height:330px;max-width:100%}
+.festival-sun{top:35px;width:210px;height:210px}
+.festival-lamp{top:78px;transform:scale(.84);transform-origin:top center}
+.festival-art-caption{bottom:22px;max-width:90%;padding-inline:6px}
+.festival-seal{right:2%;top:8%}
+@media(max-width:900px){
+  .festival-hero{grid-template-columns:minmax(0,1fr) minmax(0,.9fr);padding-top:48px;padding-bottom:54px}
+  .festival-art{min-height:310px;height:310px}
+  .festival-art-frame{height:295px}
+  .festival-sun{width:180px;height:180px;top:30px}
+  .festival-lamp{top:67px;transform:scale(.76);transform-origin:top center}
+  .festival-art-caption{bottom:18px}
+}
+@media(max-width:650px){
+  .festival-hero{grid-template-columns:minmax(0,1fr);gap:8px;padding-top:38px;padding-bottom:42px}
+  .festival-copy h1{margin-top:10px;margin-bottom:17px}
+  .festival-description{margin-top:0}
+  .festival-hero .hero-actions{margin:21px 0}
+  .festival-art{min-height:250px;height:250px;margin:0 auto;width:min(100%,360px)}
+  .festival-art-frame{width:min(100%,270px);height:235px}
+  .festival-sun{width:145px;height:145px;top:25px}
+  .festival-lamp{top:49px;transform:scale(.61);transform-origin:top center}
+  .festival-flower{font-size:46px}
+  .flower-one{top:17%;left:4%}
+  .flower-two{bottom:24%;right:4%;font-size:38px}
+  .festival-seal{right:7%;top:5%;width:62px;height:62px;font-size:9px}
+  .festival-art-caption{bottom:13px;gap:4px}
+  .festival-art-caption span{font-size:15px}
+  .festival-art-caption b{font-size:6px;letter-spacing:.08em}
+}
+@media(max-width:380px){
+  .festival-hero{padding-inline:18px}
+  .festival-art{height:225px;min-height:225px}
+  .festival-art-frame{height:215px;width:min(100%,245px)}
+  .festival-sun{width:130px;height:130px}
+  .festival-lamp{top:43px;transform:scale(.55);transform-origin:top center}
+  .festival-art-caption b{font-size:5px}
+}
