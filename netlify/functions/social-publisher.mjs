@@ -177,7 +177,7 @@ export default async () => {
 
       const bothDone = Boolean(facebookId && instagramId);
       const anyDone = Boolean(facebookId || instagramId);
-      const status = bothDone ? "published" : (attempts >= MAX_ATTEMPTS && !anyDone ? "failed" : (anyDone ? "partial" : "pending"));
+      const status = bothDone ? "published" : (attempts >= MAX_ATTEMPTS ? "failed" : (anyDone ? "partial" : "pending"));
       const lastError = errors.length ? errors.join(" | ").slice(0, 2000) : null;
       await updateQueue(config, row.id, {
         status,
