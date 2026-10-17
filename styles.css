@@ -280,3 +280,29 @@ footer{background:#41161d;color:#ead5c7;padding:22px clamp(18px,8vw,120px);font-
   .festival-lamp{top:43px;transform:scale(.55);transform-origin:top center}
   .festival-art-caption b{font-size:5px}
 }
+
+
+/* Compact first screen: simple festive mark, no oversized artwork or blank column */
+.festival-hero{
+  display:block;
+  min-height:0;
+  padding:clamp(30px,4vw,52px) clamp(22px,9vw,140px) clamp(32px,4vw,48px);
+}
+.festival-hero:before{inset:8px}
+.festival-hero:after{height:4px}
+.festival-copy{max-width:720px;margin:0 auto;text-align:center}
+.festival-copy .eyebrow{justify-content:center}
+.festival-overline{margin-top:12px}
+.festival-copy h1{font-size:clamp(40px,5.2vw,66px);line-height:1.02;margin:10px 0 16px}
+.festival-description{margin-inline:auto;max-width:560px;font-size:14px;line-height:1.7}
+.festival-hero .hero-actions{justify-content:center;margin:20px 0}
+.festival-trust{justify-content:center}
+.festival-art{display:none!important}
+@media(max-width:650px){
+ .festival-hero{padding:28px 22px 34px}
+ .festival-copy h1{font-size:clamp(38px,10vw,54px);margin:8px 0 13px}
+ .festival-overline{font-size:17px;margin-top:8px}
+ .festival-description{font-size:13px;line-height:1.65}
+ .festival-hero .hero-actions{margin:17px 0;gap:14px}
+ .festival-trust{font-size:9px;gap:7px}
+}
