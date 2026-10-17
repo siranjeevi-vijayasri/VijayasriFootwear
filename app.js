@@ -6,7 +6,11 @@
   const grid = document.getElementById('productGrid');
   const empty = document.getElementById('emptyHint');
   let products = [];
-  let category = 'All';
+  const brandFilter = document.getElementById('brandFilter');
+  const audienceFilter = document.getElementById('audienceFilter');
+  const typeFilter = document.getElementById('typeFilter');
+  const sizeFilter = document.getElementById('sizeFilter');
+  const resetFilters = document.getElementById('resetFilters');
   document.getElementById('year').textContent = new Date().getFullYear();
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const imageUrls = value => [...new Set(String(value || '').split(/[\n,]+/).map(url => url.trim()).filter(Boolean))];
@@ -25,9 +29,45 @@
     return `<article class="product-card"><div class="product-image product-gallery">${gallery}</div><div class="product-info"><div class="product-brand">${esc(p.brand || 'Footwear')}</div><div class="product-name">${esc(p.name)}</div><div class="product-meta">${esc([p.model, p.category, p.sizes].filter(Boolean).join(' · '))}</div><div class="product-price">${p.price != null && p.price !== '' ? '₹'+Number(p.price).toLocaleString('en-IN') : 'Ask for price'} <small>${p.mrp && Number(p.mrp)>Number(p.price) ? `<s>₹${Number(p.mrp).toLocaleString('en-IN')}</s>` : ''}</small></div><a class="btn btn-green" target="_blank" rel="noopener" href="https://wa.me/${WA}?text=${encodeURIComponent(msg)}">Enquire on WhatsApp ↗</a></div></article>`;
   }
 
+  function productAudience(p) {
+    if (p.audience) return String(p.audience).trim();
+    const first = String(p.category || '').split(' - ')[0].trim();
+    return ['Men', 'Women', 'Kids', 'Unisex'].includes(first) ? first : '';
+  }
+  function productType(p) {
+    const parts = String(p.category || '').split(' - ');
+    if (parts.length > 1 && ['Men', 'Women', 'Kids', 'Unisex'].includes(parts[0].trim())) return parts.slice(1).join(' - ').trim();
+    return ['Sandals', 'Shoes', 'Slippers', 'Flip-Flops', 'Formal', 'Sports', 'Other'].includes(String(p.category || '').trim()) ? String(p.category).trim() : '';
+  }
+  function productSizes(p) {
+    return [...new Set(String(p.sizes || '').split(/[，,;|/]+/).map(s => s.trim()).filter(Boolean))];
+  }
+  function setOptions(select, values, placeholder, selected = '') {
+    const unique = [...new Set(values.filter(Boolean))].sort((a,b) => a.localeCompare(b, undefined, {numeric:true, sensitivity:'base'}));
+    select.innerHTML = '<option value="">' + esc(placeholder) + '</option>' + unique.map(v => '<option value="' + esc(v) + '">' + esc(v) + '</option>').join('');
+    select.value = unique.includes(selected) ? selected : '';
+    select.disabled = unique.length === 0;
+  }
+  function updateFilters() {
+    const brand = brandFilter.value, audience = audienceFilter.value, type = typeFilter.value, size = sizeFilter.value;
+    setOptions(brandFilter, products.map(p => String(p.brand || '').trim()), 'All brands', brand);
+    const byBrand = products.filter(p => !brandFilter.value || String(p.brand || '').trim() === brandFilter.value);
+    setOptions(audienceFilter, byBrand.map(productAudience), 'All audiences', audience);
+    const byAudience = byBrand.filter(p => !audienceFilter.value || productAudience(p) === audienceFilter.value);
+    setOptions(typeFilter, byAudience.map(productType), 'All types', type);
+    const byType = byAudience.filter(p => !typeFilter.value || productType(p) === typeFilter.value);
+    setOptions(sizeFilter, byType.flatMap(productSizes), 'All sizes', size);
+  }
   function render() {
     const q = (document.getElementById('search')?.value || '').trim().toLowerCase();
-    const shown = products.filter(p => { const parts = String(p.category || '').split(' - '); const matchesCategory = category === 'All' || parts.includes(category) || p.category === category || p.audience === category; return matchesCategory && `${p.brand || ''} ${p.name || ''} ${p.model || ''} ${p.category || ''}`.toLowerCase().includes(q); });
+    const brand = brandFilter?.value || '', audience = audienceFilter?.value || '', type = typeFilter?.value || '', size = sizeFilter?.value || '';
+    const shown = products.filter(p => {
+      const text = `${p.brand || ''} ${p.name || ''} ${p.model || ''} ${p.category || ''} ${p.sizes || ''} ${p.colours || ''}`.toLowerCase();
+      return (!brand || String(p.brand || '').trim() === brand) &&
+        (!audience || productAudience(p) === audience) &&
+        (!type || productType(p) === type) &&
+        (!size || productSizes(p).includes(size)) && text.includes(q);
+    });
     grid.innerHTML = shown.map(productCard).join('');
     empty.hidden = shown.length > 0;
     if (!supa) {
@@ -95,18 +135,20 @@
   });
 
   document.getElementById('search')?.addEventListener('input', render);
-  document.getElementById('filters')?.addEventListener('click', event => {
-    const button = event.target.closest('[data-category]');
-    if (!button) return;
-    category = button.dataset.category;
-    document.querySelectorAll('.filter').forEach(item => item.classList.toggle('active', item === button));
-    render();
+  brandFilter?.addEventListener('change', () => { audienceFilter.value = ''; typeFilter.value = ''; sizeFilter.value = ''; updateFilters(); render(); });
+  audienceFilter?.addEventListener('change', () => { typeFilter.value = ''; sizeFilter.value = ''; updateFilters(); render(); });
+  typeFilter?.addEventListener('change', () => { sizeFilter.value = ''; updateFilters(); render(); });
+  sizeFilter?.addEventListener('change', render);
+  resetFilters?.addEventListener('click', () => {
+    brandFilter.value = ''; audienceFilter.value = ''; typeFilter.value = ''; sizeFilter.value = '';
+    updateFilters(); render();
   });
   async function load() {
     if (!supa) { render(); return; }
     const { data, error } = await supa.from('products').select('*').eq('published', true).order('created_at', { ascending: false });
     if (error) { grid.innerHTML = '<div class="loading">We could not load the catalogue right now. Please contact the shop on WhatsApp.</div>'; return; }
     products = data || [];
+    updateFilters();
     render();
   }
   load();
