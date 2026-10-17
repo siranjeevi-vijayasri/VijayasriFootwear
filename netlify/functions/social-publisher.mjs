@@ -6,7 +6,7 @@ const MAX_ATTEMPTS = 3;
 
 export const config = { schedule: "*/5 * * * *" };
 
-const env = (name) => (Netlify.env.get(name) || "").trim();
+const env = (name) => (process.env[name] || "").trim();
 
 function requiredConfig() {
   const names = [
