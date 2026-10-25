@@ -204,22 +204,90 @@
     }
   }
 
-  async function startCrackerSoundForTenSeconds() {
-    try {
-      crackerAudio = new Audio('assets/diwali-crackers.mp3');
-      crackerAudio.preload = 'auto';
-      crackerAudio.volume = 0.85;
-      crackerAudio.loop = true;
-      await crackerAudio.play();
-      crackerStopTimer = window.setTimeout(stopCrackerSound, 10000);
-    } catch (_) {
-      // Browser autoplay restrictions may require the visitor to interact first.
-      // Do not show a sound toggle or interrupt the catalogue with a prompt.
-    }
+  let crackerAudioContext = null;
+  let fallbackSoundTimer = null;
+  let soundButton = null;
+
+  // A visible, user-initiated control is required because modern browsers block
+  // sound autoplay. If the MP3 codec/file fails, synthesize short cracker-like
+  // pops with Web Audio as a fallback.
+  function playFallbackCrackers() {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) throw new Error('Web Audio is not available in this browser');
+    crackerAudioContext = crackerAudioContext || new AudioContextClass();
+    if (crackerAudioContext.state === 'suspended') crackerAudioContext.resume();
+    const ctx = crackerAudioContext;
+    const pop = () => {
+      if (!ctx || ctx.state !== 'running') return;
+      const length = Math.floor(ctx.sampleRate * 0.12);
+      const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / length);
+      const noise = ctx.createBufferSource();
+      noise.buffer = buffer;
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'highpass';
+      filter.frequency.value = 700 + Math.random() * 1800;
+      const gain = ctx.createGain();
+      const now = ctx.currentTime;
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.22, now + 0.008);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+      noise.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+      noise.start(now); noise.stop(now + 0.12);
+    };
+    pop();
+    fallbackSoundTimer = window.setInterval(() => { pop(); if (Math.random() > 0.55) window.setTimeout(pop, 90 + Math.random() * 180); }, 380);
+  }
+
+  function ensureSoundButton() {
+    if (soundButton) return;
+    soundButton = document.createElement('button');
+    soundButton.type = 'button';
+    soundButton.id = 'diwaliSoundToggle';
+    soundButton.textContent = '🔊 Enable Diwali sound';
+    soundButton.setAttribute('aria-label', 'Enable Diwali firecracker sound');
+    soundButton.style.cssText = 'position:fixed;right:16px;bottom:16px;z-index:10050;border:0;border-radius:999px;padding:12px 16px;background:#65152f;color:#fff;font:600 14px system-ui,sans-serif;box-shadow:0 4px 18px #0003;cursor:pointer;';
+    soundButton.addEventListener('click', async () => {
+      if (soundButton.dataset.playing === 'true') {
+        stopCrackerSound();
+        if (fallbackSoundTimer) window.clearInterval(fallbackSoundTimer);
+        fallbackSoundTimer = null;
+        if (crackerAudioContext && crackerAudioContext.state === 'running') await crackerAudioContext.suspend();
+        soundButton.dataset.playing = 'false';
+        soundButton.textContent = '🔊 Enable Diwali sound';
+        return;
+      }
+      try {
+        crackerAudio = new Audio('./assets/diwali-crackers.mp3');
+        crackerAudio.preload = 'auto';
+        crackerAudio.volume = 0.85;
+        crackerAudio.loop = true;
+        await crackerAudio.play();
+      } catch (_) {
+        try { playFallbackCrackers(); }
+        catch (error) {
+          soundButton.textContent = 'Sound unavailable in this browser';
+          return;
+        }
+      }
+      soundButton.dataset.playing = 'true';
+      soundButton.textContent = '🔇 Turn sound off';
+      if (crackerStopTimer) window.clearTimeout(crackerStopTimer);
+      crackerStopTimer = window.setTimeout(() => {
+        stopCrackerSound();
+        if (fallbackSoundTimer) window.clearInterval(fallbackSoundTimer);
+        fallbackSoundTimer = null;
+        if (crackerAudioContext && crackerAudioContext.state === 'running') crackerAudioContext.suspend();
+        soundButton.dataset.playing = 'false';
+        soundButton.textContent = '🔊 Play Diwali sound again';
+      }, 10000);
+    });
+    document.body.appendChild(soundButton);
   }
 
   startFireworksForTenSeconds();
-  startCrackerSoundForTenSeconds();
+  ensureSoundButton();
 
   function productAudience(p) {
     if (p.audience) return String(p.audience).trim();
