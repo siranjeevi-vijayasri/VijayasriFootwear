@@ -6,6 +6,15 @@
   const grid = document.getElementById('productGrid');
   const empty = document.getElementById('emptyHint');
   let products = [];
+  const CART_KEY = 'vjs-footwear-cart-v1';
+  let cart = [];
+  try { cart = JSON.parse(localStorage.getItem(CART_KEY) || '[]'); if (!Array.isArray(cart)) cart = []; } catch (_) { cart = []; }
+  const cartDrawer = document.getElementById('cartDrawer');
+  const cartBackdrop = document.getElementById('cartBackdrop');
+  const cartItems = document.getElementById('cartItems');
+  const cartCount = document.getElementById('cartCount');
+  const cartTotal = document.getElementById('cartTotal');
+  const money = value => '₹' + Number(value || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 });
   const brandFilter = document.getElementById('brandFilter');
   const audienceFilter = document.getElementById('audienceFilter');
   const typeFilter = document.getElementById('typeFilter');
@@ -26,8 +35,92 @@
         gallery += `<div class="gallery-thumbs" aria-label="More product images">${urls.map((url, index) => `<button type="button" class="gallery-thumb${index === 0 ? ' active' : ''}" data-gallery-target="${galleryId}" data-gallery-url="${esc(url)}" aria-label="View image ${index + 1}"><img loading="lazy" src="${esc(url)}" alt=""></button>`).join('')}</div>`;
       }
     }
-    return `<article class="product-card"><div class="product-image product-gallery">${gallery}</div><div class="product-info"><div class="product-brand">${esc(p.brand || 'Footwear')}</div><div class="product-name">${esc(p.name)}</div><div class="product-meta">${esc([p.model, p.category, p.sizes].filter(Boolean).join(' · '))}</div><div class="product-price">${p.price != null && p.price !== '' ? '₹'+Number(p.price).toLocaleString('en-IN') : 'Ask for price'} <small>${p.mrp && Number(p.mrp)>Number(p.price) ? `<s>₹${Number(p.mrp).toLocaleString('en-IN')}</s>` : ''}</small></div><a class="btn btn-green" target="_blank" rel="noopener" href="https://wa.me/${WA}?text=${encodeURIComponent(msg)}">Enquire on WhatsApp ↗</a></div></article>`;
+    const sizes = productSizes(p);
+    const sizePicker = sizes.length
+      ? `<label class="cart-size-label">Size <select class="cart-size-select" data-cart-size="${esc(p.id)}"><option value="">Choose size</option>${sizes.map(size => `<option value="${esc(size)}">${esc(size)}</option>`).join('')}</select></label>`
+      : '<p class="cart-size-hint">Size can be confirmed with the shop</p>';
+    return `<article class="product-card"><div class="product-image product-gallery">${gallery}</div><div class="product-info"><div class="product-brand">${esc(p.brand || 'Footwear')}</div><div class="product-name">${esc(p.name)}</div><div class="product-meta">${esc([p.model, p.category, p.sizes].filter(Boolean).join(' · '))}</div><div class="product-price">${p.price != null && p.price !== '' ? '₹'+Number(p.price).toLocaleString('en-IN') : 'Ask for price'} <small>${p.mrp && Number(p.mrp)>Number(p.price) ? `<s>₹${Number(p.mrp).toLocaleString('en-IN')}</s>` : ''}</small></div>${sizePicker}<button class="btn btn-add-cart" type="button" data-add-cart="${esc(p.id)}">＋ Add to cart</button><a class="btn btn-green" target="_blank" rel="noopener" href="https://wa.me/${WA}?text=${encodeURIComponent(msg)}">Enquire on WhatsApp ↗</a></div></article>`;
   }
+
+  function persistCart() {
+    try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch (_) {}
+    renderCart();
+  }
+  function renderCart() {
+    const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+    if (cartCount) cartCount.textContent = String(count);
+    if (cartItems) {
+      cartItems.innerHTML = cart.length ? cart.map(item => `
+        <article class="cart-item">
+          ${item.image ? `<img src="${esc(item.image)}" alt="" loading="lazy">` : '<div class="cart-item-placeholder">👟</div>'}
+          <div class="cart-item-info"><strong>${esc(item.brand)} ${esc(item.name)}</strong><small>${esc(item.model || '')}${item.model ? ' · ' : ''}Size: ${esc(item.size || 'To confirm')}</small><b>${item.price != null ? money(item.price * item.quantity) : 'Price to confirm'}</b>
+            <div class="cart-quantity"><button type="button" data-cart-action="minus" data-cart-key="${esc(item.key)}" aria-label="Decrease quantity">−</button><span>${item.quantity}</span><button type="button" data-cart-action="plus" data-cart-key="${esc(item.key)}" aria-label="Increase quantity">+</button><button type="button" class="cart-remove" data-cart-action="remove" data-cart-key="${esc(item.key)}">Remove</button></div>
+          </div>
+        </article>`).join('') : '<div class="cart-empty"><span>🪔</span><strong>Your cart is waiting to sparkle</strong><p>Add a few footwear favourites from the catalogue.</p></div>';
+    }
+    const total = cart.reduce((sum, item) => sum + (item.price == null ? 0 : item.price * item.quantity), 0);
+    if (cartTotal) cartTotal.textContent = money(total);
+    const checkout = document.getElementById('checkoutWhatsApp');
+    if (checkout) checkout.disabled = cart.length === 0;
+  }
+  function openCart() {
+    if (!cartDrawer || !cartBackdrop) return;
+    cartDrawer.hidden = false; cartBackdrop.hidden = false;
+    document.body.classList.add('cart-open');
+    renderCart();
+  }
+  function closeCart() {
+    if (!cartDrawer || !cartBackdrop) return;
+    cartDrawer.hidden = true; cartBackdrop.hidden = true;
+    document.body.classList.remove('cart-open');
+  }
+  grid.addEventListener('click', event => {
+    const addButton = event.target.closest('[data-add-cart]');
+    if (!addButton) return;
+    const product = products.find(item => String(item.id) === String(addButton.dataset.addCart));
+    if (!product) return;
+    const sizes = productSizes(product);
+    const picker = grid.querySelector(`[data-cart-size="${CSS.escape(String(product.id))}"]`);
+    const chosenSize = picker ? picker.value : 'Size to confirm';
+    if (sizes.length && !chosenSize) {
+      picker?.focus();
+      if (picker) picker.setCustomValidity('Please choose a size first.');
+      picker?.reportValidity();
+      picker?.addEventListener('change', () => picker.setCustomValidity(''), { once: true });
+      return;
+    }
+    const size = chosenSize || 'Size to confirm';
+    const key = String(product.id) + '::' + size;
+    const existing = cart.find(item => item.key === key);
+    if (existing) existing.quantity += 1;
+    else cart.push({ key, id: String(product.id), brand: product.brand || 'Footwear', name: product.name || 'Footwear', model: product.model || '', price: product.price == null || product.price === '' || !Number.isFinite(Number(product.price)) ? null : Number(product.price), image: imageUrls(product.image_url)[0] || '', size, quantity: 1 });
+    persistCart();
+    addButton.textContent = '✓ Added';
+    window.setTimeout(() => { if (addButton.isConnected) addButton.textContent = '＋ Add to cart'; }, 1200);
+  });
+  cartItems?.addEventListener('click', event => {
+    const button = event.target.closest('[data-cart-action]');
+    if (!button) return;
+    const item = cart.find(entry => entry.key === button.dataset.cartKey);
+    if (!item) return;
+    if (button.dataset.cartAction === 'plus') item.quantity += 1;
+    if (button.dataset.cartAction === 'minus') item.quantity -= 1;
+    if (button.dataset.cartAction === 'remove' || item.quantity <= 0) cart = cart.filter(entry => entry.key !== item.key);
+    persistCart();
+  });
+  document.getElementById('cartToggle')?.addEventListener('click', openCart);
+  document.getElementById('cartClose')?.addEventListener('click', closeCart);
+  document.getElementById('continueShopping')?.addEventListener('click', closeCart);
+  cartBackdrop?.addEventListener('click', closeCart);
+  document.addEventListener('keydown', event => { if (event.key === 'Escape' && cartDrawer && !cartDrawer.hidden) closeCart(); });
+  document.getElementById('checkoutWhatsApp')?.addEventListener('click', () => {
+    if (!cart.length) return;
+    const lines = cart.map((item, index) => `${index + 1}. ${item.brand} ${item.name}${item.model ? ' (' + item.model + ')' : ''} | Size: ${item.size || 'To confirm'} | Qty: ${item.quantity} | ${item.price == null ? 'Price to confirm' : money(item.price * item.quantity)}`);
+    const total = cart.reduce((sum, item) => sum + (item.price == null ? 0 : item.price * item.quantity), 0);
+    const message = `Hello Vijayasri Footwear! I'd like to enquire about these items from my cart:\\n\\n${lines.join('\\n')}\\n\\nEstimated total for priced items: ${money(total)}\\nPlease confirm size, availability and final price. This is an order enquiry; no payment has been made.`;
+    window.open(`https://wa.me/${WA}?text=${encodeURIComponent(message)}`, '_blank', 'noopener');
+  });
+  renderCart();
 
   function productAudience(p) {
     if (p.audience) return String(p.audience).trim();
