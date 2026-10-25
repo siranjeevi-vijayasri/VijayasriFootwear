@@ -125,6 +125,90 @@
   });
   renderCart();
 
+  // Optional festive cracker sound: starts only after the visitor taps the sound button.
+  const crackerSoundToggle = document.getElementById('crackerSoundToggle');
+  let crackerAudioContext = null;
+  let crackerTimer = null;
+  function playCrackerBurst() {
+    if (!crackerAudioContext || crackerAudioContext.state !== 'running') return;
+    const ctx = crackerAudioContext;
+    const now = ctx.currentTime;
+    // A short, synthesized pop: filtered noise plus a quick low-frequency thump.
+    const length = Math.floor(ctx.sampleRate * 0.22);
+    const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
+    const channel = buffer.getChannelData(0);
+    for (let i = 0; i < length; i++) {
+      const fade = Math.pow(1 - i / length, 2.8);
+      channel[i] = (Math.random() * 2 - 1) * fade;
+    }
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'highpass';
+    filter.frequency.setValueAtTime(650, now);
+    const crackGain = ctx.createGain();
+    crackGain.gain.setValueAtTime(0.0001, now);
+    crackGain.gain.exponentialRampToValueAtTime(0.42, now + 0.008);
+    crackGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
+    noise.connect(filter).connect(crackGain).connect(ctx.destination);
+    noise.start(now);
+    noise.stop(now + 0.22);
+    const oscillator = ctx.createOscillator();
+    const thumpGain = ctx.createGain();
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(115, now);
+    oscillator.frequency.exponentialRampToValueAtTime(42, now + 0.13);
+    thumpGain.gain.setValueAtTime(0.0001, now);
+    thumpGain.gain.exponentialRampToValueAtTime(0.24, now + 0.01);
+    thumpGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
+    oscillator.connect(thumpGain).connect(ctx.destination);
+    oscillator.start(now);
+    oscillator.stop(now + 0.17);
+    // A few lighter pops create a little cracker-string effect.
+    [0.09, 0.19, 0.31].forEach((delay, index) => {
+      window.setTimeout(() => {
+        if (!crackerAudioContext || crackerAudioContext.state !== 'running') return;
+        const pop = ctx.createOscillator();
+        const gain = ctx.createGain();
+        pop.type = 'triangle';
+        pop.frequency.setValueAtTime(700 + index * 240, ctx.currentTime);
+        gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.055, ctx.currentTime + 0.004);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.045);
+        pop.connect(gain).connect(ctx.destination);
+        pop.start();
+        pop.stop(ctx.currentTime + 0.05);
+      }, delay * 1000);
+    });
+  }
+  function stopCrackerSound() {
+    if (crackerTimer) window.clearInterval(crackerTimer);
+    crackerTimer = null;
+    if (crackerAudioContext && crackerAudioContext.state !== 'closed') crackerAudioContext.suspend().catch(() => {});
+    if (crackerSoundToggle) {
+      crackerSoundToggle.setAttribute('aria-pressed', 'false');
+      crackerSoundToggle.textContent = '🔇 Crackers sound: Off';
+    }
+  }
+  crackerSoundToggle?.addEventListener('click', async () => {
+    if (crackerTimer) { stopCrackerSound(); return; }
+    try {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) {
+        crackerSoundToggle.textContent = 'Sound not supported';
+        return;
+      }
+      crackerAudioContext = crackerAudioContext || new AudioContextClass();
+      await crackerAudioContext.resume();
+      crackerSoundToggle.setAttribute('aria-pressed', 'true');
+      crackerSoundToggle.textContent = '🔊 Crackers sound: On';
+      playCrackerBurst();
+      crackerTimer = window.setInterval(playCrackerBurst, 2600);
+    } catch (_) {
+      crackerSoundToggle.textContent = 'Sound unavailable';
+    }
+  });
+
   function productAudience(p) {
     if (p.audience) return String(p.audience).trim();
     const first = String(p.category || '').split(' - ')[0].trim();
