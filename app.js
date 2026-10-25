@@ -49,6 +49,8 @@
   function renderCart() {
     const count = cart.reduce((sum, item) => sum + item.quantity, 0);
     if (cartCount) cartCount.textContent = String(count);
+    const floatingCart = document.getElementById('floatingCart');
+    if (floatingCart) { floatingCart.hidden = count === 0; const floatingCount = document.getElementById('floatingCartCount'); if (floatingCount) floatingCount.textContent = String(count); }
     if (cartItems) {
       cartItems.innerHTML = cart.length ? cart.map(item => `
         <article class="cart-item">
@@ -109,6 +111,7 @@
     persistCart();
   });
   document.getElementById('cartToggle')?.addEventListener('click', openCart);
+  document.getElementById('floatingCart')?.addEventListener('click', openCart);
   document.getElementById('cartClose')?.addEventListener('click', closeCart);
   document.getElementById('continueShopping')?.addEventListener('click', closeCart);
   cartBackdrop?.addEventListener('click', closeCart);
