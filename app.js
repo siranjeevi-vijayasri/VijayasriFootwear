@@ -25,8 +25,8 @@
   const imageUrls = value => [...new Set(String(value || '').split(/[\n,]+/).map(url => url.trim()).filter(Boolean))];
 
   function productCard(p) {
-    const msg = `Hello Vijayasri Footwear, I am interested in ${p.brand || ''} ${p.name || 'this product'}${p.model ? ' (Model: '+p.model+')' : ''}. Please confirm sizes, colours, availability and current price.`;
     const urls = imageUrls(p.image_url);
+    const msg = `Hello Vijayasri Footwear, I am interested in ${p.brand || ''} ${p.name || 'this product'}${p.model ? ' (Model: '+p.model+')' : ''}. Please confirm sizes, colours, availability and current price.${urls[0] ? '\\n\\nProduct image: ' + urls[0] : ''}`;
     const galleryId = 'gallery-' + String(p.id || Math.random().toString(36).slice(2)).replace(/[^a-zA-Z0-9_-]/g, '');
     let gallery = '<div class="image-fallback">Product photo to be added</div>';
     if (urls.length) {
@@ -118,7 +118,7 @@
   document.addEventListener('keydown', event => { if (event.key === 'Escape' && cartDrawer && !cartDrawer.hidden) closeCart(); });
   document.getElementById('checkoutWhatsApp')?.addEventListener('click', () => {
     if (!cart.length) return;
-    const lines = cart.map((item, index) => `${index + 1}. ${item.brand} ${item.name}${item.model ? ' (' + item.model + ')' : ''} | Size: ${item.size || 'To confirm'} | Qty: ${item.quantity} | ${item.price == null ? 'Price to confirm' : money(item.price * item.quantity)}`);
+    const lines = cart.map((item, index) => `${index + 1}. ${item.brand} ${item.name}${item.model ? ' (' + item.model + ')' : ''} | Size: ${item.size || 'To confirm'} | Qty: ${item.quantity} | ${item.price == null ? 'Price to confirm' : money(item.price * item.quantity)}${item.image ? '\\n   Product image: ' + item.image : ''}`);
     const total = cart.reduce((sum, item) => sum + (item.price == null ? 0 : item.price * item.quantity), 0);
     const message = `Hello Vijayasri Footwear! I'd like to enquire about these items from my cart:\n\n${lines.join('\n')}\n\nEstimated total for priced items: ${money(total)}\nPlease confirm size, availability and final price. This is an order enquiry; no payment has been made.`;
     window.open(`https://wa.me/${WA}?text=${encodeURIComponent(message)}`, '_blank', 'noopener');
@@ -258,15 +258,21 @@
         soundButton.textContent = '🔊 Enable Diwali sound';
         return;
       }
+      // Start generated cracker pops directly from this click so the site
+      // still has audible effects even if the supplied recording is silent or unsupported.
+      try {
+        playFallbackCrackers();
+      } catch (error) {
+        // Keep trying the recording below in browsers without Web Audio.
+      }
       try {
         crackerAudio = new Audio('./assets/diwali-crackers.mp3');
         crackerAudio.preload = 'auto';
-        crackerAudio.volume = 0.85;
+        crackerAudio.volume = 0.7;
         crackerAudio.loop = true;
         await crackerAudio.play();
       } catch (_) {
-        try { playFallbackCrackers(); }
-        catch (error) {
+        if (!fallbackSoundTimer) {
           soundButton.textContent = 'Sound unavailable in this browser';
           return;
         }
