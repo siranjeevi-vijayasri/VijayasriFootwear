@@ -154,18 +154,45 @@
     });
   }
 
+  // Launch colourful rockets and bursts across the full viewport, not just the hero.
   function startFireworksForTenSeconds() {
-    if (!diwaliHero || !diwaliDecor) return;
     createFireworkParticles();
-    diwaliHero.classList.add('fireworks-active');
-    diwaliDecor.classList.add('fireworks-active');
+    if (diwaliHero && diwaliDecor) { diwaliHero.classList.add('fireworks-active'); diwaliDecor.classList.add('fireworks-active'); }
+    let overlay = document.getElementById('siteFireworks');
+    if (!overlay) { overlay = document.createElement('div'); overlay.id = 'siteFireworks'; overlay.className = 'site-fireworks'; overlay.setAttribute('aria-hidden', 'true'); document.body.appendChild(overlay); }
+    overlay.classList.add('site-fireworks-active');
+    let burstCount = 0;
+    const launchRocket = () => {
+      if (!overlay.isConnected || !overlay.classList.contains('site-fireworks-active')) return;
+      const width = window.innerWidth || 1200, height = window.innerHeight || 800;
+      const x = 35 + Math.random() * Math.max(1, width - 70), targetY = 70 + Math.random() * Math.max(1, height * 0.62);
+      const rocket = document.createElement('span'); rocket.className = 'site-rocket';
+      rocket.style.setProperty('--rocket-x', x + 'px'); rocket.style.setProperty('--rocket-y', targetY + 'px');
+      rocket.style.setProperty('--rocket-flight', (0.55 + Math.random() * 0.4) + 's');
+      rocket.style.setProperty('--rocket-colour', ['#ffcf33','#ff4f64','#35c9ff','#a8f05a','#ff8c42','#d86bff'][burstCount % 6]);
+      overlay.appendChild(rocket);
+      window.setTimeout(() => {
+        if (!overlay.isConnected) return;
+        rocket.remove();
+        const colours = ['#ffcf33','#ff4f64','#35c9ff','#a8f05a','#ff8c42','#f7f2ff','#d86bff'];
+        const burst = document.createElement('span'); burst.className = 'site-rocket-burst';
+        burst.style.setProperty('--burst-x', x + 'px'); burst.style.setProperty('--burst-y', targetY + 'px');
+        for (let i = 0; i < 24; i++) {
+          const particle = document.createElement('i'), angle = (Math.PI * 2 * i / 24) + Math.random() * 0.12, distance = 35 + Math.random() * 65;
+          particle.style.setProperty('--burst-dx', (Math.cos(angle) * distance) + 'px'); particle.style.setProperty('--burst-dy', (Math.sin(angle) * distance) + 'px');
+          particle.style.setProperty('--burst-colour', colours[(i + burstCount) % colours.length]); burst.appendChild(particle);
+        }
+        overlay.appendChild(burst); window.setTimeout(() => burst.remove(), 1350); burstCount++;
+      }, 620);
+    };
+    launchRocket(); const rocketTimer = window.setInterval(launchRocket, 420);
     if (fireworksStopTimer) window.clearTimeout(fireworksStopTimer);
     fireworksStopTimer = window.setTimeout(() => {
-      diwaliHero.classList.remove('fireworks-active');
-      diwaliDecor.classList.remove('fireworks-active');
+      window.clearInterval(rocketTimer); overlay.classList.remove('site-fireworks-active');
+      if (diwaliHero) diwaliHero.classList.remove('fireworks-active'); if (diwaliDecor) diwaliDecor.classList.remove('fireworks-active');
+      window.setTimeout(() => { if (overlay.isConnected) overlay.remove(); }, 1500);
     }, 10000);
   }
-
   function stopCrackerSound() {
     if (crackerTimer) window.clearInterval(crackerTimer);
     if (crackerStopTimer) window.clearTimeout(crackerStopTimer);
