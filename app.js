@@ -125,21 +125,36 @@
   });
   renderCart();
 
-  // Optional festive cracker sound: starts only after the visitor taps the sound button.
+  // Fireworks play automatically for the first 10 seconds. Sound is attempted on load,
+  // but browsers may block audio until the visitor interacts with the page.
   const crackerSoundToggle = document.getElementById('crackerSoundToggle');
+  const diwaliHero = document.querySelector('.diwali-hero');
+  const diwaliDecor = document.querySelector('.diwali-decor');
   let crackerAudioContext = null;
   let crackerTimer = null;
+  let crackerStopTimer = null;
+  let fireworksStopTimer = null;
+
+  function startFireworksForTenSeconds() {
+    if (!diwaliHero || !diwaliDecor) return;
+    diwaliHero.classList.add('fireworks-active');
+    diwaliDecor.classList.add('fireworks-active');
+    if (fireworksStopTimer) window.clearTimeout(fireworksStopTimer);
+    fireworksStopTimer = window.setTimeout(() => {
+      diwaliHero.classList.remove('fireworks-active');
+      diwaliDecor.classList.remove('fireworks-active');
+    }, 10000);
+  }
+
   function playCrackerBurst() {
     if (!crackerAudioContext || crackerAudioContext.state !== 'running') return;
     const ctx = crackerAudioContext;
     const now = ctx.currentTime;
-    // A short, synthesized pop: filtered noise plus a quick low-frequency thump.
     const length = Math.floor(ctx.sampleRate * 0.22);
     const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
     const channel = buffer.getChannelData(0);
     for (let i = 0; i < length; i++) {
-      const fade = Math.pow(1 - i / length, 2.8);
-      channel[i] = (Math.random() * 2 - 1) * fade;
+      channel[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 2.8);
     }
     const noise = ctx.createBufferSource();
     noise.buffer = buffer;
@@ -148,7 +163,7 @@
     filter.frequency.setValueAtTime(650, now);
     const crackGain = ctx.createGain();
     crackGain.gain.setValueAtTime(0.0001, now);
-    crackGain.gain.exponentialRampToValueAtTime(0.42, now + 0.008);
+    crackGain.gain.exponentialRampToValueAtTime(0.36, now + 0.008);
     crackGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
     noise.connect(filter).connect(crackGain).connect(ctx.destination);
     noise.start(now);
@@ -159,12 +174,11 @@
     oscillator.frequency.setValueAtTime(115, now);
     oscillator.frequency.exponentialRampToValueAtTime(42, now + 0.13);
     thumpGain.gain.setValueAtTime(0.0001, now);
-    thumpGain.gain.exponentialRampToValueAtTime(0.24, now + 0.01);
+    thumpGain.gain.exponentialRampToValueAtTime(0.18, now + 0.01);
     thumpGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
     oscillator.connect(thumpGain).connect(ctx.destination);
     oscillator.start(now);
     oscillator.stop(now + 0.17);
-    // A few lighter pops create a little cracker-string effect.
     [0.09, 0.19, 0.31].forEach((delay, index) => {
       window.setTimeout(() => {
         if (!crackerAudioContext || crackerAudioContext.state !== 'running') return;
@@ -173,7 +187,7 @@
         pop.type = 'triangle';
         pop.frequency.setValueAtTime(700 + index * 240, ctx.currentTime);
         gain.gain.setValueAtTime(0.0001, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.055, ctx.currentTime + 0.004);
+        gain.gain.exponentialRampToValueAtTime(0.045, ctx.currentTime + 0.004);
         gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.045);
         pop.connect(gain).connect(ctx.destination);
         pop.start();
@@ -181,32 +195,50 @@
       }, delay * 1000);
     });
   }
+
   function stopCrackerSound() {
     if (crackerTimer) window.clearInterval(crackerTimer);
+    if (crackerStopTimer) window.clearTimeout(crackerStopTimer);
     crackerTimer = null;
+    crackerStopTimer = null;
     if (crackerAudioContext && crackerAudioContext.state !== 'closed') crackerAudioContext.suspend().catch(() => {});
     if (crackerSoundToggle) {
       crackerSoundToggle.setAttribute('aria-pressed', 'false');
       crackerSoundToggle.textContent = '🔇 Crackers sound: Off';
     }
   }
-  crackerSoundToggle?.addEventListener('click', async () => {
-    if (crackerTimer) { stopCrackerSound(); return; }
+
+  async function startCrackerSoundForTenSeconds() {
     try {
       const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-      if (!AudioContextClass) {
-        crackerSoundToggle.textContent = 'Sound not supported';
-        return;
-      }
+      if (!AudioContextClass) throw new Error('Audio not supported');
       crackerAudioContext = crackerAudioContext || new AudioContextClass();
       await crackerAudioContext.resume();
-      crackerSoundToggle.setAttribute('aria-pressed', 'true');
-      crackerSoundToggle.textContent = '🔊 Crackers sound: On';
+      if (crackerAudioContext.state !== 'running') throw new Error('Audio blocked');
+      if (crackerTimer) window.clearInterval(crackerTimer);
+      if (crackerStopTimer) window.clearTimeout(crackerStopTimer);
+      crackerSoundToggle?.setAttribute('aria-pressed', 'true');
+      if (crackerSoundToggle) crackerSoundToggle.textContent = '🔊 Crackers sound: On (10s)';
       playCrackerBurst();
-      crackerTimer = window.setInterval(playCrackerBurst, 2600);
+      crackerTimer = window.setInterval(playCrackerBurst, 1250);
+      crackerStopTimer = window.setTimeout(stopCrackerSound, 10000);
+      return true;
     } catch (_) {
-      crackerSoundToggle.textContent = 'Sound unavailable';
+      if (crackerSoundToggle) {
+        crackerSoundToggle.setAttribute('aria-pressed', 'false');
+        crackerSoundToggle.textContent = '🔊 Tap for 10s crackers sound';
+      }
+      return false;
     }
+  }
+
+  // Visual fireworks are automatic. Attempt sound too; if the browser blocks autoplay,
+  // the visible button lets the visitor enable it with one tap.
+  startFireworksForTenSeconds();
+  startCrackerSoundForTenSeconds();
+  crackerSoundToggle?.addEventListener('click', () => {
+    if (crackerTimer) stopCrackerSound();
+    else startCrackerSoundForTenSeconds();
   });
 
   function productAudience(p) {
