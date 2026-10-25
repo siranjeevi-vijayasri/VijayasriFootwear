@@ -125,14 +125,14 @@
   });
   renderCart();
 
-  // Automatic 10-second Diwali fireworks. Audio is attempted on page load;
-  // some browsers block sound until a visitor interacts with the page.
+  // Run colourful fireworks and the supplied real cracker recording for ten seconds.
+  // Autoplay is attempted on page load; browsers may block audio until a visitor interacts.
   const diwaliHero = document.querySelector('.diwali-hero');
   const diwaliDecor = document.querySelector('.diwali-decor');
-  let crackerAudioContext = null;
   let crackerTimer = null;
   let crackerStopTimer = null;
   let fireworksStopTimer = null;
+  let crackerAudio = null;
 
   function createFireworkParticles() {
     if (!diwaliDecor) return;
@@ -166,65 +166,28 @@
     }, 10000);
   }
 
-  function playCrackerBurst() {
-    if (!crackerAudioContext || crackerAudioContext.state !== 'running') return;
-    const ctx = crackerAudioContext;
-    const now = ctx.currentTime;
-    const length = Math.floor(ctx.sampleRate * 0.18);
-    const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
-    const channel = buffer.getChannelData(0);
-    for (let i = 0; i < length; i++) {
-      channel[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 2.5);
-    }
-    const noise = ctx.createBufferSource();
-    noise.buffer = buffer;
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'highpass';
-    filter.frequency.setValueAtTime(900, now);
-    const crackGain = ctx.createGain();
-    crackGain.gain.setValueAtTime(0.0001, now);
-    crackGain.gain.exponentialRampToValueAtTime(0.28, now + 0.006);
-    crackGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
-    noise.connect(filter).connect(crackGain).connect(ctx.destination);
-    noise.start(now);
-    noise.stop(now + 0.18);
-    [0.045, 0.12, 0.23, 0.34].forEach((delay, index) => {
-      window.setTimeout(() => {
-        if (!crackerAudioContext || crackerAudioContext.state !== 'running') return;
-        const pop = ctx.createOscillator();
-        const gain = ctx.createGain();
-        pop.type = 'square';
-        pop.frequency.setValueAtTime(950 + index * 360, ctx.currentTime);
-        gain.gain.setValueAtTime(0.0001, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.032, ctx.currentTime + 0.003);
-        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.035);
-        pop.connect(gain).connect(ctx.destination);
-        pop.start();
-        pop.stop(ctx.currentTime + 0.04);
-      }, delay * 1000);
-    });
-  }
-
   function stopCrackerSound() {
     if (crackerTimer) window.clearInterval(crackerTimer);
     if (crackerStopTimer) window.clearTimeout(crackerStopTimer);
     crackerTimer = null;
     crackerStopTimer = null;
-    if (crackerAudioContext && crackerAudioContext.state !== 'closed') crackerAudioContext.suspend().catch(() => {});
+    if (crackerAudio) {
+      crackerAudio.pause();
+      crackerAudio.currentTime = 0;
+    }
   }
 
   async function startCrackerSoundForTenSeconds() {
     try {
-      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-      if (!AudioContextClass) return;
-      crackerAudioContext = crackerAudioContext || new AudioContextClass();
-      await crackerAudioContext.resume();
-      if (crackerAudioContext.state !== 'running') return;
-      playCrackerBurst();
-      crackerTimer = window.setInterval(playCrackerBurst, 950);
+      crackerAudio = new Audio('assets/diwali-crackers.mp3');
+      crackerAudio.preload = 'auto';
+      crackerAudio.volume = 0.85;
+      crackerAudio.loop = true;
+      await crackerAudio.play();
       crackerStopTimer = window.setTimeout(stopCrackerSound, 10000);
     } catch (_) {
-      // Autoplay audio may be blocked by browser policy; never interrupt browsing with a prompt.
+      // Browser autoplay restrictions may require the visitor to interact first.
+      // Do not show a sound toggle or interrupt the catalogue with a prompt.
     }
   }
 
