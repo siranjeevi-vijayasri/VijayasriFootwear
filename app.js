@@ -125,14 +125,10 @@
   });
   renderCart();
 
-  // Run colourful fireworks for sixty seconds; cracker sound also runs for sixty seconds after the visitor enables it.
-  // Browsers may block audio until a visitor interacts.
+  // Run colourful fireworks across the full viewport for sixty seconds.
   const diwaliHero = document.querySelector('.diwali-hero');
   const diwaliDecor = document.querySelector('.diwali-decor');
-  let crackerTimer = null;
-  let crackerStopTimer = null;
   let fireworksStopTimer = null;
-  let crackerAudio = null;
 
   function createFireworkParticles() {
     if (!diwaliDecor) return;
@@ -154,7 +150,6 @@
     });
   }
 
-  // Launch colourful rockets and bursts across the full viewport, not just the hero.
   function startFireworksForSixtySeconds() {
     createFireworkParticles();
     if (diwaliHero && diwaliDecor) { diwaliHero.classList.add('fireworks-active'); diwaliDecor.classList.add('fireworks-active'); }
@@ -193,107 +188,8 @@
       window.setTimeout(() => { if (overlay.isConnected) overlay.remove(); }, 1500);
     }, 60000);
   }
-  function stopCrackerSound() {
-    if (crackerTimer) window.clearInterval(crackerTimer);
-    if (crackerStopTimer) window.clearTimeout(crackerStopTimer);
-    crackerTimer = null;
-    crackerStopTimer = null;
-    if (crackerAudio) {
-      crackerAudio.pause();
-      crackerAudio.currentTime = 0;
-    }
-  }
-
-  let crackerAudioContext = null;
-  let fallbackSoundTimer = null;
-  let soundButton = null;
-
-  // A visible, user-initiated control is required because modern browsers block
-  // sound autoplay. If the MP3 codec/file fails, synthesize short cracker-like
-  // pops with Web Audio as a fallback.
-  function playFallbackCrackers() {
-    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContextClass) throw new Error('Web Audio is not available in this browser');
-    crackerAudioContext = crackerAudioContext || new AudioContextClass();
-    if (crackerAudioContext.state === 'suspended') crackerAudioContext.resume();
-    const ctx = crackerAudioContext;
-    const pop = () => {
-      if (!ctx || ctx.state !== 'running') return;
-      const length = Math.floor(ctx.sampleRate * 0.12);
-      const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
-      const data = buffer.getChannelData(0);
-      for (let i = 0; i < length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / length);
-      const noise = ctx.createBufferSource();
-      noise.buffer = buffer;
-      const filter = ctx.createBiquadFilter();
-      filter.type = 'highpass';
-      filter.frequency.value = 700 + Math.random() * 1800;
-      const gain = ctx.createGain();
-      const now = ctx.currentTime;
-      gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.exponentialRampToValueAtTime(0.22, now + 0.008);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
-      noise.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
-      noise.start(now); noise.stop(now + 0.12);
-    };
-    pop();
-    fallbackSoundTimer = window.setInterval(() => { pop(); if (Math.random() > 0.55) window.setTimeout(pop, 90 + Math.random() * 180); }, 380);
-  }
-
-  function ensureSoundButton() {
-    if (soundButton) return;
-    soundButton = document.createElement('button');
-    soundButton.type = 'button';
-    soundButton.id = 'diwaliSoundToggle';
-    soundButton.textContent = '🔊 Enable Diwali sound';
-    soundButton.setAttribute('aria-label', 'Enable Diwali firecracker sound');
-    soundButton.style.cssText = 'position:fixed;left:16px;bottom:16px;z-index:10050;max-width:calc(100vw - 32px);border:0;border-radius:999px;padding:12px 16px;background:#65152f;color:#fff;font:600 14px system-ui,sans-serif;box-shadow:0 4px 18px #0003;cursor:pointer;';
-    soundButton.addEventListener('click', async () => {
-      if (soundButton.dataset.playing === 'true') {
-        stopCrackerSound();
-        if (fallbackSoundTimer) window.clearInterval(fallbackSoundTimer);
-        fallbackSoundTimer = null;
-        if (crackerAudioContext && crackerAudioContext.state === 'running') await crackerAudioContext.suspend();
-        soundButton.dataset.playing = 'false';
-        soundButton.textContent = '🔊 Enable Diwali sound';
-        return;
-      }
-      // Start generated cracker pops directly from this click so the site
-      // still has audible effects even if the supplied recording is silent or unsupported.
-      try {
-        playFallbackCrackers();
-      } catch (error) {
-        // Keep trying the recording below in browsers without Web Audio.
-      }
-      try {
-        crackerAudio = new Audio('./assets/diwali-crackers.mp3');
-        crackerAudio.preload = 'auto';
-        crackerAudio.volume = 0.7;
-        crackerAudio.loop = true;
-        await crackerAudio.play();
-      } catch (_) {
-        if (!fallbackSoundTimer) {
-          soundButton.textContent = 'Sound unavailable in this browser';
-          return;
-        }
-      }
-      soundButton.dataset.playing = 'true';
-      soundButton.textContent = '🔇 Turn sound off';
-      if (crackerStopTimer) window.clearTimeout(crackerStopTimer);
-      crackerStopTimer = window.setTimeout(() => {
-        stopCrackerSound();
-        if (fallbackSoundTimer) window.clearInterval(fallbackSoundTimer);
-        fallbackSoundTimer = null;
-        if (crackerAudioContext && crackerAudioContext.state === 'running') crackerAudioContext.suspend();
-        soundButton.dataset.playing = 'false';
-        soundButton.textContent = '🔊 Play Diwali sound again';
-      }, 60000);
-    });
-    document.body.appendChild(soundButton);
-  }
 
   startFireworksForSixtySeconds();
-  ensureSoundButton();
 
   function productAudience(p) {
     if (p.audience) return String(p.audience).trim();
