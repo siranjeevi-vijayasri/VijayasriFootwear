@@ -632,34 +632,20 @@ body.cart-open{overflow:hidden}
 @media(max-width:600px){.floating-cart{right:14px;bottom:14px;padding:12px 16px;font-size:13px;box-shadow:0 6px 22px rgba(59,16,32,.28)}}
 @media(prefers-reduced-motion:reduce){.floating-cart{transition:none}}
 
-/* Festive cracker burst animation and visitor-controlled sound */
-.cracker-sound-toggle{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 14px;border:1px solid #d7a44b;border-radius:999px;background:#fff0d8;color:#702338;font:inherit;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 3px 12px rgba(103,39,34,.08)}
-.cracker-sound-toggle:hover,.cracker-sound-toggle[aria-pressed="true"]{background:#ffcf66;color:#4b1424}
-.diwali-hero{position:relative}
-.diwali-hero:after{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;background:
- radial-gradient(circle at 12% 22%,rgba(255,191,65,.95) 0 2px,transparent 3px),
- radial-gradient(circle at 88% 30%,rgba(224,69,70,.9) 0 2px,transparent 3px),
- radial-gradient(circle at 68% 78%,rgba(255,215,91,.95) 0 2px,transparent 3px);
- animation:cracker-sparkle 2.2s steps(2,end) infinite}
-.diwali-decor .firework{z-index:1}
-.diwali-decor .firework:after{content:"✦";position:absolute;left:50%;top:50%;font-size:1.8em;opacity:0;transform:translate(-50%,-50%) scale(.2);animation:cracker-burst 2.6s ease-out infinite;color:#f2b83d;text-shadow:0 0 8px #ffd46d,0 0 20px #ed6b37}
-.firework-two:after{animation-delay:.8s!important;color:#d84759!important}
-.firework-three:after{animation-delay:1.6s!important;color:#e6a32d!important}
-@keyframes cracker-burst{0%,15%{opacity:0;transform:translate(-50%,-50%) scale(.15) rotate(0)}28%{opacity:1;transform:translate(-50%,-50%) scale(1.2) rotate(25deg)}58%{opacity:.8;transform:translate(-50%,-50%) scale(1.65) rotate(55deg)}82%,100%{opacity:0;transform:translate(-50%,-50%) scale(2.1) rotate(80deg)}}
-@keyframes cracker-sparkle{0%,100%{opacity:.18}50%{opacity:.68}}
-@media(max-width:650px){.cracker-sound-toggle{font-size:11px;padding:10px 12px}.everyday-hero .hero-actions{gap:10px}}
-@media(prefers-reduced-motion:reduce){.diwali-hero:after,.diwali-decor .firework:after{animation:none!important}}
 
-
-/* Make the opening firework show unmistakable, then let JS turn it off after 10 seconds. */
+/* Colourful firecracker explosions: particles travel outwards, not zoom in/out. */
 .diwali-hero:after{animation:none;opacity:0}
-.diwali-decor .firework{opacity:0;animation:none}
-.diwali-decor .firework:after{content:"✹";font-size:2.8em;opacity:0;animation:none}
-.diwali-hero.fireworks-active:after{animation:cracker-sparkle .65s steps(2,end) infinite;opacity:1}
-.diwali-decor.fireworks-active .firework{opacity:1;animation:firework-pop 1.05s ease-in-out infinite}
-.diwali-decor.fireworks-active .firework:after{animation:cracker-burst 1.25s ease-out infinite;opacity:1}
-.diwali-decor.fireworks-active .firework-one:after{animation-delay:0s}
-.diwali-decor.fireworks-active .firework-two:after{animation-delay:.35s!important}
-.diwali-decor.fireworks-active .firework-three:after{animation-delay:.7s!important}
-@keyframes cracker-burst{0%{opacity:0;transform:translate(-50%,-50%) scale(.12) rotate(0)}22%{opacity:1;transform:translate(-50%,-50%) scale(1.2) rotate(20deg)}58%{opacity:.9;transform:translate(-50%,-50%) scale(2.1) rotate(55deg)}100%{opacity:0;transform:translate(-50%,-50%) scale(2.8) rotate(80deg)}}
-@media(prefers-reduced-motion:reduce){.diwali-hero:after,.diwali-decor.fireworks-active .firework,.diwali-decor.fireworks-active .firework:after{animation:none!important}.diwali-decor.fireworks-active .firework{opacity:1}}
+.diwali-decor .firework{position:absolute;width:1px;height:1px;opacity:0;font-size:0;text-shadow:none;animation:none}
+.diwali-decor .firework:after{content:none!important;display:none!important}
+.firework-particle{position:absolute;left:0;top:0;width:5px;height:12px;border-radius:3px;background:var(--particle-colour);box-shadow:0 0 8px var(--particle-colour),0 0 16px rgba(255,218,100,.7);opacity:0;transform:translate(-50%,-50%) rotate(0) scale(.2);pointer-events:none}
+.diwali-decor.fireworks-active .firework{opacity:1}
+.diwali-decor.fireworks-active .firework-particle{animation:colourful-cracker-blast 1.15s cubic-bezier(.12,.62,.25,1) infinite;animation-delay:var(--particle-delay)}
+.diwali-decor.fireworks-active .firework-two .firework-particle{animation-delay:calc(var(--particle-delay) + .3s)}
+.diwali-decor.fireworks-active .firework-three .firework-particle{animation-delay:calc(var(--particle-delay) + .6s)}
+@keyframes colourful-cracker-blast{
+  0%{opacity:0;transform:translate(-50%,-50%) translate(0,0) rotate(0) scale(.35)}
+  8%{opacity:1}
+  72%{opacity:1;transform:translate(-50%,-50%) translate(var(--dx),var(--dy)) rotate(140deg) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-50%) translate(calc(var(--dx) * 1.22),calc(var(--dy) * 1.22)) rotate(220deg) scale(.65)}
+}
+@media(prefers-reduced-motion:reduce){.diwali-decor.fireworks-active .firework-particle{animation:none!important;opacity:0}}
