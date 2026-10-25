@@ -247,7 +247,7 @@
     soundButton.id = 'diwaliSoundToggle';
     soundButton.textContent = '🔊 Enable Diwali sound';
     soundButton.setAttribute('aria-label', 'Enable Diwali firecracker sound');
-    soundButton.style.cssText = 'position:fixed;right:16px;bottom:16px;z-index:10050;border:0;border-radius:999px;padding:12px 16px;background:#65152f;color:#fff;font:600 14px system-ui,sans-serif;box-shadow:0 4px 18px #0003;cursor:pointer;';
+    soundButton.style.cssText = 'position:fixed;left:16px;bottom:16px;z-index:10050;max-width:calc(100vw - 32px);border:0;border-radius:999px;padding:12px 16px;background:#65152f;color:#fff;font:600 14px system-ui,sans-serif;box-shadow:0 4px 18px #0003;cursor:pointer;';
     soundButton.addEventListener('click', async () => {
       if (soundButton.dataset.playing === 'true') {
         stopCrackerSound();
@@ -287,7 +287,7 @@
         if (crackerAudioContext && crackerAudioContext.state === 'running') crackerAudioContext.suspend();
         soundButton.dataset.playing = 'false';
         soundButton.textContent = '🔊 Play Diwali sound again';
-      }, 10000);
+      }, 60000);
     });
     document.body.appendChild(soundButton);
   }
