@@ -649,3 +649,17 @@ body.cart-open{overflow:hidden}
 @keyframes cracker-sparkle{0%,100%{opacity:.18}50%{opacity:.68}}
 @media(max-width:650px){.cracker-sound-toggle{font-size:11px;padding:10px 12px}.everyday-hero .hero-actions{gap:10px}}
 @media(prefers-reduced-motion:reduce){.diwali-hero:after,.diwali-decor .firework:after{animation:none!important}}
+
+
+/* Make the opening firework show unmistakable, then let JS turn it off after 10 seconds. */
+.diwali-hero:after{animation:none;opacity:0}
+.diwali-decor .firework{opacity:0;animation:none}
+.diwali-decor .firework:after{content:"✹";font-size:2.8em;opacity:0;animation:none}
+.diwali-hero.fireworks-active:after{animation:cracker-sparkle .65s steps(2,end) infinite;opacity:1}
+.diwali-decor.fireworks-active .firework{opacity:1;animation:firework-pop 1.05s ease-in-out infinite}
+.diwali-decor.fireworks-active .firework:after{animation:cracker-burst 1.25s ease-out infinite;opacity:1}
+.diwali-decor.fireworks-active .firework-one:after{animation-delay:0s}
+.diwali-decor.fireworks-active .firework-two:after{animation-delay:.35s!important}
+.diwali-decor.fireworks-active .firework-three:after{animation-delay:.7s!important}
+@keyframes cracker-burst{0%{opacity:0;transform:translate(-50%,-50%) scale(.12) rotate(0)}22%{opacity:1;transform:translate(-50%,-50%) scale(1.2) rotate(20deg)}58%{opacity:.9;transform:translate(-50%,-50%) scale(2.1) rotate(55deg)}100%{opacity:0;transform:translate(-50%,-50%) scale(2.8) rotate(80deg)}}
+@media(prefers-reduced-motion:reduce){.diwali-hero:after,.diwali-decor.fireworks-active .firework,.diwali-decor.fireworks-active .firework:after{animation:none!important}.diwali-decor.fireworks-active .firework{opacity:1}}
