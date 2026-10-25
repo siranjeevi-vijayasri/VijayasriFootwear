@@ -117,7 +117,7 @@
     if (!cart.length) return;
     const lines = cart.map((item, index) => `${index + 1}. ${item.brand} ${item.name}${item.model ? ' (' + item.model + ')' : ''} | Size: ${item.size || 'To confirm'} | Qty: ${item.quantity} | ${item.price == null ? 'Price to confirm' : money(item.price * item.quantity)}`);
     const total = cart.reduce((sum, item) => sum + (item.price == null ? 0 : item.price * item.quantity), 0);
-    const message = `Hello Vijayasri Footwear! I'd like to enquire about these items from my cart:\\n\\n${lines.join('\\n')}\\n\\nEstimated total for priced items: ${money(total)}\\nPlease confirm size, availability and final price. This is an order enquiry; no payment has been made.`;
+    const message = `Hello Vijayasri Footwear! I'd like to enquire about these items from my cart:\n\n${lines.join('\n')}\n\nEstimated total for priced items: ${money(total)}\nPlease confirm size, availability and final price. This is an order enquiry; no payment has been made.`;
     window.open(`https://wa.me/${WA}?text=${encodeURIComponent(message)}`, '_blank', 'noopener');
   });
   renderCart();
