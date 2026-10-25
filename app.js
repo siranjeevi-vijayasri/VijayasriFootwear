@@ -125,8 +125,8 @@
   });
   renderCart();
 
-  // Run colourful fireworks and the supplied real cracker recording for ten seconds.
-  // Autoplay is attempted on page load; browsers may block audio until a visitor interacts.
+  // Run colourful fireworks for sixty seconds; cracker sound also runs for sixty seconds after the visitor enables it.
+  // Browsers may block audio until a visitor interacts.
   const diwaliHero = document.querySelector('.diwali-hero');
   const diwaliDecor = document.querySelector('.diwali-decor');
   let crackerTimer = null;
@@ -155,7 +155,7 @@
   }
 
   // Launch colourful rockets and bursts across the full viewport, not just the hero.
-  function startFireworksForTenSeconds() {
+  function startFireworksForSixtySeconds() {
     createFireworkParticles();
     if (diwaliHero && diwaliDecor) { diwaliHero.classList.add('fireworks-active'); diwaliDecor.classList.add('fireworks-active'); }
     let overlay = document.getElementById('siteFireworks');
@@ -191,7 +191,7 @@
       window.clearInterval(rocketTimer); overlay.classList.remove('site-fireworks-active');
       if (diwaliHero) diwaliHero.classList.remove('fireworks-active'); if (diwaliDecor) diwaliDecor.classList.remove('fireworks-active');
       window.setTimeout(() => { if (overlay.isConnected) overlay.remove(); }, 1500);
-    }, 10000);
+    }, 60000);
   }
   function stopCrackerSound() {
     if (crackerTimer) window.clearInterval(crackerTimer);
@@ -292,7 +292,7 @@
     document.body.appendChild(soundButton);
   }
 
-  startFireworksForTenSeconds();
+  startFireworksForSixtySeconds();
   ensureSoundButton();
 
   function productAudience(p) {
