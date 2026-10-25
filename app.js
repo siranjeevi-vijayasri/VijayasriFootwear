@@ -125,9 +125,8 @@
   });
   renderCart();
 
-  // Fireworks play automatically for the first 10 seconds. Sound is attempted on load,
-  // but browsers may block audio until the visitor interacts with the page.
-  const crackerSoundToggle = document.getElementById('crackerSoundToggle');
+  // Automatic 10-second Diwali fireworks. Audio is attempted on page load;
+  // some browsers block sound until a visitor interacts with the page.
   const diwaliHero = document.querySelector('.diwali-hero');
   const diwaliDecor = document.querySelector('.diwali-decor');
   let crackerAudioContext = null;
@@ -135,8 +134,29 @@
   let crackerStopTimer = null;
   let fireworksStopTimer = null;
 
+  function createFireworkParticles() {
+    if (!diwaliDecor) return;
+    const palette = ['#ffcf33', '#ff4f64', '#35c9ff', '#a8f05a', '#ff8c42', '#f7f2ff', '#d86bff'];
+    diwaliDecor.querySelectorAll('.firework').forEach((firework, fireworkIndex) => {
+      firework.textContent = '';
+      firework.setAttribute('aria-hidden', 'true');
+      for (let i = 0; i < 18; i++) {
+        const particle = document.createElement('span');
+        const angle = (Math.PI * 2 * i / 18) + (fireworkIndex * 0.17);
+        const distance = 34 + (i % 3) * 13;
+        particle.className = 'firework-particle';
+        particle.style.setProperty('--dx', (Math.cos(angle) * distance) + 'px');
+        particle.style.setProperty('--dy', (Math.sin(angle) * distance) + 'px');
+        particle.style.setProperty('--particle-colour', palette[(i + fireworkIndex * 2) % palette.length]);
+        particle.style.setProperty('--particle-delay', ((i % 6) * 0.025) + 's');
+        firework.appendChild(particle);
+      }
+    });
+  }
+
   function startFireworksForTenSeconds() {
     if (!diwaliHero || !diwaliDecor) return;
+    createFireworkParticles();
     diwaliHero.classList.add('fireworks-active');
     diwaliDecor.classList.add('fireworks-active');
     if (fireworksStopTimer) window.clearTimeout(fireworksStopTimer);
@@ -150,48 +170,37 @@
     if (!crackerAudioContext || crackerAudioContext.state !== 'running') return;
     const ctx = crackerAudioContext;
     const now = ctx.currentTime;
-    const length = Math.floor(ctx.sampleRate * 0.22);
+    const length = Math.floor(ctx.sampleRate * 0.18);
     const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
     const channel = buffer.getChannelData(0);
     for (let i = 0; i < length; i++) {
-      channel[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 2.8);
+      channel[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 2.5);
     }
     const noise = ctx.createBufferSource();
     noise.buffer = buffer;
     const filter = ctx.createBiquadFilter();
     filter.type = 'highpass';
-    filter.frequency.setValueAtTime(650, now);
+    filter.frequency.setValueAtTime(900, now);
     const crackGain = ctx.createGain();
     crackGain.gain.setValueAtTime(0.0001, now);
-    crackGain.gain.exponentialRampToValueAtTime(0.36, now + 0.008);
-    crackGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
+    crackGain.gain.exponentialRampToValueAtTime(0.28, now + 0.006);
+    crackGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
     noise.connect(filter).connect(crackGain).connect(ctx.destination);
     noise.start(now);
-    noise.stop(now + 0.22);
-    const oscillator = ctx.createOscillator();
-    const thumpGain = ctx.createGain();
-    oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(115, now);
-    oscillator.frequency.exponentialRampToValueAtTime(42, now + 0.13);
-    thumpGain.gain.setValueAtTime(0.0001, now);
-    thumpGain.gain.exponentialRampToValueAtTime(0.18, now + 0.01);
-    thumpGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
-    oscillator.connect(thumpGain).connect(ctx.destination);
-    oscillator.start(now);
-    oscillator.stop(now + 0.17);
-    [0.09, 0.19, 0.31].forEach((delay, index) => {
+    noise.stop(now + 0.18);
+    [0.045, 0.12, 0.23, 0.34].forEach((delay, index) => {
       window.setTimeout(() => {
         if (!crackerAudioContext || crackerAudioContext.state !== 'running') return;
         const pop = ctx.createOscillator();
         const gain = ctx.createGain();
-        pop.type = 'triangle';
-        pop.frequency.setValueAtTime(700 + index * 240, ctx.currentTime);
+        pop.type = 'square';
+        pop.frequency.setValueAtTime(950 + index * 360, ctx.currentTime);
         gain.gain.setValueAtTime(0.0001, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.045, ctx.currentTime + 0.004);
-        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.045);
+        gain.gain.exponentialRampToValueAtTime(0.032, ctx.currentTime + 0.003);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.035);
         pop.connect(gain).connect(ctx.destination);
         pop.start();
-        pop.stop(ctx.currentTime + 0.05);
+        pop.stop(ctx.currentTime + 0.04);
       }, delay * 1000);
     });
   }
@@ -202,44 +211,25 @@
     crackerTimer = null;
     crackerStopTimer = null;
     if (crackerAudioContext && crackerAudioContext.state !== 'closed') crackerAudioContext.suspend().catch(() => {});
-    if (crackerSoundToggle) {
-      crackerSoundToggle.setAttribute('aria-pressed', 'false');
-      crackerSoundToggle.textContent = '🔇 Crackers sound: Off';
-    }
   }
 
   async function startCrackerSoundForTenSeconds() {
     try {
       const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-      if (!AudioContextClass) throw new Error('Audio not supported');
+      if (!AudioContextClass) return;
       crackerAudioContext = crackerAudioContext || new AudioContextClass();
       await crackerAudioContext.resume();
-      if (crackerAudioContext.state !== 'running') throw new Error('Audio blocked');
-      if (crackerTimer) window.clearInterval(crackerTimer);
-      if (crackerStopTimer) window.clearTimeout(crackerStopTimer);
-      crackerSoundToggle?.setAttribute('aria-pressed', 'true');
-      if (crackerSoundToggle) crackerSoundToggle.textContent = '🔊 Crackers sound: On (10s)';
+      if (crackerAudioContext.state !== 'running') return;
       playCrackerBurst();
-      crackerTimer = window.setInterval(playCrackerBurst, 1250);
+      crackerTimer = window.setInterval(playCrackerBurst, 950);
       crackerStopTimer = window.setTimeout(stopCrackerSound, 10000);
-      return true;
     } catch (_) {
-      if (crackerSoundToggle) {
-        crackerSoundToggle.setAttribute('aria-pressed', 'false');
-        crackerSoundToggle.textContent = '🔊 Tap for 10s crackers sound';
-      }
-      return false;
+      // Autoplay audio may be blocked by browser policy; never interrupt browsing with a prompt.
     }
   }
 
-  // Visual fireworks are automatic. Attempt sound too; if the browser blocks autoplay,
-  // the visible button lets the visitor enable it with one tap.
   startFireworksForTenSeconds();
   startCrackerSoundForTenSeconds();
-  crackerSoundToggle?.addEventListener('click', () => {
-    if (crackerTimer) stopCrackerSound();
-    else startCrackerSoundForTenSeconds();
-  });
 
   function productAudience(p) {
     if (p.audience) return String(p.audience).trim();
