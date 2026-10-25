@@ -623,3 +623,11 @@ body.cart-open{overflow:hidden}
  .cart-drawer{padding:18px}
 }
 @media(prefers-reduced-motion:reduce){.diwali-decor *{animation:none!important}}
+
+/* Persistent quick-access cart: appears after the first item is added */
+.floating-cart{position:fixed;right:22px;bottom:22px;z-index:900;display:flex;align-items:center;justify-content:center;gap:10px;padding:13px 18px;border:1px solid #e4a83e;border-radius:999px;background:#ffcf66;color:#4b1424;font:800 14px/1.2 inherit;box-shadow:0 8px 26px rgba(59,16,32,.24);cursor:pointer;transition:transform .18s ease,box-shadow .18s ease}
+.floating-cart:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(59,16,32,.3)}
+.floating-cart[hidden]{display:none}
+.floating-cart .cart-count{background:#4b1424;color:#fff8eb}
+@media(max-width:600px){.floating-cart{right:14px;bottom:14px;padding:12px 16px;font-size:13px;box-shadow:0 6px 22px rgba(59,16,32,.28)}}
+@media(prefers-reduced-motion:reduce){.floating-cart{transition:none}}
