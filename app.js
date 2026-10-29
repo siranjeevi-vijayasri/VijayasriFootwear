@@ -6,6 +6,15 @@
   const grid = document.getElementById('productGrid');
   const empty = document.getElementById('emptyHint');
   let products = [];
+  const CART_KEY = 'vjs-footwear-cart-v1';
+  let cart = [];
+  try { cart = JSON.parse(localStorage.getItem(CART_KEY) || '[]'); if (!Array.isArray(cart)) cart = []; } catch (_) { cart = []; }
+  const cartDrawer = document.getElementById('cartDrawer');
+  const cartBackdrop = document.getElementById('cartBackdrop');
+  const cartItems = document.getElementById('cartItems');
+  const cartCount = document.getElementById('cartCount');
+  const cartTotal = document.getElementById('cartTotal');
+  const money = value => '₹' + Number(value || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 });
   const brandFilter = document.getElementById('brandFilter');
   const audienceFilter = document.getElementById('audienceFilter');
   const typeFilter = document.getElementById('typeFilter');
@@ -16,8 +25,8 @@
   const imageUrls = value => [...new Set(String(value || '').split(/[\n,]+/).map(url => url.trim()).filter(Boolean))];
 
   function productCard(p) {
-    const msg = `Hello Vijayasri Footwear, I am interested in ${p.brand || ''} ${p.name || 'this product'}${p.model ? ' (Model: '+p.model+')' : ''}. Please confirm sizes, colours, availability and current price.`;
     const urls = imageUrls(p.image_url);
+    const msg = `Hello Vijayasri Footwear, I am interested in ${p.brand || ''} ${p.name || 'this product'}${p.model ? ' (Model: '+p.model+')' : ''}. Please confirm sizes, colours, availability and current price.${urls[0] ? '\n\nProduct image: ' + urls[0] : ''}`;
     const galleryId = 'gallery-' + String(p.id || Math.random().toString(36).slice(2)).replace(/[^a-zA-Z0-9_-]/g, '');
     let gallery = '<div class="image-fallback">Product photo to be added</div>';
     if (urls.length) {
@@ -26,8 +35,161 @@
         gallery += `<div class="gallery-thumbs" aria-label="More product images">${urls.map((url, index) => `<button type="button" class="gallery-thumb${index === 0 ? ' active' : ''}" data-gallery-target="${galleryId}" data-gallery-url="${esc(url)}" aria-label="View image ${index + 1}"><img loading="lazy" src="${esc(url)}" alt=""></button>`).join('')}</div>`;
       }
     }
-    return `<article class="product-card"><div class="product-image product-gallery">${gallery}</div><div class="product-info"><div class="product-brand">${esc(p.brand || 'Footwear')}</div><div class="product-name">${esc(p.name)}</div><div class="product-meta">${esc([p.model, p.category, p.sizes].filter(Boolean).join(' · '))}</div><div class="product-price">${p.price != null && p.price !== '' ? '₹'+Number(p.price).toLocaleString('en-IN') : 'Ask for price'} <small>${p.mrp && Number(p.mrp)>Number(p.price) ? `<s>₹${Number(p.mrp).toLocaleString('en-IN')}</s>` : ''}</small></div><a class="btn btn-green" target="_blank" rel="noopener" href="https://wa.me/${WA}?text=${encodeURIComponent(msg)}">Enquire on WhatsApp ↗</a></div></article>`;
+    const sizes = productSizes(p);
+    const sizePicker = sizes.length
+      ? `<label class="cart-size-label">Size <select class="cart-size-select" data-cart-size="${esc(p.id)}"><option value="">Choose size</option>${sizes.map(size => `<option value="${esc(size)}">${esc(size)}</option>`).join('')}</select></label>`
+      : '<p class="cart-size-hint">Size can be confirmed with the shop</p>';
+    return `<article class="product-card"><div class="product-image product-gallery">${gallery}</div><div class="product-info"><div class="product-brand">${esc(p.brand || 'Footwear')}</div><div class="product-name">${esc(p.name)}</div><div class="product-meta">${esc([p.model, p.category, p.sizes].filter(Boolean).join(' · '))}</div><div class="product-price">${p.price != null && p.price !== '' ? '₹'+Number(p.price).toLocaleString('en-IN') : 'Ask for price'} <small>${p.mrp && Number(p.mrp)>Number(p.price) ? `<s>₹${Number(p.mrp).toLocaleString('en-IN')}</s>` : ''}</small></div>${sizePicker}<button class="btn btn-add-cart" type="button" data-add-cart="${esc(p.id)}">＋ Add to cart</button><a class="btn btn-green" target="_blank" rel="noopener" href="https://wa.me/${WA}?text=${encodeURIComponent(msg)}">Enquire on WhatsApp ↗</a></div></article>`;
   }
+
+  function persistCart() {
+    try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch (_) {}
+    renderCart();
+  }
+  function renderCart() {
+    const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+    if (cartCount) cartCount.textContent = String(count);
+    const floatingCart = document.getElementById('floatingCart');
+    if (floatingCart) { floatingCart.hidden = count === 0; const floatingCount = document.getElementById('floatingCartCount'); if (floatingCount) floatingCount.textContent = String(count); }
+    if (cartItems) {
+      cartItems.innerHTML = cart.length ? cart.map(item => `
+        <article class="cart-item">
+          ${item.image ? `<img src="${esc(item.image)}" alt="" loading="lazy">` : '<div class="cart-item-placeholder">👟</div>'}
+          <div class="cart-item-info"><strong>${esc(item.brand)} ${esc(item.name)}</strong><small>${esc(item.model || '')}${item.model ? ' · ' : ''}Size: ${esc(item.size || 'To confirm')}</small><b>${item.price != null ? money(item.price * item.quantity) : 'Price to confirm'}</b>
+            <div class="cart-quantity"><button type="button" data-cart-action="minus" data-cart-key="${esc(item.key)}" aria-label="Decrease quantity">−</button><span>${item.quantity}</span><button type="button" data-cart-action="plus" data-cart-key="${esc(item.key)}" aria-label="Increase quantity">+</button><button type="button" class="cart-remove" data-cart-action="remove" data-cart-key="${esc(item.key)}">Remove</button></div>
+          </div>
+        </article>`).join('') : '<div class="cart-empty"><span>🪔</span><strong>Your cart is waiting to sparkle</strong><p>Add a few footwear favourites from the catalogue.</p></div>';
+    }
+    const total = cart.reduce((sum, item) => sum + (item.price == null ? 0 : item.price * item.quantity), 0);
+    if (cartTotal) cartTotal.textContent = money(total);
+    const checkout = document.getElementById('checkoutWhatsApp');
+    if (checkout) checkout.disabled = cart.length === 0;
+  }
+  function openCart() {
+    if (!cartDrawer || !cartBackdrop) return;
+    cartDrawer.hidden = false; cartBackdrop.hidden = false;
+    document.body.classList.add('cart-open');
+    renderCart();
+  }
+  function closeCart() {
+    if (!cartDrawer || !cartBackdrop) return;
+    cartDrawer.hidden = true; cartBackdrop.hidden = true;
+    document.body.classList.remove('cart-open');
+  }
+  grid.addEventListener('click', event => {
+    const addButton = event.target.closest('[data-add-cart]');
+    if (!addButton) return;
+    const product = products.find(item => String(item.id) === String(addButton.dataset.addCart));
+    if (!product) return;
+    const sizes = productSizes(product);
+    const picker = grid.querySelector(`[data-cart-size="${CSS.escape(String(product.id))}"]`);
+    const chosenSize = picker ? picker.value : 'Size to confirm';
+    if (sizes.length && !chosenSize) {
+      picker?.focus();
+      if (picker) picker.setCustomValidity('Please choose a size first.');
+      picker?.reportValidity();
+      picker?.addEventListener('change', () => picker.setCustomValidity(''), { once: true });
+      return;
+    }
+    const size = chosenSize || 'Size to confirm';
+    const key = String(product.id) + '::' + size;
+    const existing = cart.find(item => item.key === key);
+    if (existing) existing.quantity += 1;
+    else cart.push({ key, id: String(product.id), brand: product.brand || 'Footwear', name: product.name || 'Footwear', model: product.model || '', price: product.price == null || product.price === '' || !Number.isFinite(Number(product.price)) ? null : Number(product.price), image: imageUrls(product.image_url)[0] || '', size, quantity: 1 });
+    persistCart();
+    addButton.textContent = '✓ Added';
+    window.setTimeout(() => { if (addButton.isConnected) addButton.textContent = '＋ Add to cart'; }, 1200);
+  });
+  cartItems?.addEventListener('click', event => {
+    const button = event.target.closest('[data-cart-action]');
+    if (!button) return;
+    const item = cart.find(entry => entry.key === button.dataset.cartKey);
+    if (!item) return;
+    if (button.dataset.cartAction === 'plus') item.quantity += 1;
+    if (button.dataset.cartAction === 'minus') item.quantity -= 1;
+    if (button.dataset.cartAction === 'remove' || item.quantity <= 0) cart = cart.filter(entry => entry.key !== item.key);
+    persistCart();
+  });
+  document.getElementById('cartToggle')?.addEventListener('click', openCart);
+  document.getElementById('floatingCart')?.addEventListener('click', openCart);
+  document.getElementById('cartClose')?.addEventListener('click', closeCart);
+  document.getElementById('continueShopping')?.addEventListener('click', closeCart);
+  cartBackdrop?.addEventListener('click', closeCart);
+  document.addEventListener('keydown', event => { if (event.key === 'Escape' && cartDrawer && !cartDrawer.hidden) closeCart(); });
+  document.getElementById('checkoutWhatsApp')?.addEventListener('click', () => {
+    if (!cart.length) return;
+    const lines = cart.map((item, index) => `${index + 1}. ${item.brand} ${item.name}${item.model ? ' (' + item.model + ')' : ''} | Size: ${item.size || 'To confirm'} | Qty: ${item.quantity} | ${item.price == null ? 'Price to confirm' : money(item.price * item.quantity)}${item.image ? '\n   Product image: ' + item.image : ''}`);
+    const total = cart.reduce((sum, item) => sum + (item.price == null ? 0 : item.price * item.quantity), 0);
+    const message = `Hello Vijayasri Footwear! I'd like to enquire about these items from my cart:\n\n${lines.join('\n')}\n\nEstimated total for priced items: ${money(total)}\nPlease confirm size, availability and final price. This is an order enquiry; no payment has been made.`;
+    window.open(`https://wa.me/${WA}?text=${encodeURIComponent(message)}`, '_blank', 'noopener');
+  });
+  renderCart();
+
+  // Run colourful fireworks across the full viewport for sixty seconds.
+  const diwaliHero = document.querySelector('.diwali-hero');
+  const diwaliDecor = document.querySelector('.diwali-decor');
+  let fireworksStopTimer = null;
+
+  function createFireworkParticles() {
+    if (!diwaliDecor) return;
+    const palette = ['#ffcf33', '#ff4f64', '#35c9ff', '#a8f05a', '#ff8c42', '#f7f2ff', '#d86bff'];
+    diwaliDecor.querySelectorAll('.firework').forEach((firework, fireworkIndex) => {
+      firework.textContent = '';
+      firework.setAttribute('aria-hidden', 'true');
+      for (let i = 0; i < 18; i++) {
+        const particle = document.createElement('span');
+        const angle = (Math.PI * 2 * i / 18) + (fireworkIndex * 0.17);
+        const distance = 34 + (i % 3) * 13;
+        particle.className = 'firework-particle';
+        particle.style.setProperty('--dx', (Math.cos(angle) * distance) + 'px');
+        particle.style.setProperty('--dy', (Math.sin(angle) * distance) + 'px');
+        particle.style.setProperty('--particle-colour', palette[(i + fireworkIndex * 2) % palette.length]);
+        particle.style.setProperty('--particle-delay', ((i % 6) * 0.025) + 's');
+        firework.appendChild(particle);
+      }
+    });
+  }
+
+  function startFireworksForSixtySeconds() {
+    createFireworkParticles();
+    if (diwaliHero && diwaliDecor) { diwaliHero.classList.add('fireworks-active'); diwaliDecor.classList.add('fireworks-active'); }
+    let overlay = document.getElementById('siteFireworks');
+    if (!overlay) { overlay = document.createElement('div'); overlay.id = 'siteFireworks'; overlay.className = 'site-fireworks'; overlay.setAttribute('aria-hidden', 'true'); document.body.appendChild(overlay); }
+    overlay.classList.add('site-fireworks-active');
+    let burstCount = 0;
+    const launchRocket = () => {
+      if (!overlay.isConnected || !overlay.classList.contains('site-fireworks-active')) return;
+      const width = window.innerWidth || 1200, height = window.innerHeight || 800;
+      const x = 35 + Math.random() * Math.max(1, width - 70), targetY = 70 + Math.random() * Math.max(1, height * 0.62);
+      const rocket = document.createElement('span'); rocket.className = 'site-rocket';
+      rocket.style.setProperty('--rocket-x', x + 'px'); rocket.style.setProperty('--rocket-y', targetY + 'px');
+      rocket.style.setProperty('--rocket-flight', (0.55 + Math.random() * 0.4) + 's');
+      rocket.style.setProperty('--rocket-colour', ['#ffcf33','#ff4f64','#35c9ff','#a8f05a','#ff8c42','#d86bff'][burstCount % 6]);
+      overlay.appendChild(rocket);
+      window.setTimeout(() => {
+        if (!overlay.isConnected) return;
+        rocket.remove();
+        const colours = ['#ffcf33','#ff4f64','#35c9ff','#a8f05a','#ff8c42','#f7f2ff','#d86bff'];
+        const burst = document.createElement('span'); burst.className = 'site-rocket-burst';
+        burst.style.setProperty('--burst-x', x + 'px'); burst.style.setProperty('--burst-y', targetY + 'px');
+        for (let i = 0; i < 24; i++) {
+          const particle = document.createElement('i'), angle = (Math.PI * 2 * i / 24) + Math.random() * 0.12, distance = 35 + Math.random() * 65;
+          particle.style.setProperty('--burst-dx', (Math.cos(angle) * distance) + 'px'); particle.style.setProperty('--burst-dy', (Math.sin(angle) * distance) + 'px');
+          particle.style.setProperty('--burst-colour', colours[(i + burstCount) % colours.length]); burst.appendChild(particle);
+        }
+        overlay.appendChild(burst); window.setTimeout(() => burst.remove(), 1350); burstCount++;
+      }, 620);
+    };
+    launchRocket(); const rocketTimer = window.setInterval(launchRocket, 420);
+    if (fireworksStopTimer) window.clearTimeout(fireworksStopTimer);
+    fireworksStopTimer = window.setTimeout(() => {
+      window.clearInterval(rocketTimer); overlay.classList.remove('site-fireworks-active');
+      if (diwaliHero) diwaliHero.classList.remove('fireworks-active'); if (diwaliDecor) diwaliDecor.classList.remove('fireworks-active');
+      window.setTimeout(() => { if (overlay.isConnected) overlay.remove(); }, 1500);
+    }, 60000);
+  }
+
+  startFireworksForSixtySeconds();
 
   function productAudience(p) {
     if (p.audience) return String(p.audience).trim();

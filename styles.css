@@ -509,3 +509,164 @@ footer{background:#1d3529;color:#dbe4da}
   .everyday-gallery{height:250px}
   .everyday-photo figcaption{font-size:8px}
 }
+
+
+/* Diwali Dhamaka theme: jewel tones, marigold gold, diyas and celebratory fireworks */
+:root{--green:#4b1424;--lime:#ffd36a;--cream:#fff8eb;--ink:#321820;--muted:#79636a;--line:#ecd9c8}
+body{background:#fff8eb;color:#321820}
+.topline{background:#3b1020;color:#ffe8b2;letter-spacing:.045em}
+.header{background:#fff9ef;border-bottom-color:#ead6bd}
+.identity b{color:#4b1424}
+.header nav a:hover{color:#b65a25}
+.btn-green{background:#4b1424;color:#fff8eb}
+.btn-green:hover{background:#681d2e}
+.header-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.cart-toggle{background:#ffcf66;color:#4b1424;border:1px solid #e4a83e;font-weight:800;white-space:nowrap}
+.cart-toggle:hover{background:#f4b947}
+.cart-count{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 5px;border-radius:50%;background:#4b1424;color:#fff8eb;font-size:11px}
+.diwali-hero{position:relative;background:radial-gradient(ellipse at 85% 15%,rgba(255,205,93,.28),transparent 34%),linear-gradient(120deg,#fff3d9 0%,#fff9ef 52%,#f9e3c4 100%);isolation:isolate}
+.diwali-hero:before{content:"";position:absolute;inset:12px;border:1px solid rgba(190,119,39,.35);border-radius:14px;pointer-events:none;z-index:-1}
+.diwali-hero .everyday-copy .eyebrow{color:#9a4c24}
+.diwali-hero .hero-overline{color:#b46c24}
+.diwali-hero .everyday-copy h1{color:#4b1424}
+.diwali-hero .everyday-copy h1 em{color:#b65a25}
+.diwali-hero .hero-description{color:#72545a}
+.diwali-hero .text-link{color:#7a2638;border-color:#e0b77d}
+.diwali-hero .hero-trust{color:#76535a}
+.diwali-hero .hero-trust i{background:#dca33b}
+.diwali-decor{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.diwali-decor .diya{position:absolute;filter:drop-shadow(0 4px 9px rgba(197,108,25,.2));animation:diya-glow 2.8s ease-in-out infinite alternate}
+.diya-one{font-size:clamp(28px,4vw,52px);right:43%;top:6%}
+.diya-two{font-size:clamp(24px,3vw,40px);left:2%;bottom:7%;animation-delay:.7s!important}
+.firework{position:absolute;color:#d98b23;font-size:clamp(22px,3vw,42px);text-shadow:0 0 16px #ffc85c;animation:firework-pop 2.5s ease-in-out infinite}
+.firework-one{right:5%;top:8%}.firework-two{right:18%;top:42%;color:#a52c48;animation-delay:.6s}.firework-three{left:43%;bottom:10%;color:#c47a20;animation-delay:1.2s}
+@keyframes diya-glow{from{filter:drop-shadow(0 0 3px rgba(245,166,35,.35));transform:translateY(0)}to{filter:drop-shadow(0 0 13px rgba(245,166,35,.7));transform:translateY(-3px)}}
+@keyframes firework-pop{0%,100%{opacity:.45;transform:scale(.72) rotate(0)}50%{opacity:1;transform:scale(1.16) rotate(18deg)}}
+.everyday-copy,.everyday-gallery{z-index:1}
+.diwali-strip{display:flex;justify-content:center;align-items:center;gap:18px;padding:18px 20px;background:#4b1424;color:#fff0c9;text-align:center;border-top:2px solid #e7b44c;border-bottom:2px solid #e7b44c}
+.diwali-strip>span{font-size:clamp(24px,3vw,36px)}
+.diwali-strip div{display:flex;flex-direction:column;gap:4px}
+.diwali-strip strong{font-family:Georgia,"Times New Roman",serif;font-size:clamp(19px,2.5vw,28px);font-weight:500}
+.diwali-strip small{font-size:12px;color:#f1d8ba;line-height:1.5}
+.catalogue{background:#fffdf8}
+.catalogue .section-head h2,.section h2{color:#4b1424}
+.eyebrow{color:#a65328}
+.catalogue-filters{border-color:#ead6bd;background:#fff0d8}
+.catalogue-filter-field span{color:#6d2635}
+.catalogue-filter-field select{border-color:#e1c9a8;background:#fffaf1;color:#321820}
+.filter-reset{border-color:#d7b58b;color:#702338;background:#fffaf1}
+.filter-reset:hover{background:#4b1424;color:#fff8eb}
+.product-card{border-color:#eadfce;background:#fff}
+.product-card:hover{border-color:#d7a44b;box-shadow:0 9px 25px rgba(103,39,34,.08)}
+.product-brand{color:#a65328}
+.product-name{color:#4b1424}
+.product-price{color:#7b2337}
+.product-gallery .gallery-main{background:#fff4e2}
+.product-info .btn{width:100%}
+.btn-add-cart{margin-top:12px;background:#ffcf66;color:#4b1424;border:1px solid #e4b04c;font-weight:800}
+.btn-add-cart:hover{background:#f3ba45}
+.cart-size-label{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;color:#6d2635;font-size:12px;font-weight:750}
+.cart-size-select{min-width:100px;max-width:65%;padding:8px 10px;border:1px solid #e2cba9;border-radius:8px;background:#fffaf1;color:#321820;font:inherit}
+.cart-size-hint{margin:12px 0 0;color:#79636a;font-size:11px;line-height:1.5}
+.about{background:#fff0d8;border-color:#ecd3a6}
+.about .eyebrow{color:#9a4c24}
+.contact{background:#4b1424}
+.contact .eyebrow{color:#ffcf66}
+.contact .btn-light{background:#ffcf66;color:#4b1424}
+.contact .btn-outline{border-color:#ffcf66;color:#fff0d8}
+footer{background:#310d19;color:#f2d7bc}
+.cart-backdrop{position:fixed;inset:0;background:rgba(36,8,18,.55);backdrop-filter:blur(3px);z-index:1000}
+.cart-drawer{position:fixed;z-index:1001;right:0;top:0;bottom:0;width:min(460px,100%);display:flex;flex-direction:column;background:#fffaf1;box-shadow:-18px 0 55px rgba(45,12,22,.22);padding:24px;overflow-y:auto}
+.cart-drawer[hidden],.cart-backdrop[hidden]{display:none}
+body.cart-open{overflow:hidden}
+.cart-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-bottom:14px;border-bottom:1px solid #ecd9c8}
+.cart-head .eyebrow{font-size:10px;letter-spacing:.12em}
+.cart-head h2{margin:5px 0 0;color:#4b1424;font-size:27px}
+.cart-close{width:40px;height:40px;border:1px solid #ead6bd;border-radius:50%;background:#fff;color:#4b1424;font-size:27px;cursor:pointer}
+.cart-note{font-size:12px;line-height:1.65;color:#79636a;background:#fff0d8;border-radius:10px;padding:12px 14px}
+.cart-items{display:flex;flex-direction:column;gap:12px;padding:6px 0 20px}
+.cart-item{display:grid;grid-template-columns:76px minmax(0,1fr);gap:13px;padding:12px 0;border-bottom:1px solid #eee0d0}
+.cart-item>img,.cart-item-placeholder{width:76px;height:76px;border-radius:10px;object-fit:contain;background:#fff0d8}
+.cart-item-placeholder{display:grid;place-items:center;font-size:28px}
+.cart-item-info{min-width:0;display:flex;flex-direction:column;gap:5px}
+.cart-item-info strong{font-size:13px;color:#4b1424;line-height:1.4}
+.cart-item-info small{font-size:11px;color:#79636a}
+.cart-item-info>b{font-size:13px;color:#7b2337}
+.cart-quantity{display:flex;align-items:center;gap:9px;margin-top:4px}
+.cart-quantity button{min-width:28px;height:28px;border:1px solid #e4cfb2;border-radius:7px;background:#fff;color:#4b1424;cursor:pointer}
+.cart-quantity span{font-size:12px;font-weight:800}
+.cart-quantity .cart-remove{margin-left:auto;width:auto;padding:0 8px;border:0;background:transparent;color:#a52c48;font-size:11px}
+.cart-empty{padding:50px 12px;text-align:center;color:#79636a}
+.cart-empty span{display:block;font-size:36px;margin-bottom:10px}
+.cart-empty strong{color:#4b1424}
+.cart-empty p{font-size:12px;line-height:1.6}
+.cart-footer{margin-top:auto;padding-top:16px;border-top:1px solid #ecd9c8;display:flex;flex-direction:column;gap:10px}
+.cart-total-row{display:flex;align-items:center;justify-content:space-between;color:#4b1424}
+.cart-total-row strong{font-size:22px}
+.cart-footer>small{color:#79636a;font-size:10px;line-height:1.5}
+.cart-checkout{width:100%;border:0;border-radius:10px;margin-top:4px}
+.cart-checkout:disabled{opacity:.45;cursor:not-allowed}
+.cart-continue{padding:11px;border:0;background:transparent;color:#7b2337;font-weight:750;cursor:pointer}
+@media(max-width:850px){.diya-one{right:8%;top:4%}.firework-two{right:6%;top:45%}}
+@media(max-width:650px){
+ .header{height:auto;min-height:78px;flex-wrap:wrap}
+ .header nav{order:3;width:100%;justify-content:center;padding:4px 0 2px}
+ .header-actions{margin-left:auto;gap:7px}
+ .header-whatsapp{display:none}
+ .cart-toggle{font-size:12px;padding:10px 12px}
+ .diwali-hero:before{inset:7px}
+ .diya-one{right:5%;top:3%;font-size:26px}
+ .diya-two{left:2%;bottom:3%;font-size:24px}
+ .firework-one{right:5%;top:17%}.firework-two{right:3%;top:53%}.firework-three{left:5%;bottom:15%}
+ .diwali-strip{gap:10px;padding:15px 12px}
+ .diwali-strip small{font-size:10px}
+ .cart-drawer{padding:18px}
+}
+@media(prefers-reduced-motion:reduce){.diwali-decor *{animation:none!important}}
+
+/* Persistent quick-access cart: appears after the first item is added */
+.floating-cart{position:fixed;right:22px;bottom:22px;z-index:900;display:flex;align-items:center;justify-content:center;gap:10px;padding:13px 18px;border:1px solid #e4a83e;border-radius:999px;background:#ffcf66;color:#4b1424;font:800 14px/1.2 inherit;box-shadow:0 8px 26px rgba(59,16,32,.24);cursor:pointer;transition:transform .18s ease,box-shadow .18s ease}
+.floating-cart:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(59,16,32,.3)}
+.floating-cart[hidden]{display:none}
+.floating-cart .cart-count{background:#4b1424;color:#fff8eb}
+@media(max-width:600px){.floating-cart{right:14px;bottom:14px;padding:12px 16px;font-size:13px;box-shadow:0 6px 22px rgba(59,16,32,.28)}}
+@media(prefers-reduced-motion:reduce){.floating-cart{transition:none}}
+
+
+/* Colourful firecracker explosions: particles travel outwards, not zoom in/out. */
+.diwali-hero:after{animation:none;opacity:0}
+.diwali-decor .firework{position:absolute;width:1px;height:1px;opacity:0;font-size:0;text-shadow:none;animation:none}
+.diwali-decor .firework:after{content:none!important;display:none!important}
+.firework-particle{position:absolute;left:0;top:0;width:5px;height:12px;border-radius:3px;background:var(--particle-colour);box-shadow:0 0 8px var(--particle-colour),0 0 16px rgba(255,218,100,.7);opacity:0;transform:translate(-50%,-50%) rotate(0) scale(.2);pointer-events:none}
+.diwali-decor.fireworks-active .firework{opacity:1}
+.diwali-decor.fireworks-active .firework-particle{animation:colourful-cracker-blast 1.15s cubic-bezier(.12,.62,.25,1) infinite;animation-delay:var(--particle-delay)}
+.diwali-decor.fireworks-active .firework-two .firework-particle{animation-delay:calc(var(--particle-delay) + .3s)}
+.diwali-decor.fireworks-active .firework-three .firework-particle{animation-delay:calc(var(--particle-delay) + .6s)}
+@keyframes colourful-cracker-blast{
+  0%{opacity:0;transform:translate(-50%,-50%) translate(0,0) rotate(0) scale(.35)}
+  8%{opacity:1}
+  72%{opacity:1;transform:translate(-50%,-50%) translate(var(--dx),var(--dy)) rotate(140deg) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-50%) translate(calc(var(--dx) * 1.22),calc(var(--dy) * 1.22)) rotate(220deg) scale(.65)}
+}
+@media(prefers-reduced-motion:reduce){.diwali-decor.fireworks-active .firework-particle{animation:none!important;opacity:0}}
+
+/* Full-viewport Diwali rockets and colourful explosions. */
+.site-fireworks{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:850;opacity:0;isolation:isolate}
+.site-fireworks.site-fireworks-active{opacity:1}
+.site-rocket{position:absolute;left:var(--rocket-x);bottom:-18px;width:4px;height:20px;border-radius:50%;background:var(--rocket-colour);box-shadow:0 0 7px 3px var(--rocket-colour);animation:rocket-rise var(--rocket-flight) cubic-bezier(.2,.6,.3,1) forwards}
+.site-rocket:after{content:"";position:absolute;left:0;top:12px;width:3px;height:42px;transform:translateX(-50%);background:linear-gradient(to bottom,var(--rocket-colour),transparent);opacity:.9}
+@keyframes rocket-rise{to{left:var(--rocket-x);bottom:calc(100% - var(--rocket-y));opacity:.95}}
+.site-rocket-burst{position:absolute;left:var(--burst-x);top:var(--burst-y);width:1px;height:1px}
+.site-rocket-burst i{position:absolute;left:0;top:0;width:5px;height:10px;border-radius:4px;background:var(--burst-colour);box-shadow:0 0 9px var(--burst-colour),0 0 17px var(--burst-colour);animation:rocket-burst-spread 1.25s ease-out forwards}
+@keyframes rocket-burst-spread{0%{opacity:1;transform:translate(0,0) rotate(0) scale(.35)}70%{opacity:1}100%{opacity:0;transform:translate(var(--burst-dx),var(--burst-dy)) rotate(240deg) scale(.65)}}
+.diwali-strip{background:linear-gradient(105deg,#4b1424,#7b2337 48%,#153b2d)!important;color:#fff2db}
+.diwali-strip strong,.diwali-strip small{color:#fff2db}
+.product-card{border-color:rgba(196,122,32,.24);box-shadow:0 8px 24px rgba(75,20,36,.055)}
+.product-brand{color:#a52c48}
+.product-card .btn,.product-card .whatsapp-button{background:linear-gradient(110deg,#7b2337,#b13a52)!important;color:#fff8eb!important}
+.product-card .btn:hover,.product-card .whatsapp-button:hover{background:linear-gradient(110deg,#153b2d,#287253)!important}
+.section-heading .eyebrow,.catalogue .eyebrow{color:#a52c48}
+.about,.contact{background-image:radial-gradient(circle at 8% 15%,rgba(255,207,102,.14),transparent 26%),radial-gradient(circle at 92% 80%,rgba(216,107,255,.10),transparent 24%)}
+.contact{background-color:#4b1424}
+.contact .btn-green{background:linear-gradient(100deg,#ffcf66,#ff8c42);color:#4b1424}
+@media(prefers-reduced-motion:reduce){.site-fireworks,.site-rocket,.site-rocket-burst i{animation:none!important;display:none!important}}
