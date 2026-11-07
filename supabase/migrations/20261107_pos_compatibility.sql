@@ -54,7 +54,7 @@ begin
   select * into v_variant from public.product_variants where id=v_variant_id and is_active for update;
   if not found then raise exception 'Selected size/colour is unavailable'; end if;
   if v_variant.stock_quantity<v_qty then raise exception 'Insufficient stock for size % colour % (available %)',v_variant.size,v_variant.colour,v_variant.stock_quantity; end if;
-  select * into v_product from public.catalog_products where id=v_variant.product_id;
+  select * into v_product from public.catalog_products where source_product_id=v_variant.product_id;
   if not found then raise exception 'Catalogue product not found for selected variant'; end if;
   v_price:=coalesce(nullif(v_item->>'unit_price','')::numeric,v_variant.selling_price,v_product.price,0);
   if v_price<0 then raise exception 'Invalid price'; end if;
@@ -69,7 +69,7 @@ begin
  for v_item in select value from jsonb_array_elements(p_items) loop
   v_variant_id:=(v_item->>'variant_id')::uuid;
   select * into v_variant from public.product_variants where id=v_variant_id;
-  select * into v_product from public.catalog_products where id=v_variant.product_id;
+  select * into v_product from public.catalog_products where source_product_id=v_variant.product_id;
   v_qty:=(v_item->>'quantity')::integer;
   v_price:=coalesce(nullif(v_item->>'unit_price','')::numeric,v_variant.selling_price,v_product.price,0);
   v_rate:=case when p_bill_type='GST' then greatest(coalesce(nullif(v_item->>'tax_rate','')::numeric,0),0) else 0 end;
