@@ -1,57 +1,210 @@
-# Vijayasri Footwear — Product & Architecture Outline
+# Vijayasri Footwear — Master Product Requirements
 
-## Product direction
+**Status:** Product requirements and target architecture  
+**Canonical scope:** This document is the single source of truth for product scope, workflows, architecture, security, compatibility and delivery acceptance.  
+**Repository:** `siranjeevi-vijayasri/VijayasriFootwear`  
+**Development branch:** `feature/pos-role-based-access`
 
-Vijayasri Footwear is a single-workspace retail operations platform backed by one central product and inventory service. The shop POS, public website and future marketplaces must use the same product identities, SKU definitions and stock ledger.
+---
 
-## Single workspace
+## 1. Product vision
 
-1. **Dashboard** — Sales, profit, stock alerts, purchases and activity.
-2. **Products** — Brands, models, sizes, colours, images and pricing.
-3. **Suppliers** — Contacts, GSTIN, price lists and supplier balances.
-4. **Purchases** — Purchase bills, invoice uploads, returns and stock receipt.
-5. **Inventory** — Size-wise stock, transfers, adjustments and low-stock alerts.
-6. **Sales & POS** — GST/non-GST bills, payments, returns and receipts.
-7. **Reports** — Sales, margins, profit, tax, stock and supplier reports.
-8. **Customers & Staff** — Customer history, roles, permissions and activity.
-9. **Online catalogue** — Public products, pricing, enquiries and order tracking.
-10. **Marketplace centre** — Future Flipkart and Amazon listings, orders and stock sync.
+Build Vijayasri Footwear as a single-workspace retail operations platform for the physical shop and its digital sales channels. The platform must use one central product master, one SKU system and one authoritative inventory ledger. Shop POS, the public website and future marketplaces must never maintain independent stock balances.
 
-## Central product and inventory model
+The immediate priority is a reliable shop-management and POS foundation while preserving the existing public catalogue. Amazon and Flipkart connectivity is a future integration phase, not a claim of current live integration.
 
-- Maintain one canonical product master.
-- Maintain one SKU per sellable variant (for example, model + colour + size).
-- Track stock movements in a central, auditable stock ledger.
-- Keep stock quantities by SKU and location.
-- Treat POS, website and marketplace as sales channels, not independent inventory stores.
+## 2. Workspace navigation and modules
 
-## Shared stock service and channel rules
+The management application must remain a **single workspace** at the existing custom route `/VJSManage/`. Do not introduce `/admin`.
 
-All channels must reserve and update stock through the same inventory service to reduce overselling.
+| Module | Required scope |
+|---|---|
+| Dashboard | Sales, profit, stock alerts, purchases and recent activity |
+| Products | Brands, models, sizes, colours, images, pricing and SKU/variant management |
+| Suppliers | Supplier contacts, GSTIN, price lists, purchase history and supplier balances |
+| Purchases | Purchase bills, invoice uploads, purchase returns and stock receipt |
+| Inventory | Size-wise stock, transfers, adjustments, reservations and low-stock alerts |
+| Sales & POS | Walk-in sales, GST/non-GST bills, payments, returns and receipts |
+| Reports | Sales, margins, profit, tax, stock movement and supplier reports |
+| Customers & Staff | Customer profiles/history, staff accounts, roles, permissions and activity logs |
+| Online catalogue | Public products, published pricing, enquiries, cart/order tracking and order status |
+| Marketplace centre | Future Amazon/Flipkart listings, marketplace orders and stock synchronisation |
 
-Expected order lifecycle:
-1. **Check availability** against sellable on-hand stock, existing reservations and any safety buffer.
-2. **Reserve atomically** when an order is accepted. A reservation must not allow two channels to claim the same units.
-3. **Confirm/fulfil** by converting the reservation into a stock deduction and recording the corresponding ledger movement.
-4. **Release** the reservation when an order is cancelled, expires or payment fails according to the configured channel policy.
-5. **Return/reconcile** returned units through an inspected return flow; only saleable units return to available stock.
-6. **Reconcile** marketplace and website stock updates with the central ledger, recording failures and retrying safely.
+All modules should share the same underlying records and permissions. Avoid duplicate product, customer, supplier or stock masters.
 
-Inventory operations must be idempotent, auditable and concurrency-safe. Do not rely on delayed storefront quantity updates as the stock-control mechanism. Channel integrations should consume the central service/API and publish availability changes after committed inventory transactions.
+## 3. Central product master and SKU model
 
-## Scope and integration principles
+- Maintain one canonical product master for each footwear model/product.
+- Maintain a distinct SKU for every sellable variant, at minimum model + colour + size. A SKU must identify exactly one stock-keeping variant.
+- Store brand, model/name, audience (Men/Women/Kids/Unisex), footwear type/category, size, colour, images, description, MRP, selling price, cost and publication status as appropriate.
+- Support multiple product images per model/variant and retain existing image URL support.
+- Support product-level and variant-level attributes without forcing existing catalogue records into an incompatible shape.
+- Keep a clear relationship between the legacy public catalogue product and its new SKU/variant records.
+- Do not bulk-rename brands or product names based on fuzzy text matching. Brand spelling/normalisation changes require deliberate, reviewed data migration.
 
-- Shop POS supports walk-in sales.
-- Website supports online orders and the existing public catalogue.
-- Marketplaces are planned for future Amazon and Flipkart integration.
-- Marketplace centre should be designed for listing, order ingestion and stock synchronisation, but external marketplace connectivity is not assumed to be active in the initial release.
-- Preserve the existing Supabase `products` table and catalogue data. Use additive, backwards-compatible migrations; do not drop or destructively rewrite existing product data.
-- Keep the management route at `/VJSManage`; do not introduce `/admin`.
-- Preserve the existing customer-facing catalogue and its current theme/cart behaviour while integrating shared inventory.
-- Keep this project isolated to `siranjeevi-vijayasri/VijayasriFootwear`, branch `feature/pos-role-based-access`. Do not modify `vsfootwear`, `MRSSTATIONERY` or `main`.
+## 4. Central inventory service — critical architecture
 
-## Delivery approach
+**All channels must reserve and update stock through the same inventory service to reduce overselling.**
 
-Implement in stages: (1) inspect and document the existing schema and application, (2) central product/SKU and stock ledger foundation, (3) shared reservation/commit/release service, (4) POS and purchasing workflows, (5) customer and staff permissions, (6) reporting, (7) website integration, and (8) marketplace adapters when credentials and API access are available.
+Channels:
+- **Shop POS:** walk-in and in-store sales.
+- **Website:** public catalogue orders.
+- **Marketplaces:** future Amazon and Flipkart orders/listings.
 
-Each stage must include migration safety checks and tests for duplicate reservations, concurrent sales, cancellation/release, returns, and channel reconciliation before being enabled in production.
+Inventory requirements:
+1. Maintain stock by SKU and, where needed, physical location.
+2. Maintain an auditable stock ledger. Never treat a manually edited quantity as the only historical record.
+3. Track on-hand, reserved, available and (if used) damaged/quarantined quantities separately.
+4. Calculate available-to-sell from committed stock and active reservations, applying any configured safety buffer.
+5. Reserve stock atomically inside the database/service so concurrent orders from different channels cannot reserve the same units.
+6. Confirm/fulfil an order by consuming its reservation and recording the stock movement exactly once.
+7. Release reservations on cancellation, expiry or payment failure according to the channel's order policy.
+8. Process returns through a return/inspection workflow. Only approved saleable items are returned to available stock; damaged items remain unavailable.
+9. Record purchases, receipts, sales, returns, transfers and adjustments as ledger movements with actor, timestamp, reason and source reference.
+10. Make operations idempotent so retries or duplicate webhooks do not double-deduct or double-release stock.
+11. Reconcile channel orders and stock updates with the central ledger. Record failures and retry safely.
+12. Publish channel availability only after the underlying inventory transaction commits.
+
+Do not rely on delayed website or marketplace quantity updates as the stock-control mechanism. Channel integrations must call the shared service/API. Use database transactions, constraints and appropriate row locking/atomic functions for reservation and deduction.
+
+## 5. Sales, POS and payments
+
+- Support quick walk-in sales by selecting products and exact size/colour SKU.
+- Validate availability through the central inventory service before completing a sale.
+- Support GST and non-GST bill types, with configurable tax treatment and transparent tax/total calculation.
+- Support discounts, payment method and payment status, receipts, printable invoices/PDF and WhatsApp sharing.
+- Record line-item selling price, discount, tax, cost snapshot and margin inputs so historical reports remain accurate if product prices change later.
+- Support full and partial returns/refunds where the business workflow allows them; return stock must pass through the central inventory return flow.
+- Prevent a sale from being completed twice when a user retries or the network reconnects.
+
+## 6. Purchasing and suppliers
+
+- Maintain supplier name, contact details, address and GSTIN, plus price lists and supplier balances.
+- Record purchase bills, invoice number/date, supplier, line items, unit cost, tax, discounts and attachments/invoice uploads.
+- Receive stock against purchase lines and create inventory ledger entries only when stock is actually received.
+- Support partial receipts, purchase returns and supplier balance updates.
+- Preserve purchase cost history for margin and profit reporting.
+
+## 7. Inventory operations
+
+- Provide size-wise and colour-wise stock visibility.
+- Support stock receipt, inter-location transfers, stock adjustments, damaged/quarantined stock and low-stock thresholds.
+- Require a reason and actor for manual adjustments.
+- Show stock on hand, reserved, available and reorder/low-stock status distinctly.
+- Provide a traceable movement history per SKU.
+
+## 8. Customers, staff and permissions
+
+- Maintain customer contact details and purchase/order history, subject to appropriate privacy and access controls.
+- Support staff accounts and role-based permissions (for example owner/admin, manager, cashier and inventory/purchase staff).
+- Enforce permissions on the server/database, not merely by hiding UI controls.
+- Log important actions: sign-in/access where feasible, product changes, price changes, purchases, sales, refunds, stock adjustments, role changes and exports.
+- Keep owner-controlled administration and least-privilege access. Do not expose Supabase service-role credentials in browser code.
+
+## 9. Public online catalogue and customer experience
+
+Preserve the current public catalogue and its existing customer-facing behaviour while progressively integrating central product/SKU and inventory services.
+
+Required customer experience:
+- Publicly display published products, brand/model, price and product images.
+- Filter by brand, audience (Men/Women/Kids/Unisex), footwear type and size.
+- Show footwear images clearly in the scrolling catalogue; avoid excessive cropping and allow customers to inspect images without opening every product.
+- Support multiple images per product.
+- Support mobile image zoom and usable desktop image zoom.
+- Provide size selection and add-to-cart; make the cart easy to find and use.
+- Provide WhatsApp product enquiries and order communication.
+- Support online order tracking/status as the order workflow is introduced.
+- Preserve the existing Diwali theme and crackers animation where currently part of the customer experience; do not add sound. Theme changes must not impair usability or accessibility.
+- Do not make unpublished products public.
+- Do not expose private customer or operational data through public catalogue queries.
+
+## 10. Marketplace centre — future phase
+
+Design for Amazon and Flipkart without pretending integrations are already active.
+
+Future capabilities:
+- Map central products/SKUs to marketplace listing identifiers.
+- Publish/update listing data and channel-specific price/availability where permitted.
+- Ingest marketplace orders and route them through the same reservation/fulfilment service.
+- Synchronise stock from the central inventory service.
+- Handle duplicate/out-of-order webhooks, cancellations, returns and reconciliation.
+- Track integration status, errors and retry history.
+- Store credentials securely server-side; never in frontend code.
+
+Marketplace API access, seller accounts, approvals and credentials are prerequisites for enabling live integrations.
+
+## 11. Reports and business metrics
+
+Provide reports for:
+- Sales by date, channel, product, SKU and staff.
+- Gross margin and profit using historical cost snapshots and recorded discounts/returns.
+- GST/tax summaries and bill registers.
+- Current stock, reserved/available stock, low stock and stock movement.
+- Purchases, supplier balances and purchase returns.
+- Returns, cancellations and refunds.
+- Channel reconciliation and marketplace integration exceptions when those channels are enabled.
+
+Clearly define each metric and its treatment of tax, discounts, returns and cancelled orders. Avoid presenting estimates as realised profit.
+
+## 12. Existing system, data and compatibility constraints
+
+- Preserve the existing Supabase `public.products` table and all existing product/catalogue data.
+- Use additive, backwards-compatible schema migrations. Do not drop, rename destructively or truncate existing tables/columns/data.
+- Review the actual existing schema and application before implementation; do not assume new tables or fields already exist.
+- Keep existing Supabase Auth, RLS and Storage protections. Extend policies deliberately for staff roles and new tables.
+- The `/VJSManage/` route is a navigation path, not a security boundary. Authentication, authorisation and RLS are mandatory.
+- Use only the Supabase public anon/publishable key in browser code. Service-role keys and other secrets must remain server-side.
+- Retain current customer catalogue, image storage and publishing behaviour during migration.
+- The repository README contains deployment/setup notes; this master document governs product requirements.
+
+## 13. Security, reliability and quality requirements
+
+- Apply Row Level Security to every table containing operational or personal data.
+- Validate all inventory-changing operations server-side/database-side.
+- Use transaction-safe reservation, fulfilment, release and return operations.
+- Add foreign keys, uniqueness constraints, non-negative stock protections and appropriate indexes.
+- Use audit records for sensitive business operations.
+- Avoid logging secrets, payment credentials or unnecessary customer personal information.
+- Handle network retries, duplicate requests and out-of-order channel events safely.
+- Provide useful error messages without leaking internal credentials or database details.
+- Test desktop and mobile layouts, accessibility basics and the existing public catalogue regression paths.
+
+## 14. Acceptance criteria
+
+The foundation is not ready for production until tests demonstrate:
+
+1. Existing products remain readable and publishable after migrations.
+2. Each sellable size/colour variant maps to one unique SKU.
+3. Two concurrent channels cannot reserve the last unit twice.
+4. A confirmed sale deducts stock once, including safe retry behaviour.
+5. Cancellation/expiry releases a reservation once.
+6. A return does not increase available stock until it is inspected and approved.
+7. Purchases and receipts increase stock through ledger entries.
+8. Transfers and adjustments preserve total stock accounting and audit history.
+9. A cashier cannot perform owner-only actions; database policies enforce this.
+10. Public users can read only published catalogue data and cannot access operational records.
+11. POS, website and future marketplace adapters use the same inventory operations.
+12. Existing catalogue filters, images, cart, theme and WhatsApp enquiry continue to work.
+13. GST/non-GST invoices and report calculations are verified against test cases.
+14. Failed channel synchronisation is visible and can be reconciled/retried without duplicate stock movement.
+
+## 15. Delivery sequence
+
+1. **Discovery and baseline:** inspect the existing frontend, Supabase schema/RLS, storage, deployment configuration and current catalogue flows; record regression tests.
+2. **Data foundation:** add central SKU/variant model, inventory locations if needed, stock ledger and additive migrations; backfill safely from existing products with review.
+3. **Inventory service:** implement atomic reserve, confirm, release, return, transfer and adjustment operations plus concurrency/idempotency tests.
+4. **Core operations:** suppliers, purchasing, receipts, POS, payments and returns.
+5. **People and controls:** customer records, staff roles, server-side permissions and activity audit.
+6. **Workspace and reports:** dashboard, module navigation and validated business reports.
+7. **Website integration:** connect cart/order workflow and availability to the shared inventory service without breaking the catalogue.
+8. **Marketplace readiness:** build channel adapter contracts and reconciliation framework; enable live Amazon/Flipkart integrations only after access and credentials are provided.
+
+Every stage must be reviewed, tested and committed on the designated feature branch before moving to the next. Do not claim a feature is implemented merely because it is documented here.
+
+## 16. Project boundaries
+
+All Vijayasri Footwear work must remain in:
+- Repository: `siranjeevi-vijayasri/VijayasriFootwear`
+- Branch: `feature/pos-role-based-access`
+
+Do not modify `vsfootwear`, `MRSSTATIONERY` or `main` unless the user explicitly changes this instruction.
