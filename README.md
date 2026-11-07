@@ -2,7 +2,13 @@
 
 The product scope and target architecture are maintained in the **[Master Product Requirements](docs/PRODUCT_ARCHITECTURE.md)**. That document is the single source of truth for the workspace modules, central product/SKU model, shared inventory service, POS, website, future marketplace integrations, security, compatibility constraints, acceptance criteria and delivery sequence.
 
-This repository currently contains the public footwear catalogue and the `/VJSManage/` management interface. The full retail operations platform described in the master requirements is the target scope; do not assume every module or marketplace integration is already implemented.
+This repository is the **existing customer-facing catalogue project**. It will remain separate from the new retail operations platform.
+
+The new platform will be developed in a separate repository, proposed name: `VijayasriFootwearOperations`, with its own dedicated Supabase project for products/SKUs, inventory, suppliers, purchases, POS, billing, staff and reporting. The new repository has not yet been created. Once available, its code and database migrations will live there.
+
+The existing catalogue and its current Supabase project must remain operational during development. Do not repoint the live catalogue to the new Supabase project until the new platform is tested and an explicit integration/cutover plan is approved. The eventual catalogue integration should read published product and availability data from the new central system through a controlled interface.
+
+Do not assume that the operations modules are already implemented in this catalogue repository.
 
 ## Existing catalogue setup and deployment
 
