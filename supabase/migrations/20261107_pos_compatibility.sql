@@ -23,7 +23,7 @@ begin
  update public.product_variants set stock_quantity=stock_quantity+p_quantity_change,updated_at=now()
  where id=p_variant_id returning stock_quantity into v_stock;
  insert into public.inventory_movements(variant_id,movement_type,quantity_change,note,created_by)
- values(p_variant_id,p_movement_type,p_note,auth.uid());
+ values(p_variant_id,p_movement_type,p_quantity_change,p_note,auth.uid());
  return v_stock;
 end; $$;
 
