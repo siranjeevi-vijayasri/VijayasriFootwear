@@ -1,16 +1,13 @@
-# Vijayasri Footwear — Netlify catalogue + VJSManage
+# Vijayasri Footwear — Catalogue and Retail Operations Platform
 
-A responsive public footwear catalogue and a separate owner admin page at `/VJSManage/`. Uses Supabase Auth, Postgres Row Level Security (RLS), and Storage for protected product editing and persistent catalogue changes. Includes a Netlify Function to import public product metadata from supported product pages.
+The product scope and target architecture are maintained in the **[Master Product Requirements](docs/PRODUCT_ARCHITECTURE.md)**. That document is the single source of truth for the workspace modules, central product/SKU model, shared inventory service, POS, website, future marketplace integrations, security, compatibility constraints, acceptance criteria and delivery sequence.
 
-## Shop details included
-- Shop: Vijayasri Footwear
-- WhatsApp: +91 83000 29513 (`918300029513` link format)
-- Address: Salai St, Ayyampettai, Tamil Nadu 614201
-- Logo: `assets/VS_Logo.jpg`
-- Admin path: `/VJSManage/` (a custom path, not an authentication control)
+This repository currently contains the public footwear catalogue and the `/VJSManage/` management interface. The full retail operations platform described in the master requirements is the target scope; do not assume every module or marketplace integration is already implemented.
 
-## Important before launch
-The package is built and deployable, but it will not show/manage live products until you connect a Supabase project and create an admin account. The `config.js` currently contains obvious placeholders. Do not put a Supabase service-role key in browser code; only use the project's public anon/publishable key. RLS in `supabase/schema.sql` is the actual access control.
+## Existing catalogue setup and deployment
+
+The sections below describe the current catalogue implementation and its setup. They do not replace or override the master product requirements.
+
 
 ## Setup and deploy
 1. Create a Supabase project at https://supabase.com/.
