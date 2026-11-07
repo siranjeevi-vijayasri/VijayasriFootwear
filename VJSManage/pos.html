@@ -8,7 +8,7 @@
 <section id="billing" class="tab panel">
 <div class="section-title"><div><h1>Create bill</h1><p>Choose a product size, quantity and confirm the bill details.</p></div><span class="pill" id="invoiceHint">New invoice</span></div>
 <div class="grid two">
-<label>Product<select id="productSelect"><option value="">Select product</option></select></label>
+<label>Search product<input id="productSearch" type="search" list="productChoices" placeholder="Type brand, product name or model…" autocomplete="off" enterkeyhint="search"><datalist id="productChoices"></datalist><select id="productSelect" hidden><option value="">Select product</option></select></label>
 <label>Colour<select id="variantColour"><option value="">All colours</option></select></label>
 <label>Available size / colour<select id="variantSelect"><option value="">Select size</option></select></label>
 <label>Quantity<input id="quantity" type="number" min="1" step="1" value="1"></label>
@@ -30,7 +30,7 @@
 <div id="receipt" class="receipt" hidden></div>
 </section>
 <section id="inventory" class="tab panel" hidden><div class="section-title"><div><h1>Size-wise inventory</h1><p>Add sizes for existing catalogue products and manage stock quantities.</p></div></div>
-<div class="grid two"><label>Product<select id="stockProduct"><option value="">Select product</option></select></label><label>Size<input id="stockSize" placeholder="e.g. 7 / 40 / UK 8"></label><label>Colour<input id="stockColour" placeholder="e.g. Black / Tan"></label><label>SKU (optional)<input id="stockSku"></label><label>Cost price (₹)<input id="costPrice" type="number" min="0" step="0.01" value="0"></label><label>Selling price (₹)<input id="sellingPrice" type="number" min="0" step="0.01"></label><label>Opening quantity<input id="openingQty" type="number" min="0" step="1" value="0"></label><label>Reorder level<input id="reorderLevel" type="number" min="0" step="1" value="2"></label><div class="field-end"><button id="saveVariant" class="primary" type="button">Save size / stock</button></div></div>
+<div class="grid two"><label>Search product<input id="stockProductSearch" type="search" list="stockProductChoices" placeholder="Type brand, product name or model…" autocomplete="off" enterkeyhint="search"><datalist id="stockProductChoices"></datalist><select id="stockProduct" hidden><option value="">Select product</option></select></label><label>Size<input id="stockSize" placeholder="e.g. 7 / 40 / UK 8"></label><label>Colour<input id="stockColour" placeholder="e.g. Black / Tan"></label><label>SKU (optional)<input id="stockSku"></label><label>Cost price (₹)<input id="costPrice" type="number" min="0" step="0.01" value="0"></label><label>Selling price (₹)<input id="sellingPrice" type="number" min="0" step="0.01"></label><label>Opening quantity<input id="openingQty" type="number" min="0" step="1" value="0"></label><label>Reorder level<input id="reorderLevel" type="number" min="0" step="1" value="2"></label><div class="field-end"><button id="saveVariant" class="primary" type="button">Save size / stock</button></div></div>
 <div class="table-wrap"><table><thead><tr><th>Product</th><th>Size / Colour</th><th>SKU</th><th>Cost</th><th>Selling</th><th>Stock</th><th>Reorder</th><th>Stock adjustment</th></tr></thead><tbody id="inventoryRows"></tbody></table></div>
 <p class="hint">Owner/Manager can add or adjust stock. Cashiers can view stock and create bills.</p>
 </section>
