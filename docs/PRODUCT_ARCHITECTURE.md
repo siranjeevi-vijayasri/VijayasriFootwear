@@ -146,17 +146,30 @@ Provide reports for:
 
 Clearly define each metric and its treatment of tax, discounts, returns and cancelled orders. Avoid presenting estimates as realised profit.
 
-## 12. Existing system, data and compatibility constraints
+## 12. Separate catalogue and operations projects
 
-- Preserve the existing Supabase `public.products` table and all existing product/catalogue data.
-- Use additive, backwards-compatible schema migrations. Do not drop, rename destructively or truncate existing tables/columns/data.
-- Review the actual existing schema and application before implementation; do not assume new tables or fields already exist.
-- Keep existing Supabase Auth, RLS and Storage protections. Extend policies deliberately for staff roles and new tables.
-- The `/VJSManage/` route is a navigation path, not a security boundary. Authentication, authorisation and RLS are mandatory.
-- Use only the Supabase public anon/publishable key in browser code. Service-role keys and other secrets must remain server-side.
-- Retain current customer catalogue, image storage and publishing behaviour during migration.
-- The repository README contains deployment/setup notes; this master document governs product requirements.
+The product is now split into two independently deployed projects:
 
+**Existing catalogue project**
+- Repository: `siranjeevi-vijayasri/VijayasriFootwear`
+- Branch for current catalogue-project maintenance: `feature/pos-role-based-access`
+- Owns the current public catalogue, customer-facing experience, and existing `/VJSManage/` route until a deliberate migration plan says otherwise.
+- Its existing Supabase project, product data, image storage and deployment must remain untouched by operations-platform development.
+- Do not repoint the live catalogue to a new database or change its production configuration as part of building the operations platform.
+
+**New retail operations project**
+- Proposed repository: `siranjeevi-vijayasri/VijayasriFootwearOperations` (to be created separately).
+- Own Supabase project, database, Auth configuration, Storage buckets, RLS policies, migrations and deployment configuration.
+- Owns the new management workspace: product/SKU master, suppliers, purchases, inventory ledger, POS, billing, staff roles, reports and future marketplace adapters.
+- All operations-platform implementation and migrations belong in the new repository and its dedicated Supabase project.
+
+**Future integration**
+- The new operations platform becomes the authoritative source for product/SKU and inventory data once it is production-ready.
+- The existing public catalogue may later consume published products and availability through a controlled, authenticated/server-mediated integration.
+- Do not copy production secrets between projects or expose service-role keys in browser code.
+- Do not migrate, delete, or repoint existing catalogue data until backup, mapping, regression testing and explicit cutover approval are complete.
+
+For the new operations project, use additive migrations within its own clean database. Inspect the new project's schema before each implementation phase.
 ## 13. Security, reliability and quality requirements
 
 - Apply Row Level Security to every table containing operational or personal data.
@@ -190,21 +203,27 @@ The foundation is not ready for production until tests demonstrate:
 
 ## 15. Delivery sequence
 
-1. **Discovery and baseline:** inspect the existing frontend, Supabase schema/RLS, storage, deployment configuration and current catalogue flows; record regression tests.
-2. **Data foundation:** add central SKU/variant model, inventory locations if needed, stock ledger and additive migrations; backfill safely from existing products with review.
-3. **Inventory service:** implement atomic reserve, confirm, release, return, transfer and adjustment operations plus concurrency/idempotency tests.
-4. **Core operations:** suppliers, purchasing, receipts, POS, payments and returns.
-5. **People and controls:** customer records, staff roles, server-side permissions and activity audit.
-6. **Workspace and reports:** dashboard, module navigation and validated business reports.
-7. **Website integration:** connect cart/order workflow and availability to the shared inventory service without breaking the catalogue.
-8. **Marketplace readiness:** build channel adapter contracts and reconciliation framework; enable live Amazon/Flipkart integrations only after access and credentials are provided.
+1. **Create project foundations:** create the new GitHub repository and a separate Supabase project; record project identifiers, region, deployment target and secret-management approach. No credentials should be committed.
+2. **Discovery and baseline:** inspect the new repository scaffold and Supabase project settings; establish migrations, environment configuration, RLS testing and deployment checks.
+3. **Data foundation:** implement product master, SKU/variant model, inventory locations and stock ledger in the new database.
+4. **Inventory service:** implement atomic reserve, confirm, release, return, transfer and adjustment operations plus concurrency/idempotency tests.
+5. **Core operations:** suppliers, purchasing, receipts, POS, payments, invoices and returns.
+6. **People and controls:** customer records, staff roles, server-side permissions and activity audit.
+7. **Workspace and reports:** dashboard, module navigation and validated business reports.
+8. **Catalogue integration:** only after the new platform is tested, define and implement a controlled interface from the existing catalogue to published products and availability. Preserve the live catalogue until explicit cutover approval.
+9. **Marketplace readiness:** build channel adapter contracts and reconciliation framework; enable live Amazon/Flipkart integrations only after access and credentials are provided.
 
-Every stage must be reviewed, tested and committed on the designated feature branch before moving to the next. Do not claim a feature is implemented merely because it is documented here.
-
+Every stage must be reviewed, tested and committed to the appropriate repository before moving to the next. Do not claim a feature is implemented merely because it is documented here.
 ## 16. Project boundaries
 
-All Vijayasri Footwear work must remain in:
-- Repository: `siranjeevi-vijayasri/VijayasriFootwear`
-- Branch: `feature/pos-role-based-access`
+**Existing catalogue repository**
+- `siranjeevi-vijayasri/VijayasriFootwear`
+- Current designated branch: `feature/pos-role-based-access`
+- Restrict changes here to catalogue maintenance and the documented future integration boundary.
 
-Do not modify `vsfootwear`, `MRSSTATIONERY` or `main` unless the user explicitly changes this instruction.
+**New operations repository**
+- Proposed name: `siranjeevi-vijayasri/VijayasriFootwearOperations`
+- To be created; all new POS/retail-operations application code and database migrations must live here.
+- Use a dedicated Supabase project, separate from the existing catalogue Supabase project.
+
+Do not modify `vsfootwear`, `MRSSTATIONERY` or `main` unless the user explicitly changes that instruction.
