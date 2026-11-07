@@ -21,6 +21,14 @@ on conflict (user_id) do update set role = excluded.role;
 ``
 Use `Manager` or `Cashier` as the role. Keep Owner membership restricted to the existing `admin_users` table. Do not enable public sign-ups unless there is a deliberate staff onboarding process.
 
+## Product creation in POS
+- Sign in as the Owner and open **Products**.
+- Add brand (or enter a custom brand), product name, model number/SKU, audience, footwear type, selling price, MRP, catalogue sizes/colours, image URLs or multiple image files, source URL and description.
+- Choose **Published** to show it in the customer catalogue or **Draft** to keep it out of the public catalogue.
+- Product images use the existing public `product-images` Supabase Storage bucket. Uploads accept JPG, PNG and WebP up to 5 MB each.
+- After saving the product, open **Size inventory** to create each size/colour variant and enter its cost, selling price and opening quantity.
+- The existing `public.products` table and catalogue schema are reused. No new product master table or destructive schema change is required; the existing POS `product_variants` table stores size/colour-level inventory.
+
 ## First-time stock setup
 - Open **Size inventory** in POS.
 - Select an existing catalogue product and add each size as its own row (for example 6, 7, 8, 9).
