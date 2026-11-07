@@ -8,6 +8,7 @@ This is an additive POS extension. It does **not** replace, rename, or delete th
 3. In Supabase SQL Editor, run these files in order:
    - `supabase/migrations/20261101_footwear_pos.sql`
    - `supabase/migrations/20261101_footwear_pos_security_fix.sql`
+   - `supabase/migrations/20261107_pos_compatibility.sql` (required for the existing colour-aware catalogue and `stock_quantity` schema)
 4. The existing account listed in `public.admin_users` is treated as **Owner** automatically.
 5. Open `/VJSManage/pos.html` and sign in using the same Supabase email/password as VJSManage.
 
@@ -33,7 +34,7 @@ Use `Manager` or `Cashier` as the role. Keep Owner membership restricted to the 
 - Choose whether the entered selling price already includes GST or GST should be added.
 - Non-GST bills calculate no GST. Do not use this option to avoid a legal GST obligation.
 - The receipt can be printed or saved as PDF from the browser and shared through WhatsApp.
-- Sales screen currently shows the latest 100 bills and basic day/month totals.
+- Sales screen shows the latest 100 bills. Daily and monthly totals are calculated across all completed bills in the current month using paged reads.
 
 ## Current scope / next implementation
 This first POS increment includes secure staff sign-in, GST/non-GST checkout, per-size stock, stock adjustment, sales history, print/PDF receipt and WhatsApp sharing. Purchase-entry workflow, supplier management, returns/cancellations, full staff-role management UI, and a detailed profit dashboard are not part of this increment yet; the database includes the initial purchase tables for the next stage.
@@ -44,5 +45,7 @@ This first POS increment includes secure staff sign-in, GST/non-GST checkout, pe
 - Confirm an over-stock sale is rejected and no invoice is created.
 - Confirm Cashier cannot add or adjust stock.
 - Confirm Manager can adjust stock and Cashier can create bills.
+- Test the same shoe size in multiple colours and verify that each colour has independent stock.
+- Verify daily/monthly totals when the month contains more than 100 bills.
 - Confirm Owner can manage staff roles.
 - Verify invoice tax treatment and GST details with your accountant before issuing live tax invoices.
