@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>VJS POS | Vijayasri Footwear</title><link rel="stylesheet" href="pos.css"></head>
+<body><header class="top"><div><strong>Vijayasri Footwear</strong><span>Point of Sale</span></div><nav><a href="/">Customer catalogue</a><span id="userRole"></span><button id="logout" hidden>Sign out</button></nav></header>
+<main class="wrap"><div id="status" class="notice">Sign in with your authorised VJSManage account to continue.</div>
+<section id="loginPanel" class="panel login"><h1>POS sign in</h1><p>Use your existing VJSManage account. Staff accounts must be assigned a POS role by the owner.</p><form id="loginForm"><label>Email<input id="email" type="email" required autocomplete="username"></label><label>Password<input id="password" type="password" required autocomplete="current-password"></label><button class="primary">Sign in</button></form></section>
+<div id="posApp" hidden>
+<div class="tabs"><button data-tab="billing" class="active">New bill</button><button data-tab="inventory">Size inventory</button><button data-tab="sales">Sales & reports</button></div>
+<section id="billing" class="tab panel">
+<div class="section-title"><div><h1>Create bill</h1><p>Choose a product size, quantity and confirm the bill details.</p></div><span class="pill" id="invoiceHint">New invoice</span></div>
+<div class="grid two">
+<label>Search product<input id="productSearch" type="search" list="productChoices" placeholder="Type brand, product name or model…" autocomplete="off" enterkeyhint="search"><datalist id="productChoices"></datalist><select id="productSelect" hidden><option value="">Select product</option></select></label>
+<label>Colour<select id="variantColour"><option value="">All colours</option></select></label>
+<label>Available size / colour<select id="variantSelect"><option value="">Select size</option></select></label>
+<label>Quantity<input id="quantity" type="number" min="1" step="1" value="1"></label>
+<label>Unit price (₹)<input id="unitPrice" type="number" min="0" step="0.01"></label>
+<label>GST rate (%)<input id="taxRate" type="number" min="0" max="100" step="0.01" value="0"></label>
+<div class="field-end"><button id="addItem" class="secondary" type="button">Add to bill</button></div>
+</div>
+<div class="table-wrap"><table><thead><tr><th>Item / Size</th><th>Qty</th><th>Price</th><th>GST %</th><th>Amount</th><th></th></tr></thead><tbody id="cartRows"><tr><td colspan="6" class="muted">No items added yet.</td></tr></tbody></table></div>
+<div class="grid two bill-fields">
+<label>Customer name<input id="customerName" placeholder="Optional"></label><label>Customer phone<input id="customerPhone" inputmode="tel" placeholder="Optional"></label>
+<label>Bill type<select id="billType"><option value="GST">GST bill</option><option value="NON_GST">Non-GST bill</option></select></label>
+<label>Price treatment<select id="taxInclusive"><option value="true">Price includes GST</option><option value="false">Add GST to price</option></select></label>
+<label>Payment method<select id="paymentMethod"><option>Cash</option><option>UPI</option><option>Card</option><option>Other</option></select></label>
+<label>Discount (₹)<input id="discount" type="number" min="0" step="0.01" value="0"></label>
+</div>
+<div class="totals"><div><span>Subtotal</span><b id="subtotal">₹0.00</b></div><div><span>Discount</span><b id="discountTotal">₹0.00</b></div><div><span>GST (calculated)</span><b id="taxTotal">₹0.00</b></div><div class="grand"><span>Bill total</span><b id="grandTotal">₹0.00</b></div></div>
+<label>Notes<textarea id="billNotes" rows="2" placeholder="Optional notes"></textarea></label>
+<div class="actions"><button id="completeSale" class="primary" type="button" disabled>Complete sale & deduct stock</button><button id="clearBill" class="secondary" type="button">Clear bill</button></div>
+<div id="receipt" class="receipt" hidden></div>
+</section>
+<section id="inventory" class="tab panel" hidden><div class="section-title"><div><h1>Size-wise inventory</h1><p>Add sizes for existing catalogue products and manage stock quantities.</p></div></div>
+<div class="grid two"><label>Search product<input id="stockProductSearch" type="search" list="stockProductChoices" placeholder="Type brand, product name or model…" autocomplete="off" enterkeyhint="search"><datalist id="stockProductChoices"></datalist><select id="stockProduct" hidden><option value="">Select product</option></select></label><label>Size<input id="stockSize" placeholder="e.g. 7 / 40 / UK 8"></label><label>Colour<input id="stockColour" placeholder="e.g. Black / Tan"></label><label>SKU (optional)<input id="stockSku"></label><label>Cost price (₹)<input id="costPrice" type="number" min="0" step="0.01" value="0"></label><label>Selling price (₹)<input id="sellingPrice" type="number" min="0" step="0.01"></label><label>Opening quantity<input id="openingQty" type="number" min="0" step="1" value="0"></label><label>Reorder level<input id="reorderLevel" type="number" min="0" step="1" value="2"></label><div class="field-end"><button id="saveVariant" class="primary" type="button">Save size / stock</button></div></div>
+<div class="table-wrap"><table><thead><tr><th>Product</th><th>Size / Colour</th><th>SKU</th><th>Cost</th><th>Selling</th><th>Stock</th><th>Reorder</th><th>Stock adjustment</th></tr></thead><tbody id="inventoryRows"></tbody></table></div>
+<p class="hint">Owner/Manager can add or adjust stock. Cashiers can view stock and create bills.</p>
+</section>
+<section id="sales" class="tab panel" hidden><div class="section-title"><div><h1>Sales & reports</h1><p>Recent completed bills and sales totals.</p></div><button id="refreshSales" class="secondary">Refresh</button></div>
+<div class="stats"><article><span>Today's sales</span><b id="todaySales">₹0.00</b></article><article><span>Today's bills</span><b id="todayCount">0</b></article><article><span>Month sales</span><b id="monthSales">₹0.00</b></article></div>
+<div class="table-wrap"><table><thead><tr><th>Invoice</th><th>Date</th><th>Customer</th><th>Type</th><th>Payment</th><th>Total</th><th></th></tr></thead><tbody id="salesRows"></tbody></table></div>
+</section>
+</div></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../config.js"></script><script src="pos.js"></script></body></html>
