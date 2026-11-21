@@ -670,3 +670,14 @@ body.cart-open{overflow:hidden}
 .contact{background-color:#4b1424}
 .contact .btn-green{background:linear-gradient(100deg,#ffcf66,#ff8c42);color:#4b1424}
 @media(prefers-reduced-motion:reduce){.site-fireworks,.site-rocket,.site-rocket-burst i{animation:none!important;display:none!important}}
+
+/* Temporary customer-facing maintenance screen */
+.maintenance-page{min-height:100vh;display:grid;place-items:center;padding:28px;background:radial-gradient(circle at top right,#eaf0e3 0,transparent 42%),var(--cream)}
+.maintenance-card{width:min(100%,620px);padding:clamp(28px,6vw,58px);text-align:center;background:#fff;border:1px solid var(--line);border-radius:28px;box-shadow:0 24px 80px rgba(21,59,45,.09)}
+.maintenance-logo{width:86px;height:86px;object-fit:contain;border-radius:18px}
+.maintenance-eyebrow{margin:20px 0 10px;color:#71845f;font-size:11px;font-weight:800;letter-spacing:.2em}
+.maintenance-card h1{margin:0;color:var(--green);font-size:clamp(34px,6vw,52px);line-height:1.04;letter-spacing:-.055em}
+.maintenance-card p{color:var(--muted);font-size:15px;line-height:1.8}
+.maintenance-card .maintenance-note{margin-top:26px;font-size:13px}
+.maintenance-contact{display:inline-flex;margin:12px 0 24px;padding:14px 22px;border-radius:999px;background:var(--green);color:#fff;text-decoration:none;font-weight:750;font-size:14px}
+.maintenance-card small{display:block;color:var(--muted);font-size:12px}
