@@ -56,7 +56,8 @@
   function variantSizes(variant, product) {
     const available = Array.isArray(variant?.available_sizes) ? variant.available_sizes : [];
     const sizes = Array.isArray(variant?.sizes) ? variant.sizes : [];
-    return [...new Set((available.length ? available : (sizes.length ? sizes : productSizes(product))).map(value => String(value).trim()).filter(Boolean))];
+    const selected = variant?.availability_synced === true ? available : (available.length ? available : (sizes.length ? sizes : productSizes(product)));
+    return [...new Set(selected.map(value => String(value).trim()).filter(Boolean))];
   }
   function productFilterSizes(product) {
     return [...new Set(activeVariants(product).flatMap(variant => variantSizes(variant, product)))];
