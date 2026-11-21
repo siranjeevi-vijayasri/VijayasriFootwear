@@ -21,6 +21,26 @@
     return [...new Set(String(value || '').split(/[\n,]+/).map(url => url.trim()).filter(Boolean))];
   }
 
+
+  function parseColourVariants(value) {
+    return String(value || '').split(/\\r?\\n/).map((line, index) => {
+      const parts = line.split('|').map(part => part.trim());
+      if (!parts[0]) return null;
+      if (parts.length < 3) throw new Error('Colour variant line ' + (index + 1) + ' must include colour, hex (optional) and sizes.');
+      const colourName = parts[0];
+      const colourHex = parts[1] || null;
+      if (colourHex && !/^#[0-9a-fA-F]{6}$/.test(colourHex)) throw new Error('Invalid colour hex on line ' + (index + 1) + '. Use a value such as #202020.');
+      const sizes = (parts[2] || '').split(/[,;]+/).map(item => item.trim()).filter(Boolean);
+      const imageUrls = (parts[3] || '').split(';').map(item => item.trim()).filter(Boolean);
+      for (const url of imageUrls) {
+        let parsed;
+        try { parsed = new URL(url); } catch { throw new Error('Invalid image URL in colour variant line ' + (index + 1) + ': ' + url); }
+        if (!['http:', 'https:'].includes(parsed.protocol)) throw new Error('Colour variant image URLs must use HTTP or HTTPS.');
+      }
+      return { colour_name: colourName, colour_hex: colourHex, sizes, available_sizes: sizes, image_urls: [...new Set(imageUrls)], sort_order: index };
+    }).filter(Boolean);
+  }
+
   if (!ready) {
     say('Setup required: edit config.js with your Supabase project URL and publishable/anon key, run supabase/schema.sql, and create the first admin.', true);
     el('loginForm').querySelector('button').disabled = true;
@@ -94,6 +114,7 @@
     el('productId').value = '';
     el('formTitle').textContent = 'Add a product';
     el('published').checked = false;
+    el('colourVariants').value = '';
   }
 
   const brandSelect = el('brand');
@@ -134,8 +155,17 @@
       el('mrp').value = product.mrp ?? '';
       el('sizes').value = product.sizes || '';
       el('colours').value = product.colours || '';
-      el('imageUrl').value = parseImageUrls(product.image_url).join(', ');
-      el('imageFile').value = '';
+      el('colourVariants').value = '';
+      const { data: colourRows, error: colourError } = await client.from('product_variants').select('*').eq('product_id', product.id).eq('active', true).order('sort_order');
+      if (colourError && !['42P01','PGRST200'].includes(colourError.code)) {
+        say('Could not load colour variants: ' + colourError.message, true);
+      } else if (colourRows?.length) {
+        el('colourVariants').value = colourRows.map(row => [
+          row.colour_name || '', row.colour_hex || '',
+          (row.sizes || []).join(','), (row.image_urls || []).join(';')
+        ].join(' | ')).join('\n');
+      }
+      el('imageUrl').value = parseImageUrls(product.image_url).join(', ');      el('imageFile').value = '';
       el('sourcePage').value = product.source_url || '';
       el('description').value = product.description || '';
       el('published').checked = !!product.published;
@@ -210,12 +240,27 @@
       if (payload.mrp !== null && payload.mrp < 0) throw new Error('MRP cannot be negative.');
       const id = el('productId').value;
       const result = id
-        ? await client.from('products').update(payload).eq('id', id)
-        : await client.from('products').insert(payload);
+        ? await client.from('products').update(payload).eq('id', id).select('id').single()
+        : await client.from('products').insert(payload).select('id').single();
       if (result.error) throw result.error;
+      const savedProductId = result.data.id;
+      const colourVariants = parseColourVariants(el('colourVariants').value);
+      if (colourVariants.length) {
+        const rows = colourVariants.map(variant => ({ ...variant, product_id: savedProductId, active: true, updated_at: new Date().toISOString() }));
+        const { error: variantSaveError } = await client.from('product_variants').upsert(rows, { onConflict: 'product_id,colour_name' });
+        if (variantSaveError) throw new Error('Product saved, but colour variants could not be saved. Run supabase/model-colour-variants.sql and retry: ' + variantSaveError.message);
+        const { data: existingVariants, error: existingError } = await client.from('product_variants').select('id,colour_name').eq('product_id', savedProductId);
+        if (existingError) throw existingError;
+        const activeNames = new Set(colourVariants.map(variant => variant.colour_name.toLowerCase()));
+        const obsoleteIds = (existingVariants || []).filter(row => !activeNames.has(String(row.colour_name).toLowerCase())).map(row => row.id);
+        if (obsoleteIds.length) {
+          const { error: deactivateError } = await client.from('product_variants').update({ active: false, updated_at: new Date().toISOString() }).in('id', obsoleteIds);
+          if (deactivateError) throw deactivateError;
+        }
+      }
       reset();
       await loadProducts();
-      say(`Product saved with ${imageUrls.length} image(s).`);
+      say(`Product saved with ${imageUrls.length} model image(s) and ${colourVariants.length} colour variant(s).`);
     } catch (error) {
       say(error.message || 'Unable to save product.', true);
     }
