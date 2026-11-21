@@ -37,7 +37,7 @@
         try { parsed = new URL(url); } catch { throw new Error('Invalid image URL in colour variant line ' + (index + 1) + ': ' + url); }
         if (!['http:', 'https:'].includes(parsed.protocol)) throw new Error('Colour variant image URLs must use HTTP or HTTPS.');
       }
-      return { colour_name: colourName, colour_hex: colourHex, sizes, available_sizes: sizes, image_urls: [...new Set(imageUrls)], sort_order: index };
+      return { colour_name: colourName, colour_hex: colourHex, sizes, available_sizes: sizes, availability_synced: false, image_urls: [...new Set(imageUrls)], sort_order: index };
     }).filter(Boolean);
   }
 
