@@ -96,6 +96,19 @@
     });
   }
 
+  function swatchColour(variant) {
+    if (/^#[0-9a-fA-F]{6}$/.test(variant?.colour_hex || '')) return variant.colour_hex;
+    const name = String(variant?.colour_name || '').toLowerCase();
+    const known = {
+      black:'#222222', white:'#f7f7f2', red:'#c83232', blue:'#2865a8',
+      navy:'#1d3157', tan:'#b98554', brown:'#76513b', beige:'#d8c5a4',
+      grey:'#858585', gray:'#858585', green:'#3e8054', olive:'#777b3b',
+      pink:'#e6a0b5', maroon:'#762f43', yellow:'#e5c542', orange:'#df812e',
+      purple:'#79518d', cream:'#eee5cf', gold:'#c9a34b', silver:'#b8bec4'
+    };
+    return known[name] || '#c7c7c7';
+  }
+
   function productCard(p) {
     const variants = activeVariants(p);
     const selected = variants[0] || { id: '', colour_name: 'Default', image_urls: [], sizes: [] };
@@ -113,7 +126,7 @@
       ? `<label class="cart-size-label">Size <select class="cart-size-select" data-cart-size="${esc(p.id)}" data-selected-variant="${esc(selected.id)}"><option value="">Choose size</option>${sizes.map(size => `<option value="${esc(size)}">${esc(size)}</option>`).join('')}</select></label>`
       : '<p class="cart-size-hint">Size can be confirmed with the shop</p>';
     const swatches = variants.length > 1 || colour !== 'Default'
-      ? `<div class="colour-picker"><span class="colour-picker-label">Colour: <b class="selected-colour">${esc(colour)}</b></span><div class="colour-swatches" role="group" aria-label="Choose colour">${variants.map(variant => `<button type="button" class="colour-swatch${variant.id === selected.id ? ' active' : ''}" data-colour-select="${esc(p.id)}" data-variant-id="${esc(variant.id)}" title="${esc(variant.colour_name)}" aria-label="Choose ${esc(variant.colour_name)} colour" aria-pressed="${variant.id === selected.id ? 'true' : 'false'}" style="--swatch-colour:${/^#[0-9a-fA-F]{6}$/.test(variant.colour_hex || '') ? variant.colour_hex : '#c7c7c7'}"></button>`).join('')}</div></div>`
+      ? `<div class="colour-picker"><span class="colour-picker-label">Colour: <b class="selected-colour">${esc(colour)}</b></span><div class="colour-swatches" role="group" aria-label="Choose colour">${variants.map(variant => `<button type="button" class="colour-swatch${variant.id === selected.id ? ' active' : ''}" data-colour-select="${esc(p.id)}" data-variant-id="${esc(variant.id)}" title="${esc(variant.colour_name)}" aria-label="Choose ${esc(variant.colour_name)} colour" aria-pressed="${variant.id === selected.id ? 'true' : 'false'}" style="--swatch-colour:${swatchColour(variant)}"></button>`).join('')}</div></div>`
       : '';
     return `<article class="product-card" data-product-card="${esc(p.id)}" data-selected-variant="${esc(selected.id)}"><div class="product-image product-gallery">${gallery}</div><div class="product-info"><div class="product-brand">${esc(p.brand || 'Footwear')}</div><div class="product-name">${esc(p.name)}</div><div class="product-meta">${esc([p.model, p.category].filter(Boolean).join(' · '))}</div>${swatches}<div class="product-price">${p.price != null && p.price !== '' ? '₹'+Number(p.price).toLocaleString('en-IN') : 'Ask for price'} <small>${p.mrp && Number(p.mrp)>Number(p.price) ? `<s>₹${Number(p.mrp).toLocaleString('en-IN')}</s>` : ''}</small></div>${sizePicker}<button class="btn btn-add-cart" type="button" data-add-cart="${esc(p.id)}">＋ Add to cart</button><a class="btn btn-green" data-enquire-link href="https://wa.me/${WA}?text=${encodeURIComponent(msg)}" target="_blank" rel="noopener">Enquire on WhatsApp ↗</a></div></article>`;
   }
