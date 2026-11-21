@@ -55,3 +55,7 @@ This package does not contain a live database or credentials, and no merchant pr
 - Product image URLs can still be pasted as comma-separated or newline-separated links.
 - On desktop/laptop, open a product image to use the zoom controls; use the mouse wheel, double-click, or `+`, `-`, and `0` keys to zoom/reset.
 - Keep your currently working `config.js` when deploying if it contains your real Supabase URL and publishable/anon key; the template file in this ZIP uses placeholders.
+
+
+## Model and colour catalogue release
+See [docs/MAINTENANCE_AND_COLOUR_RELEASE.md](docs/MAINTENANCE_AND_COLOUR_RELEASE.md) for the maintenance deployment steps, additive Supabase migration, VJSManage colour-variant entry format and customer-facing regression checklist. This branch has maintenance mode enabled; it is not live until deployed to the production host.
