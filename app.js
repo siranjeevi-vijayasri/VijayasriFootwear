@@ -39,22 +39,83 @@
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const imageUrls = value => [...new Set(String(value || '').split(/[\n,]+/).map(url => url.trim()).filter(Boolean))];
 
+  function activeVariants(p) {
+    const saved = Array.isArray(p.product_variants) ? p.product_variants.filter(v => v.active !== false) : [];
+    if (saved.length) return saved.sort((a,b) => Number(a.sort_order || 0) - Number(b.sort_order || 0));
+    const colours = [...new Set(String(p.colours || '').split(/[,;|]+/).map(value => value.trim()).filter(Boolean))];
+    const names = colours.length ? colours : ['Default'];
+    return names.map((name, index) => ({
+      id: String(p.id) + '::' + name.toLowerCase().replace(/[^a-z0-9]+/g,'-'),
+      colour_name: name, colour_hex: null, sizes: productSizes(p),
+      available_sizes: productSizes(p), image_urls: imageUrls(p.image_url), sort_order: index
+    }));
+  }
+  function variantImages(variant, product) {
+    return Array.isArray(variant?.image_urls) && variant.image_urls.length ? variant.image_urls : imageUrls(product.image_url);
+  }
+  function variantSizes(variant, product) {
+    const available = Array.isArray(variant?.available_sizes) ? variant.available_sizes : [];
+    const sizes = Array.isArray(variant?.sizes) ? variant.sizes : [];
+    return [...new Set((available.length ? available : (sizes.length ? sizes : productSizes(product))).map(value => String(value).trim()).filter(Boolean))];
+  }
+  function productFilterSizes(product) {
+    return [...new Set(activeVariants(product).flatMap(variant => variantSizes(variant, product)))];
+  }
+  function groupProductsByModel(rows) {
+    const groups = new Map();
+    rows.forEach(row => {
+      const model = String(row.model || '').trim();
+      const key = model ? [row.brand, model].map(value => String(value || '').trim().toLowerCase()).join('::') : String(row.id);
+      if (!groups.has(key)) groups.set(key, { ...row, product_variants: [], _legacyRows: [] });
+      const group = groups.get(key);
+      group._legacyRows.push(row);
+      if (Array.isArray(row.product_variants)) group.product_variants.push(...row.product_variants);
+    });
+    return [...groups.values()].map(group => {
+      if (!group.product_variants.length) {
+        const mapped = [];
+        group._legacyRows.forEach(row => {
+          const names = [...new Set(String(row.colours || '').split(/[,;|]+/).map(value => value.trim()).filter(Boolean))];
+          (names.length ? names : ['Default']).forEach((name, index) => mapped.push({
+            id: String(row.id) + '::' + name.toLowerCase().replace(/[^a-z0-9]+/g,'-'),
+            colour_name: name, colour_hex: null, sizes: productSizes(row),
+            available_sizes: productSizes(row), image_urls: imageUrls(row.image_url), sort_order: index
+          }));
+        });
+        const seen = new Set();
+        group.product_variants = mapped.filter(variant => {
+          const key = variant.colour_name.toLowerCase();
+          if (seen.has(key)) return false;
+          seen.add(key); return true;
+        });
+      }
+      group.image_url = [...new Set(group._legacyRows.flatMap(row => imageUrls(row.image_url)))].join(',');
+      group.sizes = [...new Set(group._legacyRows.flatMap(productSizes))].join(',');
+      delete group._legacyRows;
+      return group;
+    });
+  }
+
   function productCard(p) {
-    const urls = imageUrls(p.image_url);
-    const msg = `Hello Vijayasri Footwear, I am interested in ${p.brand || ''} ${p.name || 'this product'}${p.model ? ' (Model: '+p.model+')' : ''}. Please confirm sizes, colours, availability and current price.${urls[0] ? '\n\nProduct image: ' + urls[0] : ''}`;
+    const variants = activeVariants(p);
+    const selected = variants[0] || { id: '', colour_name: 'Default', image_urls: [], sizes: [] };
+    const urls = variantImages(selected, p);
+    const colour = selected.colour_name || 'Default';
+    const msg = `Hello Vijayasri Footwear, I am interested in ${p.brand || ''} ${p.name || 'this product'}${p.model ? ' (Model: '+p.model+')' : ''}${colour !== 'Default' ? ' in '+colour+' colour' : ''}. Please confirm sizes, availability and current price.${urls[0] ? '\n\nProduct image: ' + urls[0] : ''}`;
     const galleryId = 'gallery-' + String(p.id || Math.random().toString(36).slice(2)).replace(/[^a-zA-Z0-9_-]/g, '');
     let gallery = '<div class="image-fallback">Product photo to be added</div>';
     if (urls.length) {
-      gallery = `<div class="gallery-main"><img data-gallery-main="${galleryId}" loading="lazy" src="${esc(urls[0])}" alt="${esc((p.brand || '') + ' ' + (p.name || 'footwear'))}" onerror="this.alt='Image unavailable';this.style.opacity='.35'"></div>`;
-      if (urls.length > 1) {
-        gallery += `<div class="gallery-thumbs" aria-label="More product images">${urls.map((url, index) => `<button type="button" class="gallery-thumb${index === 0 ? ' active' : ''}" data-gallery-target="${galleryId}" data-gallery-url="${esc(url)}" aria-label="View image ${index + 1}"><img loading="lazy" src="${esc(url)}" alt=""></button>`).join('')}</div>`;
-      }
+      gallery = `<div class="gallery-main"><img data-gallery-main="${galleryId}" loading="lazy" src="${esc(urls[0])}" alt="${esc((p.brand || '') + ' ' + (p.name || 'footwear') + ' ' + colour)}" onerror="this.alt='Image unavailable';this.style.opacity='.35'"></div>`;
+      if (urls.length > 1) gallery += `<div class="gallery-thumbs" aria-label="More product images">${urls.map((url, index) => `<button type="button" class="gallery-thumb${index === 0 ? ' active' : ''}" data-gallery-target="${galleryId}" data-gallery-url="${esc(url)}" aria-label="View image ${index + 1}"><img loading="lazy" src="${esc(url)}" alt=""></button>`).join('')}</div>`;
     }
-    const sizes = productSizes(p);
+    const sizes = variantSizes(selected, p);
     const sizePicker = sizes.length
-      ? `<label class="cart-size-label">Size <select class="cart-size-select" data-cart-size="${esc(p.id)}"><option value="">Choose size</option>${sizes.map(size => `<option value="${esc(size)}">${esc(size)}</option>`).join('')}</select></label>`
+      ? `<label class="cart-size-label">Size <select class="cart-size-select" data-cart-size="${esc(p.id)}" data-selected-variant="${esc(selected.id)}"><option value="">Choose size</option>${sizes.map(size => `<option value="${esc(size)}">${esc(size)}</option>`).join('')}</select></label>`
       : '<p class="cart-size-hint">Size can be confirmed with the shop</p>';
-    return `<article class="product-card"><div class="product-image product-gallery">${gallery}</div><div class="product-info"><div class="product-brand">${esc(p.brand || 'Footwear')}</div><div class="product-name">${esc(p.name)}</div><div class="product-meta">${esc([p.model, p.category, p.sizes].filter(Boolean).join(' · '))}</div><div class="product-price">${p.price != null && p.price !== '' ? '₹'+Number(p.price).toLocaleString('en-IN') : 'Ask for price'} <small>${p.mrp && Number(p.mrp)>Number(p.price) ? `<s>₹${Number(p.mrp).toLocaleString('en-IN')}</s>` : ''}</small></div>${sizePicker}<button class="btn btn-add-cart" type="button" data-add-cart="${esc(p.id)}">＋ Add to cart</button><a class="btn btn-green" target="_blank" rel="noopener" href="https://wa.me/${WA}?text=${encodeURIComponent(msg)}">Enquire on WhatsApp ↗</a></div></article>`;
+    const swatches = variants.length > 1 || colour !== 'Default'
+      ? `<div class="colour-picker"><span class="colour-picker-label">Colour: <b class="selected-colour">${esc(colour)}</b></span><div class="colour-swatches" role="group" aria-label="Choose colour">${variants.map(variant => `<button type="button" class="colour-swatch${variant.id === selected.id ? ' active' : ''}" data-colour-select="${esc(p.id)}" data-variant-id="${esc(variant.id)}" title="${esc(variant.colour_name)}" aria-label="Choose ${esc(variant.colour_name)} colour" aria-pressed="${variant.id === selected.id ? 'true' : 'false'}" style="--swatch-colour:${/^#[0-9a-fA-F]{6}$/.test(variant.colour_hex || '') ? variant.colour_hex : '#c7c7c7'}"></button>`).join('')}</div></div>`
+      : '';
+    return `<article class="product-card" data-product-card="${esc(p.id)}" data-selected-variant="${esc(selected.id)}"><div class="product-image product-gallery">${gallery}</div><div class="product-info"><div class="product-brand">${esc(p.brand || 'Footwear')}</div><div class="product-name">${esc(p.name)}</div><div class="product-meta">${esc([p.model, p.category].filter(Boolean).join(' · '))}</div>${swatches}<div class="product-price">${p.price != null && p.price !== '' ? '₹'+Number(p.price).toLocaleString('en-IN') : 'Ask for price'} <small>${p.mrp && Number(p.mrp)>Number(p.price) ? `<s>₹${Number(p.mrp).toLocaleString('en-IN')}</s>` : ''}</small></div>${sizePicker}<button class="btn btn-add-cart" type="button" data-add-cart="${esc(p.id)}">＋ Add to cart</button><a class="btn btn-green" data-enquire-link href="https://wa.me/${WA}?text=${encodeURIComponent(msg)}" target="_blank" rel="noopener">Enquire on WhatsApp ↗</a></div></article>`;
   }
 
   function persistCart() {
@@ -70,7 +131,7 @@
       cartItems.innerHTML = cart.length ? cart.map(item => `
         <article class="cart-item">
           ${item.image ? `<img src="${esc(item.image)}" alt="" loading="lazy">` : '<div class="cart-item-placeholder">👟</div>'}
-          <div class="cart-item-info"><strong>${esc(item.brand)} ${esc(item.name)}</strong><small>${esc(item.model || '')}${item.model ? ' · ' : ''}Size: ${esc(item.size || 'To confirm')}</small><b>${item.price != null ? money(item.price * item.quantity) : 'Price to confirm'}</b>
+          <div class="cart-item-info"><strong>${esc(item.brand)} ${esc(item.name)}</strong><small>${esc(item.model || '')}${item.model ? ' · ' : ''}Colour: ${esc(item.colour || 'To confirm')} · Size: ${esc(item.size || 'To confirm')}</small><b>${item.price != null ? money(item.price * item.quantity) : 'Price to confirm'}</b>
             <div class="cart-quantity"><button type="button" data-cart-action="minus" data-cart-key="${esc(item.key)}" aria-label="Decrease quantity">−</button><span>${item.quantity}</span><button type="button" data-cart-action="plus" data-cart-key="${esc(item.key)}" aria-label="Increase quantity">+</button><button type="button" class="cart-remove" data-cart-action="remove" data-cart-key="${esc(item.key)}">Remove</button></div>
           </div>
         </article>`).join('') : '<div class="cart-empty"><span>🪔</span><strong>Your cart is waiting to sparkle</strong><p>Add a few footwear favourites from the catalogue.</p></div>';
@@ -92,6 +153,46 @@
     document.body.classList.remove('cart-open');
   }
   grid.addEventListener('click', event => {
+    const colourButton = event.target.closest('[data-colour-select]');
+    if (colourButton) {
+      const product = products.find(item => String(item.id) === String(colourButton.dataset.colourSelect));
+      if (!product) return;
+      const variant = activeVariants(product).find(item => String(item.id) === String(colourButton.dataset.variantId));
+      if (!variant) return;
+      const card = colourButton.closest('[data-product-card]');
+      const urls = variantImages(variant, product);
+      const main = card.querySelector('[data-gallery-main]');
+      const galleryId = main?.dataset.galleryMain;
+      if (main && urls.length) {
+        main.src = urls[0];
+        main.alt = (product.brand || '') + ' ' + (product.name || 'footwear') + ' ' + variant.colour_name;
+        const gallery = card.querySelector('.gallery-thumbs');
+        if (urls.length > 1) {
+          const thumbs = urls.map((url,index) => `<button type="button" class="gallery-thumb${index === 0 ? ' active' : ''}" data-gallery-target="${galleryId}" data-gallery-url="${esc(url)}" aria-label="View image ${index + 1}"><img loading="lazy" src="${esc(url)}" alt=""></button>`).join('');
+          if (gallery) gallery.innerHTML = thumbs;
+          else main.insertAdjacentHTML('afterend', `<div class="gallery-thumbs" aria-label="More product images">${thumbs}</div>`);
+        } else if (gallery) gallery.remove();
+      }
+      card.dataset.selectedVariant = variant.id;
+      card.querySelectorAll('[data-colour-select]').forEach(button => {
+        const active = button === colourButton;
+        button.classList.toggle('active', active);
+        button.setAttribute('aria-pressed', String(active));
+      });
+      const selectedLabel = card.querySelector('.selected-colour');
+      if (selectedLabel) selectedLabel.textContent = variant.colour_name;
+      const sizeSelect = card.querySelector('[data-cart-size]');
+      const sizes = variantSizes(variant, product);
+      if (sizeSelect) {
+        sizeSelect.dataset.selectedVariant = variant.id;
+        sizeSelect.innerHTML = '<option value="">Choose size</option>' + sizes.map(size => `<option value="${esc(size)}">${esc(size)}</option>`).join('');
+      }
+      const image = urls[0] || '';
+      const message = `Hello Vijayasri Footwear, I am interested in ${product.brand || ''} ${product.name || 'this product'}${product.model ? ' (Model: '+product.model+')' : ''} in ${variant.colour_name} colour. Please confirm sizes, availability and current price.${image ? '\n\nProduct image: ' + image : ''}`;
+      const enquiry = card.querySelector('[data-enquire-link]');
+      if (enquiry) enquiry.href = `https://wa.me/${WA}?text=${encodeURIComponent(message)}`;
+      return;
+    }
     const addButton = event.target.closest('[data-add-cart]');
     if (!addButton) return;
     const product = products.find(item => String(item.id) === String(addButton.dataset.addCart));
@@ -107,10 +208,14 @@
       return;
     }
     const size = chosenSize || 'Size to confirm';
-    const key = String(product.id) + '::' + size;
+    const selectedVariantId = picker?.dataset.selectedVariant || '';
+    const selectedVariant = activeVariants(product).find(item => String(item.id) === String(selectedVariantId)) || activeVariants(product)[0];
+    const colour = selectedVariant?.colour_name || 'To confirm';
+    const variantImage = variantImages(selectedVariant, product)[0] || imageUrls(product.image_url)[0] || '';
+    const key = String(product.id) + '::' + String(selectedVariant?.id || '') + '::' + size;
     const existing = cart.find(item => item.key === key);
     if (existing) existing.quantity += 1;
-    else cart.push({ key, id: String(product.id), brand: product.brand || 'Footwear', name: product.name || 'Footwear', model: product.model || '', price: product.price == null || product.price === '' || !Number.isFinite(Number(product.price)) ? null : Number(product.price), image: imageUrls(product.image_url)[0] || '', size, quantity: 1 });
+    else cart.push({ key, id: String(product.id), variantId: selectedVariant?.id || '', brand: product.brand || 'Footwear', name: product.name || 'Footwear', model: product.model || '', colour, price: product.price == null || product.price === '' || !Number.isFinite(Number(product.price)) ? null : Number(product.price), image: variantImage, size, quantity: 1 });
     persistCart();
     addButton.textContent = '✓ Added';
     window.setTimeout(() => { if (addButton.isConnected) addButton.textContent = '＋ Add to cart'; }, 1200);
@@ -133,7 +238,7 @@
   document.addEventListener('keydown', event => { if (event.key === 'Escape' && cartDrawer && !cartDrawer.hidden) closeCart(); });
   document.getElementById('checkoutWhatsApp')?.addEventListener('click', () => {
     if (!cart.length) return;
-    const lines = cart.map((item, index) => `${index + 1}. ${item.brand} ${item.name}${item.model ? ' (' + item.model + ')' : ''} | Size: ${item.size || 'To confirm'} | Qty: ${item.quantity} | ${item.price == null ? 'Price to confirm' : money(item.price * item.quantity)}${item.image ? '\n   Product image: ' + item.image : ''}`);
+    const lines = cart.map((item, index) => `${index + 1}. ${item.brand} ${item.name}${item.model ? ' (' + item.model + ')' : ''} | Colour: ${item.colour || 'To confirm'} | Size: ${item.size || 'To confirm'} | Qty: ${item.quantity} | ${item.price == null ? 'Price to confirm' : money(item.price * item.quantity)}${item.image ? '\n   Product image: ' + item.image : ''}`);
     const total = cart.reduce((sum, item) => sum + (item.price == null ? 0 : item.price * item.quantity), 0);
     const message = `Hello Vijayasri Footwear! I'd like to enquire about these items from my cart:\n\n${lines.join('\n')}\n\nEstimated total for priced items: ${money(total)}\nPlease confirm size, availability and final price. This is an order enquiry; no payment has been made.`;
     window.open(`https://wa.me/${WA}?text=${encodeURIComponent(message)}`, '_blank', 'noopener');
@@ -233,7 +338,7 @@
     const byAudience = byBrand.filter(p => !audienceFilter.value || productAudience(p) === audienceFilter.value);
     setOptions(typeFilter, byAudience.map(productType), 'All types', type);
     const byType = byAudience.filter(p => !typeFilter.value || productType(p) === typeFilter.value);
-    setOptions(sizeFilter, byType.flatMap(productSizes), 'All sizes', size);
+    setOptions(sizeFilter, byType.flatMap(productFilterSizes), 'All sizes', size);
   }
   function render() {
     const q = (document.getElementById('search')?.value || '').trim().toLowerCase();
@@ -243,7 +348,7 @@
       return (!brand || String(p.brand || '').trim() === brand) &&
         (!audience || productAudience(p) === audience) &&
         (!type || productType(p) === type) &&
-        (!size || productSizes(p).includes(size)) && text.includes(q);
+        (!size || productFilterSizes(p).includes(size)) && text.includes(q);
     });
     grid.innerHTML = shown.map(productCard).join('');
     empty.hidden = shown.length > 0;
@@ -322,9 +427,13 @@
   });
   async function load() {
     if (!supa) { render(); return; }
-    const { data, error } = await supa.from('products').select('*').eq('published', true).order('created_at', { ascending: false });
+    let { data, error } = await supa.from('products').select('*, product_variants(*)').eq('published', true).order('created_at', { ascending: false });
+    if (error && ['42P01','PGRST200'].includes(error.code)) {
+      const legacy = await supa.from('products').select('*').eq('published', true).order('created_at', { ascending: false });
+      data = legacy.data; error = legacy.error;
+    }
     if (error) { grid.innerHTML = '<div class="loading">We could not load the catalogue right now. Please contact the shop on WhatsApp.</div>'; return; }
-    products = data || [];
+    products = groupProductsByModel(data || []);
     updateFilters();
     render();
   }
