@@ -681,3 +681,15 @@ body.cart-open{overflow:hidden}
 .maintenance-card .maintenance-note{margin-top:26px;font-size:13px}
 .maintenance-contact{display:inline-flex;margin:12px 0 24px;padding:14px 22px;border-radius:999px;background:var(--green);color:#fff;text-decoration:none;font-weight:750;font-size:14px}
 .maintenance-card small{display:block;color:var(--muted);font-size:12px}
+
+
+/* Model-based product colour palette */
+.colour-picker{display:flex;flex-direction:column;gap:7px;margin:4px 0}
+.colour-picker-label{font-size:11px;color:var(--muted)}
+.colour-picker-label b{color:var(--ink)}
+.colour-swatches{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.colour-swatch{width:27px;height:27px;border-radius:50%;border:2px solid #fff;background:var(--swatch-colour);box-shadow:0 0 0 1px #cbd2c7;cursor:pointer;padding:0;position:relative}
+.colour-swatch.active{box-shadow:0 0 0 2px var(--green)}
+.colour-swatch:focus-visible{outline:3px solid var(--lime);outline-offset:3px}
+.colour-swatch.active:after{content:"";position:absolute;inset:7px;border-radius:50%;border:1px solid rgba(255,255,255,.9)}
+@media(prefers-reduced-motion:reduce){.colour-swatch{transition:none}}
