@@ -75,7 +75,7 @@
       if (!groups.has(key)) groups.set(key, { ...row, product_variants: [], _legacyRows: [] });
       const group = groups.get(key);
       group._legacyRows.push(row);
-      if (Array.isArray(row.product_variants)) group.product_variants.push(...row.product_variants);
+      if (Array.isArray(row.product_variants)) group.product_variants.push(...row.product_variants.filter(variant => variant.active !== false));
     });
     return [...groups.values()].map(group => {
       let sourceVariants = group.product_variants;
@@ -117,7 +117,7 @@
       group.sizes = [...new Set(group._legacyRows.flatMap(productSizes))].join(',');
       delete group._legacyRows;
       return group;
-    });;
+    });
   }
 
   function swatchColour(variant) {
