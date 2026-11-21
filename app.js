@@ -2,6 +2,11 @@
   const WA = '918300029513';
   const config = window.VJS_CONFIG || {};
   if (config.MAINTENANCE_MODE === true) {
+    document.title = 'Maintenance | Vijayasri Footwear';
+    const robotsMeta = document.createElement('meta');
+    robotsMeta.name = 'robots';
+    robotsMeta.content = 'noindex,nofollow';
+    document.head.appendChild(robotsMeta);
     document.body.innerHTML = `
       <main class="maintenance-page" role="main">
         <div class="maintenance-card">
