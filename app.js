@@ -78,28 +78,46 @@
       if (Array.isArray(row.product_variants)) group.product_variants.push(...row.product_variants);
     });
     return [...groups.values()].map(group => {
-      if (!group.product_variants.length) {
-        const mapped = [];
+      let sourceVariants = group.product_variants;
+      if (!sourceVariants.length) {
+        sourceVariants = [];
         group._legacyRows.forEach(row => {
           const names = [...new Set(String(row.colours || '').split(/[,;|]+/).map(value => value.trim()).filter(Boolean))];
-          (names.length ? names : ['Default']).forEach((name, index) => mapped.push({
+          (names.length ? names : ['Default']).forEach((name, index) => sourceVariants.push({
             id: String(row.id) + '::' + name.toLowerCase().replace(/[^a-z0-9]+/g,'-'),
             colour_name: name, colour_hex: null, sizes: productSizes(row),
-            available_sizes: productSizes(row), image_urls: imageUrls(row.image_url), sort_order: index
+            available_sizes: productSizes(row), availability_synced: false,
+            image_urls: imageUrls(row.image_url), sort_order: index
           }));
         });
-        const seen = new Set();
-        group.product_variants = mapped.filter(variant => {
-          const key = variant.colour_name.toLowerCase();
-          if (seen.has(key)) return false;
-          seen.add(key); return true;
-        });
       }
+      const mergedVariants = new Map();
+      sourceVariants.forEach(variant => {
+        const key = String(variant.colour_name || 'Default').toLowerCase();
+        if (!mergedVariants.has(key)) {
+          mergedVariants.set(key, {
+            ...variant,
+            sizes: [...new Set(variant.sizes || [])],
+            available_sizes: [...new Set(variant.available_sizes || [])],
+            image_urls: [...new Set(variant.image_urls || [])]
+          });
+          return;
+        }
+        const current = mergedVariants.get(key);
+        current.image_urls = [...new Set([...current.image_urls, ...(variant.image_urls || [])])];
+        current.sizes = [...new Set([...current.sizes, ...(variant.sizes || [])])];
+        if (variant.availability_synced === true) {
+          current.availability_synced = true;
+          current.available_sizes = [...new Set([...current.available_sizes, ...(variant.available_sizes || [])])];
+        }
+        if (!current.colour_hex && variant.colour_hex) current.colour_hex = variant.colour_hex;
+      });
+      group.product_variants = [...mergedVariants.values()];
       group.image_url = [...new Set(group._legacyRows.flatMap(row => imageUrls(row.image_url)))].join(',');
       group.sizes = [...new Set(group._legacyRows.flatMap(productSizes))].join(',');
       delete group._legacyRows;
       return group;
-    });
+    });;
   }
 
   function swatchColour(variant) {
