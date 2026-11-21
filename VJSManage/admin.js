@@ -257,6 +257,9 @@
           const { error: deactivateError } = await client.from('product_variants').update({ active: false, updated_at: new Date().toISOString() }).in('id', obsoleteIds);
           if (deactivateError) throw deactivateError;
         }
+      } else if (id) {
+        const { error: deactivateError } = await client.from('product_variants').update({ active: false, updated_at: new Date().toISOString() }).eq('product_id', savedProductId);
+        if (deactivateError && !['42P01','PGRST200'].includes(deactivateError.code)) throw deactivateError;
       }
       reset();
       await loadProducts();
