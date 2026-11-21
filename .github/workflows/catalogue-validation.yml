@@ -1,0 +1,26 @@
+name: Catalogue validation
+
+on:
+  push:
+    branches:
+      - feature/maintenance-model-colour-catalogue
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Check customer catalogue JavaScript
+        run: node --check app.js
+      - name: Check VJSManage JavaScript
+        run: node --check VJSManage/admin.js
+      - name: Verify maintenance flag is present
+        run: grep -q 'MAINTENANCE_MODE: true' config.js
+      - name: Verify additive colour schema is present
+        run: test -s supabase/model-colour-variants.sql
