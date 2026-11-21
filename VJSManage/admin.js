@@ -23,7 +23,7 @@
 
 
   function parseColourVariants(value) {
-    return String(value || '').split(/\\r?\\n/).map((line, index) => {
+    return String(value || '').split(/\r?\n/).map((line, index) => {
       const parts = line.split('|').map(part => part.trim());
       if (!parts[0]) return null;
       if (parts.length < 3) throw new Error('Colour variant line ' + (index + 1) + ' must include colour, hex (optional) and sizes.');
