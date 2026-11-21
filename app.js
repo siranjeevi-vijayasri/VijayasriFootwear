@@ -1,6 +1,21 @@
 (() => {
   const WA = '918300029513';
   const config = window.VJS_CONFIG || {};
+  if (config.MAINTENANCE_MODE === true) {
+    document.body.innerHTML = `
+      <main class="maintenance-page" role="main">
+        <div class="maintenance-card">
+          <img src="assets/VS_Logo.jpg" alt="Vijayasri Footwear" class="maintenance-logo">
+          <p class="maintenance-eyebrow">VIJAYASRI FOOTWEAR</p>
+          <h1>We’re refreshing our catalogue.</h1>
+          <p>Our online catalogue is temporarily under maintenance while we upgrade product listings, colour options and live size availability.</p>
+          <p class="maintenance-note">For product enquiries during this time, please contact our shop directly.</p>
+          <a class="maintenance-contact" href="https://wa.me/918300029513?text=Hello%20Vijayasri%20Footwear%2C%20I%20have%20a%20product%20enquiry.">Contact us on WhatsApp ↗</a>
+          <small>Thank you for your patience.</small>
+        </div>
+      </main>`;
+    return;
+  }
   const configured = config.SUPABASE_URL && !config.SUPABASE_URL.includes('YOUR_PROJECT') && config.SUPABASE_ANON_KEY && !config.SUPABASE_ANON_KEY.includes('YOUR_SUPABASE');
   const supa = configured && window.supabase ? window.supabase.createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY) : null;
   const grid = document.getElementById('productGrid');
