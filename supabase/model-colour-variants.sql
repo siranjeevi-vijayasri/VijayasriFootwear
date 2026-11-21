@@ -8,6 +8,7 @@ create table if not exists public.product_variants (
   colour_hex text,
   sizes text[] not null default '{}',
   available_sizes text[] not null default '{}',
+  availability_synced boolean not null default false,
   image_urls text[] not null default '{}',
   sort_order integer not null default 0,
   active boolean not null default true,
@@ -23,6 +24,7 @@ create table if not exists public.product_variants (
 create index if not exists product_variants_product_active_idx
   on public.product_variants(product_id, active, sort_order);
 
+alter table public.product_variants add column if not exists availability_synced boolean not null default false;
 alter table public.product_variants enable row level security;
 
 drop policy if exists "Public reads variants of published products" on public.product_variants;
