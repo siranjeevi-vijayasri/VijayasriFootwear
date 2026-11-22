@@ -718,3 +718,9 @@ body.foot-measure-open{overflow:hidden}
 .fit-finder-visual img{display:block;width:100%;height:auto}
 .fit-finder-visual figcaption{padding:8px 5px 2px;color:#58655c;font-size:11px;line-height:1.55;text-align:center}
 .foot-measure-guide-image{display:block;width:100%;height:auto;max-height:230px;object-fit:contain;margin:12px 0;border:1px solid #dce5d9;border-radius:12px;background:#fff}
+
+.foot-size-category-label{display:block;margin:12px 0 7px;color:#284638;font-size:12px;font-weight:800}
+.foot-size-category{width:100%;max-width:360px;padding:12px 14px;border:1px solid #bdcbbb;border-radius:10px;background:#fff;color:#263d30;font:inherit;font-size:13px}
+.foot-size-highlight{border-color:#a5c9a9;background:#f0f8ef}
+.foot-size-highlight strong{color:#1c773d;font-size:32px}
+@media(max-width:560px){.foot-size-category{max-width:none}.foot-size-highlight strong{font-size:28px}}
