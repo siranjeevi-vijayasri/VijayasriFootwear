@@ -649,3 +649,6 @@ body.foot-measure-open{overflow:hidden}
 .foot-measure-points-guide{display:block;width:100%;height:auto;max-height:330px;object-fit:contain;margin:12px 0;border:1px solid #dce5d9;border-radius:12px;background:#fff}
 .foot-measure-point-hint{margin:0 0 8px;color:#53685a;font-size:11px;line-height:1.45}
 @media(max-width:560px){.foot-measure-points-guide{max-height:270px;margin:10px 0}.foot-measure-point-hint{font-size:10px}}
+
+.foot-measure-full-guide{display:block;width:100%;height:auto;max-height:68vh;object-fit:contain;margin:12px auto;border:1px solid #dce5d9;border-radius:12px;background:#fbf8ef}
+@media(max-width:560px){.foot-measure-full-guide{max-height:62vh}}
