@@ -55,3 +55,10 @@ This package does not contain a live database or credentials, and no merchant pr
 - Product image URLs can still be pasted as comma-separated or newline-separated links.
 - On desktop/laptop, open a product image to use the zoom controls; use the mouse wheel, double-click, or `+`, `-`, and `0` keys to zoom/reset.
 - Keep your currently working `config.js` when deploying if it contains your real Supabase URL and publishable/anon key; the template file in this ZIP uses placeholders.
+
+
+## Experimental independent AI foot sizing
+
+The repository now includes an experimental first-party hybrid AI foot-sizing pipeline in `ai-foot-sizing/`. It is independent of third-party sizing services and currently provides a training pipeline, a FastAPI/TorchScript inference service, provisional silhouette-derived landmark suggestions, and a customer review/correction flow in the existing camera tool.
+
+The AI service is disabled by default. Do not set `FOOT_AI_API_URL` in `config.js` until a Vijayasri model has been trained on explicitly consented and annotated images, the inference container has been deployed over HTTPS, and measurement accuracy has been validated on held-out people and devices. Until then, the existing manual A4 six-point camera workflow remains available. See `ai-foot-sizing/README.md` and `ai-foot-sizing/DATASET.md`.

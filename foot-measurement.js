@@ -18,22 +18,32 @@
   const resultStage = document.getElementById("footResultStage");
   const resultCards = document.getElementById("footMeasurementResults");
   const cameraHelp = document.getElementById("footCameraHelp");
+  const aiStatus = document.getElementById("footAiStatus");
+  const aiReviewControls = document.getElementById("footAiReviewControls");
+  const aiPointSelect = document.getElementById("footAiPointSelect");
+  const applyAiPointsButton = document.getElementById("applyFootAiPoints");
+  const switchManualButton = document.getElementById("switchFootManual");
+  const aiApiUrl = String((window.VJS_CONFIG || {}).FOOT_AI_API_URL || "").trim();
 
   if (!modal || !openButton || !video || !canvas) return;
 
   const pointsForMeasurement = [
-    "Tap the LEFT end of the A4 sheet's TOP short edge (the edge is 210 mm wide).",
-    "Tap the RIGHT end of that same top edge.",
-    "Tap the back of your heel (point 3: start of foot length).",
-    "Tap the tip of your longest toe (point 4: end of foot length).",
-    "Tap one side at the widest part of your foot (point 5: start of foot width).",
-    "Tap the opposite side at the same level (point 6: end of foot width)."
+    "Point 1: tap the LEFT end of the A4 sheet's TOP short edge (210 mm wide).",
+    "Point 2: tap the RIGHT end of that same top edge.",
+    "Point 3: tap the tip of your longest toe.",
+    "Point 4: tap the back of your heel.",
+    "Point 5: tap the widest point on the RIGHT side of your foot.",
+    "Point 6: tap the widest point on the LEFT side of your foot."
   ];
 
   let stream = null;
   let photo = null;
   let points = [];
   let measurement = null;
+  let aiMaskImage = null;
+  let aiSuggestions = null;
+  let aiReviewMode = false;
+  let aiSelectedPoint = 2;
 
   // ISO 19407:2023 simplified UK grading. India traditionally uses the English/UK scale.
   // Children's sizes use their separate conversion table; adult sizes use the adult formula.
@@ -71,6 +81,87 @@
 
   const distance = (a, b) => Math.hypot(b.x - a.x, b.y - a.y);
 
+  function setAiStatus(message, state = "idle") {
+    if (!aiStatus) return;
+    aiStatus.textContent = message;
+    aiStatus.dataset.state = state;
+  }
+
+  async function runAiAssist() {
+    if (!aiApiUrl || !photo) return;
+    setAiStatus("Analysing the foot outline and suggesting measurement points…", "loading");
+    try {
+      const blob = await new Promise(resolve => photo.toBlob(resolve, "image/jpeg", 0.88));
+      if (!blob) throw new Error("Could not prepare the captured image.");
+      const form = new FormData();
+      form.append("image", blob, "foot-capture.jpg");
+      const response = await fetch(aiApiUrl.replace(/\/$/, "") + "/predict", { method: "POST", body: form });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.detail || data.error || "AI measurement service is unavailable.");
+      if (!data.suggested_points || !data.mask_png_base64) throw new Error("The AI service returned an incomplete result.");
+      aiSuggestions = data.suggested_points;
+      aiMaskImage = new Image();
+      aiMaskImage.onload = () => {
+        drawPhoto();
+        setAiStatus("AI has suggested the toe, heel and widest-foot points. Tap the two A4 corners, then review and correct the suggestions.", "ready");
+        if (points.length === 2) prepareAiReview();
+      };
+      aiMaskImage.onerror = () => {
+        aiMaskImage = null;
+        setAiStatus("AI points were returned, but the visual overlay could not be loaded. Continue manually.", "error");
+      };
+      aiMaskImage.src = "data:image/png;base64," + data.mask_png_base64;
+    } catch (error) {
+      aiSuggestions = null;
+      aiMaskImage = null;
+      setAiStatus((error && error.message ? error.message : "AI analysis failed.") + " You can continue with manual point marking.", "error");
+    }
+  }
+
+  function normalizedPoint(value) {
+    if (!value || !Number.isFinite(value.x) || !Number.isFinite(value.y)) return null;
+    return { x: Math.max(0, Math.min(1, value.x)) * photo.width, y: Math.max(0, Math.min(1, value.y)) * photo.height };
+  }
+
+  function prepareAiReview() {
+    if (!aiSuggestions || points.length !== 2 || !photo) return;
+    const toe = normalizedPoint(aiSuggestions.toe);
+    const heel = normalizedPoint(aiSuggestions.heel);
+    const right = normalizedPoint(aiSuggestions.right_width);
+    const left = normalizedPoint(aiSuggestions.left_width);
+    if (![toe, heel, right, left].every(Boolean)) {
+      setAiStatus("AI could not locate every foot landmark confidently. Please mark all six points manually.", "error");
+      aiSuggestions = null;
+      return;
+    }
+    points = [points[0], points[1], toe, heel, right, left];
+    aiReviewMode = true;
+    aiSelectedPoint = 2;
+    if (aiPointSelect) aiPointSelect.value = "2";
+    aiReviewControls.hidden = false;
+    instruction.textContent = "Review the AI suggestions. Select a numbered point below and tap its correct location if it needs adjustment.";
+    drawPhoto();
+  }
+
+  function applyAiReview() {
+    if (!aiReviewMode || points.length !== 6) return;
+    aiReviewControls.hidden = true;
+    aiReviewMode = false;
+    instruction.textContent = "Calculating your measurement from the confirmed points…";
+    finishMeasurement();
+  }
+
+  function switchToManualMarking() {
+    aiReviewControls.hidden = true;
+    aiReviewMode = false;
+    aiSuggestions = null;
+    aiMaskImage = null;
+    points = points.slice(0, 2);
+    drawPhoto();
+    instruction.textContent = pointsForMeasurement[2];
+    setAiStatus("Manual point marking selected. Tap points 3 to 6 on your foot.", "idle");
+  }
+
   function showError(message) {
     if (!errorBox) return;
     errorBox.textContent = message;
@@ -98,6 +189,11 @@
     points = [];
     photo = null;
     resultCards.innerHTML = "";
+    aiMaskImage = null;
+    aiSuggestions = null;
+    aiReviewMode = false;
+    aiReviewControls.hidden = true;
+    setAiStatus(aiApiUrl ? "AI assistant will analyse this photo when captured." : "AI assistance is not connected yet. You can continue with manual point marking.", "idle");
     shareButton.textContent = "Share measurement on WhatsApp";
     showError("");
     showStage("intro");
@@ -131,7 +227,7 @@
       video.srcObject = stream;
       await video.play();
       showStage("camera");
-      cameraHelp.textContent = "Measure one foot. Keep the entire A4 sheet and your foot visible.";
+      cameraHelp.textContent = "Measure one foot. Keep the entire A4 sheet and your foot visible. Point your toes toward the top short edge of the portrait sheet and your heel toward the bottom.";
     } catch (error) {
       const reason = error && error.name === "NotAllowedError"
         ? "Camera permission was denied. Allow camera access in your browser settings and try again."
@@ -146,6 +242,12 @@
     if (!context || !photo) return;
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.drawImage(photo, 0, 0);
+    if (aiMaskImage && aiMaskImage.complete && aiMaskImage.naturalWidth) {
+      context.save();
+      context.globalAlpha = 0.42;
+      context.drawImage(aiMaskImage, 0, 0, canvas.width, canvas.height);
+      context.restore();
+    }
     context.lineWidth = Math.max(3, canvas.width / 500);
     context.strokeStyle = "#d8f36a";
     context.fillStyle = "#4b1424";
@@ -169,6 +271,14 @@
     };
     if (points.length >= 4) drawLine(points[2], points[3]);
     if (points.length >= 6) drawLine(points[4], points[5]);
+    if (aiReviewMode && points.length === 6) {
+      const selected = points[aiSelectedPoint];
+      context.beginPath();
+      context.arc(selected.x, selected.y, Math.max(17, canvas.width / 48), 0, Math.PI * 2);
+      context.strokeStyle = "#ffb000";
+      context.lineWidth = Math.max(5, canvas.width / 260);
+      context.stroke();
+    }
   }
 
   function capturePhoto() {
@@ -193,6 +303,8 @@
     stopCamera();
     showStage("photo");
     instruction.textContent = pointsForMeasurement[0];
+    setAiStatus(aiApiUrl ? "AI analysis is running in the background…" : "AI assistance is not connected yet. Continue with the manual six-point method.", aiApiUrl ? "loading" : "idle");
+    runAiAssist();
   }
 
   function finishMeasurement() {
@@ -261,11 +373,21 @@
   startButton?.addEventListener("click", startCamera);
   captureButton?.addEventListener("click", capturePhoto);
   undoButton?.addEventListener("click", () => {
+    if (aiReviewMode) {
+      switchToManualMarking();
+      return;
+    }
     points.pop();
     drawPhoto();
     instruction.textContent = pointsForMeasurement[points.length] || "All points marked. Calculating measurement…";
     showError("");
   });
+  aiPointSelect?.addEventListener("change", () => {
+    aiSelectedPoint = Number(aiPointSelect.value);
+    drawPhoto();
+  });
+  applyAiPointsButton?.addEventListener("click", applyAiReview);
+  switchManualButton?.addEventListener("click", switchToManualMarking);
   retakeButton?.addEventListener("click", startCamera);
   shareButton?.addEventListener("click", shareMeasurement);
   canvas.addEventListener("pointerdown", event => {
@@ -275,10 +397,19 @@
       x: (event.clientX - rect.left) * canvas.width / rect.width,
       y: (event.clientY - rect.top) * canvas.height / rect.height
     };
+    if (aiReviewMode && points.length === 6) {
+      points[aiSelectedPoint] = point;
+      drawPhoto();
+      showError("");
+      instruction.textContent = "Point " + (aiSelectedPoint + 1) + " adjusted. Review the other points or calculate your measurement.";
+      return;
+    }
     points.push(point);
     drawPhoto();
     showError("");
-    if (points.length < pointsForMeasurement.length) {
+    if (points.length === 2 && aiSuggestions) {
+      prepareAiReview();
+    } else if (points.length < pointsForMeasurement.length) {
       instruction.textContent = pointsForMeasurement[points.length];
     } else {
       instruction.textContent = "Calculating your measurement…";

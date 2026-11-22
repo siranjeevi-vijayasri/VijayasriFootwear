@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vijayasri Foot Mask Annotator</title>
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#203c2b;background:#f3f6ef}*{box-sizing:border-box}body{margin:0;padding:20px}.wrap{max-width:1100px;margin:auto}.panel{background:#fff;border:1px solid #d6e2d2;border-radius:16px;padding:18px;margin:14px 0}.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}button,input{font:inherit}button{border:0;border-radius:9px;padding:10px 15px;background:#244c35;color:#fff;font-weight:700;cursor:pointer}button.secondary{background:#eaf1e5;color:#244c35}button:disabled{opacity:.45;cursor:not-allowed}canvas{display:block;max-width:100%;height:auto;margin:14px auto;border:1px solid #cbd7c7;border-radius:8px;background:#f9faf7;touch-action: manipulation}.hint{color:#66766a;font-size:13px;line-height:1.6}.status{font-size:13px;font-weight:700;color:#28623b}.steps{display:flex;gap:16px;flex-wrap:wrap;font-size:13px}.steps span{background:#eaf1e5;border-radius:8px;padding:7px 10px}
+</style>
+</head>
+<body><main class="wrap">
+<h1>Vijayasri foot-mask annotator</h1>
+<p class="hint">Offline annotation helper for the independent foot segmentation model. Images stay in this browser tab and are not uploaded.</p>
+<section class="panel">
+<div class="controls">
+<label>Select foot photo <input id="imageInput" type="file" accept="image/jpeg,image/png,image/webp"></label>
+<button id="finish" disabled>Finish outline</button>
+<button id="undo" class="secondary" disabled>Undo point</button>
+<button id="reset" class="secondary" disabled>Clear outline</button>
+<button id="export" disabled>Export PNG mask</button>
+</div>
+<p class="hint">Click around the outside edge of one bare foot. Include every toe and the heel. Stop at the ankle crease; do not include the lower leg, paper or floor. Click at least 12 points for a useful outline, then choose Finish outline.</p>
+<p id="status" class="status" role="status">Choose a local image to begin.</p>
+<canvas id="preview" width="800" height="600" aria-label="Foot photo annotation canvas"></canvas>
+<div class="steps"><span>1. Select image</span><span>2. Click foot boundary</span><span>3. Finish outline</span><span>4. Export matching PNG mask</span></div>
+</section>
+<section class="panel">
+<strong>Dataset reminder</strong>
+<p class="hint">Use consented images only. Save source images and exported masks into the same split folder (train, val or test), using identical filename stems. Keep every person's images in only one split. See DATASET.md for the annotation boundary and privacy rules.</p>
+</section>
+</main>
+<script>
+(()=>{
+const input=document.getElementById('imageInput'),canvas=document.getElementById('preview'),ctx=canvas.getContext('2d');
+const status=document.getElementById('status'),finish=document.getElementById('finish'),undo=document.getElementById('undo'),reset=document.getElementById('reset'),exportBtn=document.getElementById('export');
+let image=null,points=[],closed=false,scale=1;
+function say(s){status.textContent=s}
+function draw(){
+ ctx.clearRect(0,0,canvas.width,canvas.height);
+ if(image)ctx.drawImage(image,0,0,canvas.width,canvas.height);
+ if(points.length){ctx.beginPath();ctx.moveTo(points[0].x,points[0].y);for(let i=1;i<points.length;i++)ctx.lineTo(points[i].x,points[i].y);if(closed)ctx.closePath();ctx.fillStyle='rgba(108,205,74,.28)';if(closed)ctx.fill();ctx.strokeStyle='#ec7b08';ctx.lineWidth=Math.max(2,canvas.width/450);ctx.stroke();for(const p of points){ctx.beginPath();ctx.arc(p.x,p.y,Math.max(3,canvas.width/180),0,Math.PI*2);ctx.fillStyle='#0b63ce';ctx.fill();ctx.strokeStyle='#fff';ctx.stroke();}}
+}
+input.addEventListener('change',()=>{
+ const file=input.files&&input.files[0];if(!file)return;
+ if(!['image/jpeg','image/png','image/webp'].includes(file.type)){say('Please choose a JPG, PNG or WebP image.');return;}
+ const url=URL.createObjectURL(file);image=new Image();
+ image.onload=()=>{scale=Math.min(1,1200/image.width,1000/image.height);canvas.width=Math.round(image.width*scale);canvas.height=Math.round(image.height*scale);points=[];closed=false;draw();finish.disabled=false;reset.disabled=false;undo.disabled=true;exportBtn.disabled=true;say('Image loaded. Click around the visible foot boundary.');URL.revokeObjectURL(url)};
+ image.onerror=()=>say('Could not read this image.');image.src=url;
+});
+canvas.addEventListener('click',e=>{
+ if(!image||closed)return;const r=canvas.getBoundingClientRect();points.push({x:(e.clientX-r.left)*canvas.width/r.width,y:(e.clientY-r.top)*canvas.height/r.height});undo.disabled=false;draw();say(points.length+' outline points marked. Continue around the foot edge.');
+});
+undo.addEventListener('click',()=>{if(points.length&&!closed){points.pop();draw();undo.disabled=!points.length;say(points.length+' outline points remain.')}});
+reset.addEventListener('click',()=>{points=[];closed=false;draw();undo.disabled=true;exportBtn.disabled=true;say('Outline cleared. Start again around the foot boundary.')});
+finish.addEventListener('click',()=>{if(points.length<12){say('Please mark at least 12 points around the foot before finishing.');return;}closed=true;draw();exportBtn.disabled=false;say('Outline closed. Check that toes, heel and ankle boundary are correct, then export the mask.')});
+exportBtn.addEventListener('click',()=>{
+ if(!image||!closed)return;const out=document.createElement('canvas');out.width=image.naturalWidth;out.height=image.naturalHeight;const c=out.getContext('2d');c.fillStyle='#000';c.fillRect(0,0,out.width,out.height);c.beginPath();points.forEach((p,i)=>{const x=p.x/ canvas.width*out.width,y=p.y/canvas.height*out.height;if(i===0)c.moveTo(x,y);else c.lineTo(x,y)});c.closePath();c.fillStyle='#fff';c.fill();const a=document.createElement('a');a.download=(input.files[0].name.replace(/\.[^.]+$/,'')+'.png');a.href=out.toDataURL('image/png');a.click();say('Mask exported. Save it beside the matching image in the correct dataset split.');
+});
+})();
+</script></body></html>

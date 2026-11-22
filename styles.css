@@ -671,3 +671,16 @@ body.foot-measure-open{overflow:hidden}
 .manual-size-result-match{font-weight:700;color:#27643a}
 @keyframes manualSizeResultIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:600px){.manual-size-result{grid-template-columns:56px minmax(0,1fr);gap:12px;padding:14px}.manual-size-result-icon{width:54px;height:54px}.manual-size-result-icon svg{width:38px;height:38px}.manual-size-result-value{min-width:68px;min-height:62px;font-size:40px}.manual-size-result-details{grid-column:1/-1;padding:10px 0 0;border-left:0;border-top:1px solid #c7dfb3}}
+
+
+/* Hybrid AI foot-sizing review controls */
+.foot-ai-status{margin:10px 0;padding:10px 12px;border:1px solid #d8e5d3;border-radius:9px;background:#f5f9f0;color:#526b55!important;font-size:11px!important;line-height:1.5!important}
+.foot-ai-status[data-state="loading"]{border-color:#d7b56b;background:#fff8e9;color:#795b22!important}
+.foot-ai-status[data-state="ready"]{border-color:#9bc98a;background:#eff8e9;color:#245c32!important}
+.foot-ai-status[data-state="error"]{border-color:#e5b0a9;background:#fff1ef;color:#923e35!important}
+.foot-ai-review{display:grid;gap:8px;margin-top:12px;padding:14px;border:1px solid #b9d4aa;border-radius:12px;background:#f5faef}
+.foot-ai-review[hidden]{display:none!important}
+.foot-ai-review label{color:#284638;font-size:12px;font-weight:800}
+.foot-ai-review select{width:100%;min-height:42px;padding:9px 11px;border:1px solid #bdcbbb;border-radius:8px;background:#fff;color:#263d30;font:inherit;font-size:13px}
+.foot-ai-review small{color:#68746b;font-size:11px;line-height:1.5}
+.foot-ai-review .btn{width:100%}
