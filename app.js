@@ -26,6 +26,9 @@
   const manualCmField = document.getElementById('manualCmField');
   const manualFootLength = document.getElementById('manualFootLength');
   const manualSizeFeedback = document.getElementById('manualSizeFeedback');
+  const manualSizeResult = document.getElementById('manualSizeResult');
+  const manualSizeResultValue = document.getElementById('manualSizeResultValue');
+  const manualSizeResultLength = document.getElementById('manualSizeResultLength');
   let manualSizeSelection = null;
   const resetFilters = document.getElementById('resetFilters');
   document.getElementById('year').textContent = new Date().getFullYear();
@@ -220,7 +223,14 @@
       message = length.toFixed(1) + ' cm is approximately UK / India size ' + size + '. Brand and style fit may vary.';
     }
     manualSizeSelection = { category, size: String(size) };
-    manualSizeFeedback.textContent = message + ' Showing products with this size listed.';
+    if (manualSizeResultValue) manualSizeResultValue.textContent = String(size);
+    if (manualSizeResultLength) {
+      manualSizeResultLength.textContent = manualSizeMethod.value === 'cm'
+        ? 'Foot length: ' + Number(manualFootLength.value).toFixed(1) + ' cm'
+        : 'Selected size: UK / India ' + size;
+    }
+    if (manualSizeResult) manualSizeResult.hidden = false;
+    if (manualSizeFeedback) manualSizeFeedback.textContent = '';
     render();
     document.getElementById('catalogue')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
@@ -229,6 +239,7 @@
     if (manualUkSize) manualUkSize.value = '';
     if (manualFootLength) manualFootLength.value = '';
     if (manualSizeFeedback) manualSizeFeedback.textContent = 'Size filter cleared. Browse all available sizes.';
+    if (manualSizeResult) manualSizeResult.hidden = true;
     render();
   }
   function setOptions(select, values, placeholder, selected = '') {
@@ -350,6 +361,7 @@
     if (manualUkSize) manualUkSize.value = '';
     if (manualFootLength) manualFootLength.value = '';
     if (manualSizeFeedback) manualSizeFeedback.textContent = 'Size filter cleared. Browse all available sizes.';
+    if (manualSizeResult) manualSizeResult.hidden = true;
     updateFilters(); render();
   });
   async function load() {
