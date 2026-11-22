@@ -1,0 +1,30 @@
+name: Foot sizing code checks
+on:
+  pull_request:
+    paths:
+      - "foot-measurement.js"
+      - "config.js"
+      - "ai-foot-sizing/**"
+      - ".github/workflows/ai-foot-sizing-check.yml"
+  push:
+    branches: [main]
+    paths:
+      - "foot-measurement.js"
+      - "config.js"
+      - "ai-foot-sizing/**"
+      - ".github/workflows/ai-foot-sizing-check.yml"
+
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Check browser JavaScript syntax
+        run: |
+          node --check foot-measurement.js
+          node --check config.js
+      - name: Check Python syntax
+        run: python -m py_compile ai-foot-sizing/app.py ai-foot-sizing/train.py ai-foot-sizing/test_geometry.py
