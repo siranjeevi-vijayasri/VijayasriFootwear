@@ -7,6 +7,7 @@
   const undoButton = document.getElementById("undoFootPoint");
   const retakeButton = document.getElementById("retakeFootPhoto");
   const shareButton = document.getElementById("shareFootMeasurements");
+  const sizeCategorySelect = document.getElementById("footSizeCategory");
   const video = document.getElementById("footCameraVideo");
   const canvas = document.getElementById("footMeasureCanvas");
   const instruction = document.getElementById("footMeasureInstruction");
@@ -33,6 +34,40 @@
   let photo = null;
   let points = [];
   let measurement = null;
+
+  // ISO 19407:2023 simplified UK grading. India traditionally uses the English/UK scale.
+  // Children's sizes use their separate conversion table; adult sizes use the adult formula.
+  const childrenSizeRows = [
+    [120, 3.5], [123, 4], [127, 4.5], [130, 5], [133, 5.5],
+    [138, 6], [142, 6.5], [146, 7], [150, 7.5], [154, 8],
+    [157, 8.5], [160, 9], [166, 9.5], [169, 10], [173, 10.5],
+    [176, 11], [179, 11.5], [185, 12], [188, 12.5], [192, 13],
+    [195, 13.5], [200, 1], [204, 1.5], [210, 2], [213, 2.5],
+    [217, 3], [220, 3.5], [226, 4], [230, 4.5], [236, 5]
+  ];
+
+  function formatSize(value) {
+    return Number.isInteger(value) ? String(value) : value.toFixed(1);
+  }
+
+  function estimateUkIndiaSize(lengthCm, category) {
+    const lengthMm = lengthCm * 10;
+    if (category === "adult") {
+      if (lengthMm < 211.7 || lengthMm > 321.8) return null;
+      const rawUkSize = ((lengthMm + (2 * 8.47)) / 8.47) - 25;
+      return { value: Math.round(rawUkSize * 2) / 2, group: "Adult" };
+    }
+
+    if (category === "children") {
+      if (lengthMm < childrenSizeRows[0][0] || lengthMm > childrenSizeRows[childrenSizeRows.length - 1][0]) return null;
+      const closest = childrenSizeRows.reduce((best, row) =>
+        Math.abs(row[0] - lengthMm) < Math.abs(best[0] - lengthMm) ? row : best
+      , childrenSizeRows[0]);
+      return { value: closest[1], group: "Children's" };
+    }
+
+    return null;
+  }
 
   const distance = (a, b) => Math.hypot(b.x - a.x, b.y - a.y);
 
@@ -78,6 +113,11 @@
 
   async function startCamera() {
     showError("");
+    if (!sizeCategorySelect || !sizeCategorySelect.value) {
+      showError("Please choose Adult or Children’s footwear size chart before opening the camera.");
+      sizeCategorySelect?.focus();
+      return;
+    }
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       showError("Camera access is not available here. Open the website over HTTPS and allow camera permission, or use a ruler and contact the shop.");
       return;
@@ -176,17 +216,25 @@
     }
     measurement = {
       length: Math.round(lengthCm * 10) / 10,
-      width: Math.round(widthCm * 10) / 10
+      width: Math.round(widthCm * 10) / 10,
+      category: sizeCategorySelect.value,
+      size: estimateUkIndiaSize(lengthCm, sizeCategorySelect.value)
     };
     renderResult();
     showStage("result");
   }
 
   function renderResult() {
-    resultCards.innerHTML =
-      '<article class="foot-measure-result-card"><span>Foot measurement</span><strong>' +
+    const sizeCard = measurement.size
+      ? '<article class="foot-measure-result-card foot-size-highlight"><span>Estimated UK / India size · ' +
+        measurement.size.group + '</span><strong>' + formatSize(measurement.size.value) +
+        '</strong><small>Approximate starting size</small></article>'
+      : '<article class="foot-measure-result-card foot-size-highlight"><span>UK / India size</span><strong>Ask our team</strong><small>This measurement is outside the selected size chart range.</small></article>';
+    const measurementCard =
+      '<article class="foot-measure-result-card"><span>Your foot measurement</span><strong>' +
       measurement.length.toFixed(1) + ' cm</strong><small>Length · ' +
       measurement.width.toFixed(1) + ' cm wide</small></article>';
+    resultCards.innerHTML = sizeCard + measurementCard;
     shareButton.textContent = "Share measurement on WhatsApp";
   }
 
