@@ -632,10 +632,14 @@ body.foot-measure-open{overflow:hidden}
 .manual-size-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:7px}
 .manual-size-actions .btn{min-height:42px}
 .manual-size-feedback{min-height:18px;margin:3px 0 0!important;color:#365d40!important;font-size:12px!important;line-height:1.5!important}
-.camera-secondary{display:grid;gap:4px;margin-top:18px;padding-top:14px;border-top:1px solid #d8e2d5}
-.camera-secondary>span{color:#68746b;font-size:11px;font-weight:700}
-.camera-secondary .text-link{justify-self:start;padding:0;border:0;background:none;color:#526d56;font:inherit;font-size:12px;font-weight:800;text-decoration:underline;cursor:pointer}
+.camera-secondary{display:flex;gap:16px;align-items:center;margin-top:12px;padding:18px 22px;border:1px solid #d8e2d5;border-radius:14px;background:#f7faf4}
+.camera-secondary-icon{display:grid;place-items:center;flex:0 0 48px;width:48px;height:48px;color:#145b35}
+.camera-secondary-icon svg{width:42px;height:42px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.camera-secondary-copy{display:grid;gap:4px}
+.camera-secondary-copy>span{color:#68746b;font-size:11px;font-weight:700}
+.camera-secondary .text-link{justify-self:start;padding:0;border:0;background:none;color:#526d56;font:inherit;font-size:13px;font-weight:800;text-decoration:underline;cursor:pointer}
 .camera-secondary small{max-width:500px;color:#879087;font-size:10px;line-height:1.5}
+@media(max-width:560px){.camera-secondary{gap:12px;padding:14px}.camera-secondary-icon{flex-basis:40px;width:40px;height:40px}.camera-secondary-icon svg{width:36px;height:36px}}
 .manual-size-guide-card{display:grid;gap:14px;padding:clamp(18px,3vw,28px);border:1px solid #d8e2d5;border-radius:16px;background:#fbfcf8}
 .manual-size-guide-step{display:grid;grid-template-columns:38px minmax(0,1fr);gap:12px;align-items:center}
 .manual-size-guide-step>span{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#284638;color:#fff;font-size:11px;font-weight:800}
