@@ -78,6 +78,12 @@ src="https://www.facebook.com/tr?id=1154054433959918&ev=PageView&noscript=1"
     </div>
     <div id="footMeasureIntro" class="foot-measure-stage">
       <p>Use one plain A4 sheet in portrait (vertical) orientation. Place one bare foot on it; measure the larger foot if one is noticeably bigger.</p>
+      <label class="foot-size-category-label" for="footSizeCategory">Which size chart should we use?</label>
+      <select id="footSizeCategory" class="foot-size-category">
+        <option value="">Choose a size chart</option>
+        <option value="adult">Adult (Men / Women / Unisex)</option>
+        <option value="children">Children's footwear</option>
+      </select>
       <img class="foot-measure-guide-image" src="assets/foot-measurement-orientation.svg" alt="Use the A4 sheet vertically, not horizontally. Keep the full foot on the sheet and take the photo directly from above.">
       <ol>
         <li>Position the phone camera directly above the sheet, not at an angle.</li>
@@ -103,7 +109,7 @@ src="https://www.facebook.com/tr?id=1154054433959918&ev=PageView&noscript=1"
     <div id="footResultStage" class="foot-measure-stage" hidden>
       <p class="foot-measure-instruction">Your approximate foot measurements</p>
       <div id="footMeasurementResults" class="foot-measure-results"></div>
-      <p class="foot-measure-warning">Use this measurement as a starting point and confirm sizing with our shop team. Brand and style fit can vary.</p>
+      <p class="foot-measure-warning">The UK / India size is an estimate based on foot length. Camera angle, tapping position, foot width and brand/style differences can affect fit. Please confirm with our shop team before choosing.</p>
       <div class="foot-measure-actions">
         <button type="button" class="btn btn-green" id="shareFootMeasurements">Share measurement on WhatsApp</button>
       </div>
