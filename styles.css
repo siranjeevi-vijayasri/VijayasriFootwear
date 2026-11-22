@@ -621,3 +621,34 @@ body.foot-measure-open{overflow:hidden}
 .foot-size-highlight{border-color:#a5c9a9;background:#f0f8ef}
 .foot-size-highlight strong{color:#1c773d;font-size:32px}
 @media(max-width:560px){.foot-size-category{max-width:none}.foot-size-highlight strong{font-size:28px}}
+
+
+/* Manual size finder is the primary fit path; camera measurement is deliberately secondary. */
+.manual-size-finder{display:grid;gap:8px;max-width:520px;margin-top:22px;padding:18px;border:1px solid #d8e2d5;border-radius:14px;background:#fbfcf8}
+.manual-size-finder>label{margin-top:5px;color:#284638;font-size:12px;font-weight:800}
+.manual-size-finder select,.manual-size-finder input{width:100%;min-height:44px;padding:11px 12px;border:1px solid #bdcbbb;border-radius:9px;background:#fff;color:#263d30;font:inherit;font-size:13px}
+.manual-size-finder small{color:#788579;font-size:11px;line-height:1.5}
+.manual-size-finder [hidden]{display:none!important}
+.manual-size-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:7px}
+.manual-size-actions .btn{min-height:42px}
+.manual-size-feedback{min-height:18px;margin:3px 0 0!important;color:#365d40!important;font-size:12px!important;line-height:1.5!important}
+.camera-secondary{display:grid;gap:4px;margin-top:18px;padding-top:14px;border-top:1px solid #d8e2d5}
+.camera-secondary>span{color:#68746b;font-size:11px;font-weight:700}
+.camera-secondary .text-link{justify-self:start;padding:0;border:0;background:none;color:#526d56;font:inherit;font-size:12px;font-weight:800;text-decoration:underline;cursor:pointer}
+.camera-secondary small{max-width:500px;color:#879087;font-size:10px;line-height:1.5}
+.manual-size-guide-card{display:grid;gap:14px;padding:clamp(18px,3vw,28px);border:1px solid #d8e2d5;border-radius:16px;background:#fbfcf8}
+.manual-size-guide-step{display:grid;grid-template-columns:38px minmax(0,1fr);gap:12px;align-items:center}
+.manual-size-guide-step>span{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#284638;color:#fff;font-size:11px;font-weight:800}
+.manual-size-guide-step strong{display:block;color:#284638;font-size:13px}
+.manual-size-guide-step small{display:block;margin-top:4px;color:#6d776f;font-size:11px;line-height:1.55}
+.manual-size-disclaimer{margin:4px 0 0;padding-top:12px;border-top:1px solid #e1e6df;color:#788579;font-size:10px;line-height:1.6}
+@media(max-width:560px){.manual-size-finder{padding:14px}.manual-size-actions{flex-direction:column}.manual-size-actions .btn{width:100%}}
+
+
+/* Clear, numbered camera measurement instructions for mobile customers. */
+.foot-measure-points-guide{display:block;width:100%;height:auto;max-height:330px;object-fit:contain;margin:12px 0;border:1px solid #dce5d9;border-radius:12px;background:#fff}
+.foot-measure-point-hint{margin:0 0 8px;color:#53685a;font-size:11px;line-height:1.45}
+@media(max-width:560px){.foot-measure-points-guide{max-height:270px;margin:10px 0}.foot-measure-point-hint{font-size:10px}}
+
+.foot-measure-full-guide{display:block;width:100%;height:auto;max-height:68vh;object-fit:contain;margin:12px auto;border:1px solid #dce5d9;border-radius:12px;background:#fbf8ef}
+@media(max-width:560px){.foot-measure-full-guide{max-height:62vh}}

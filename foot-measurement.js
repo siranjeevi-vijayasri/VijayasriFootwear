@@ -24,10 +24,10 @@
   const pointsForMeasurement = [
     "Tap the LEFT end of the A4 sheet's TOP short edge (the edge is 210 mm wide).",
     "Tap the RIGHT end of that same top edge.",
-    "Tap the back of your heel.",
-    "Tap the tip of your longest toe.",
-    "Tap one side of your foot at its widest point.",
-    "Tap the opposite side at the same widest point."
+    "Tap the back of your heel (point 3: start of foot length).",
+    "Tap the tip of your longest toe (point 4: end of foot length).",
+    "Tap one side at the widest part of your foot (point 5: start of foot width).",
+    "Tap the opposite side at the same level (point 6: end of foot width)."
   ];
 
   let stream = null;

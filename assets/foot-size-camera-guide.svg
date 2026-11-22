@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1536" role="img" aria-labelledby="title desc">
+<title id="title">Foot Size with Camera — optional three-step guide</title>
+<desc id="desc">Step 1 place one bare foot on portrait A4 paper and photograph from directly above. Step 2 mark top-left paper corner 1, top-right paper corner 2, longest toe 3, heel 4, right widest point 5, left widest point 6. Points 4 and 3 measure length; points 6 and 5 measure width. Step 3 review estimated UK India size, length and width.</desc>
+<defs>
+ <linearGradient id="green" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#286b43"/><stop offset="1" stop-color="#063e25"/></linearGradient>
+ <linearGradient id="pale" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e9f2d5"/><stop offset="1" stop-color="#f6f7e8"/></linearGradient>
+ <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#f4f5f4"/></linearGradient>
+ <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#e9b394"/><stop offset="1" stop-color="#bd765a"/></linearGradient>
+ <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="7" stdDeviation="8" flood-color="#183b28" flood-opacity=".15"/></filter>
+ <style>
+ .head{font:700 34px Arial,sans-serif;fill:#083d25}.body{font:22px Arial,sans-serif;fill:#18251d}.small{font:18px Arial,sans-serif;fill:#405346}.white{fill:#fff;font:700 28px Arial,sans-serif}.num{font:700 27px Arial,sans-serif;fill:#fff;text-anchor:middle}.label{font:700 22px Arial,sans-serif;fill:#0b4028}
+ </style>
+</defs>
+<rect width="1024" height="1536" fill="#fbf8ef"/>
+<rect x="60" y="12" width="904" height="116" rx="28" fill="url(#green)"/>
+<text x="512" y="66" text-anchor="middle" class="white" style="font-size:48px">Foot Size with Camera</text>
+<text x="512" y="108" text-anchor="middle" class="white" style="font-size:26px;font-weight:400">Optional — Get an estimate in 3 simple steps</text>
+
+<!-- STEP 1 -->
+<rect x="34" y="150" width="956" height="480" rx="34" fill="url(#pale)"/>
+<circle cx="95" cy="190" r="31" fill="#0b482b"/><text x="95" y="201" class="white" text-anchor="middle">1</text>
+<text x="146" y="202" class="head">1. Place your foot on A4 paper</text>
+<rect x="80" y="230" width="412" height="370" rx="25" fill="#d7c8ad"/>
+<rect x="168" y="245" width="238" height="342" fill="url(#paper)" stroke="#d2d8d2" stroke-width="3" filter="url(#shadow)"/>
+<!-- stylized foot -->
+<path d="M268 552 C238 530 230 482 239 428 C246 383 235 347 233 311 C231 283 242 266 258 267 C272 267 280 281 282 301 C282 274 292 257 308 258 C324 259 332 277 331 303 C336 280 351 270 365 278 C381 288 377 310 371 330 C391 315 407 329 403 351 C397 385 384 410 387 456 C391 503 379 546 346 565 C320 580 290 571 268 552Z" fill="url(#skin)" stroke="#a7664c" stroke-width="4"/>
+<path d="M251 587 Q286 558 350 582 L368 600 L230 600Z" fill="#7d8d82"/>
+<rect x="545" y="235" width="400" height="360" rx="24" fill="#fffdf4" opacity=".9"/>
+<g fill="#145b35">
+ <rect x="574" y="270" width="38" height="44" rx="5" fill="none" stroke="#145b35" stroke-width="4"/><path d="M581 281h23M581 290h18" stroke="#145b35" stroke-width="3"/>
+ <path d="M585 350 C568 369 573 390 589 390 C604 390 610 370 598 352 C594 343 590 343 585 350Z"/>
+ <circle cx="580" cy="344" r="5"/><circle cx="590" cy="338" r="5"/><circle cx="600" cy="341" r="5"/>
+ <rect x="573" y="431" width="42" height="31" rx="7" fill="none" stroke="#145b35" stroke-width="4"/><circle cx="594" cy="446" r="9" fill="none" stroke="#145b35" stroke-width="4"/>
+ <path d="M574 500h13m-13 0v13m40-13h-13m13 0v13m-40 38h13m-13 0v-13m40 13h-13m13 0v-13" fill="none" stroke="#145b35" stroke-width="4" stroke-linecap="round"/>
+</g>
+<g class="body">
+ <text x="640" y="282">Use a plain white</text><text x="640" y="309">A4 sheet.</text>
+ <text x="640" y="363">Place one bare foot</text><text x="640" y="390">flat on the paper.</text>
+ <text x="640" y="443">Keep the camera</text><text x="640" y="470">directly above.</text>
+ <text x="640" y="520">Keep the whole sheet and</text><text x="640" y="547">foot visible, including heel</text><text x="640" y="574">and toes.</text>
+</g>
+
+<!-- STEP 2 -->
+<rect x="34" y="650" width="956" height="610" rx="34" fill="url(#pale)"/>
+<circle cx="95" cy="692" r="31" fill="#0b482b"/><text x="95" y="703" class="white" text-anchor="middle">2</text>
+<text x="146" y="704" class="head">2. Mark the paper corners and foot points</text>
+<rect x="80" y="730" width="420" height="430" rx="24" fill="#d7c8ad"/>
+<rect x="153" y="750" width="274" height="390" fill="url(#paper)" stroke="#d2d8d2" stroke-width="3" filter="url(#shadow)"/>
+<path d="M263 1100 C229 1070 226 1015 237 956 C245 908 231 861 232 824 C233 794 246 781 263 785 C278 788 283 807 282 830 C284 799 298 780 315 784 C333 787 335 810 330 837 C339 809 354 799 370 808 C387 819 379 841 371 865 C392 850 411 866 405 891 C396 931 384 964 389 1012 C393 1062 376 1102 344 1120 C315 1137 284 1121 263 1100Z" fill="url(#skin)" stroke="#a7664c" stroke-width="4"/>
+<!-- markers 1/2 corners, 3 toe, 4 heel, 5 right width, 6 left width -->
+<g>
+ <circle cx="153" cy="750" r="22" fill="#0873e8" stroke="#fff" stroke-width="4"/><text x="153" y="759" class="num">1</text>
+ <circle cx="427" cy="750" r="22" fill="#0873e8" stroke="#fff" stroke-width="4"/><text x="427" y="759" class="num">2</text>
+ <circle cx="333" cy="806" r="22" fill="#f27b00" stroke="#fff" stroke-width="4"/><text x="333" y="815" class="num">3</text>
+ <circle cx="304" cy="1122" r="22" fill="#f27b00" stroke="#fff" stroke-width="4"/><text x="304" y="1131" class="num">4</text>
+ <circle cx="399" cy="929" r="22" fill="#f27b00" stroke="#fff" stroke-width="4"/><text x="399" y="938" class="num">5</text>
+ <circle cx="242" cy="929" r="22" fill="#f27b00" stroke="#fff" stroke-width="4"/><text x="242" y="938" class="num">6</text>
+</g>
+<rect x="530" y="730" width="415" height="170" rx="22" fill="#e5f1ff"/>
+<text x="558" y="770" class="label">Paper corners (calibration)</text>
+<text x="558" y="814" class="body">1  Top-left corner of A4 sheet</text>
+<text x="558" y="858" class="body">2  Top-right corner of A4 sheet</text>
+<rect x="530" y="915" width="415" height="245" rx="22" fill="#fff0d9"/>
+<text x="558" y="955" class="label">Foot points (on your foot)</text>
+<text x="558" y="1000" class="body">3  Tip of your longest toe</text>
+<text x="558" y="1041" class="body">4  Heel (back) point</text>
+<text x="558" y="1082" class="body">5  Widest point on the right side</text>
+<text x="558" y="1123" class="body">6  Widest point on the left side</text>
+<rect x="80" y="1175" width="865" height="62" rx="18" fill="#e5f1ff"/>
+<text x="105" y="1213" class="label">Length: points 4 → 3 (heel to toe)     •     Width: points 6 → 5 (side to side)</text>
+
+<!-- STEP 3 -->
+<rect x="34" y="1280" width="956" height="230" rx="34" fill="url(#pale)"/>
+<circle cx="95" cy="1320" r="31" fill="#0b482b"/><text x="95" y="1331" class="white" text-anchor="middle">3</text>
+<text x="146" y="1332" class="head">3. Check your estimated size</text>
+<rect x="80" y="1360" width="865" height="120" rx="22" fill="#fffdf4" stroke="#a7c59b" stroke-width="3"/>
+<rect x="80" y="1360" width="865" height="38" rx="18" fill="url(#green)"/>
+<text x="105" y="1388" class="white" style="font-size:22px">Your estimated result</text>
+<g text-anchor="middle" fill="#0b4028" font-family="Arial,sans-serif">
+ <text x="225" y="1430" font-size="20">Estimated UK / India size</text><text x="225" y="1470" font-size="36" font-weight="700">9</text>
+ <path d="M370 1408v58M630 1408v58" stroke="#b7c8ae" stroke-width="2"/>
+ <text x="500" y="1430" font-size="20">Foot length (cm)</text><text x="500" y="1470" font-size="36" font-weight="700">27.1</text>
+ <text x="785" y="1430" font-size="20">Width (cm)</text><text x="785" y="1470" font-size="36" font-weight="700">10.9</text>
+</g>
+<text x="512" y="1530" text-anchor="middle" class="small">This is an estimate. Brand and style fit may vary.</text>
+</svg>
