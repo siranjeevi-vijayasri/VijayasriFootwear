@@ -244,12 +244,12 @@
     const sizeLabel = measurement.size
       ? "Estimated UK / India size: " + formatSize(measurement.size.value) + " (approx.)"
       : "UK / India size: Please advise";
-    const message = "Hello Vijayasri Footwear. I measured one foot using the website camera tool:\\n" +
-      "Category: " + categoryLabel + "\\n" +
-      sizeLabel + "\\n" +
+    const message = "Hello Vijayasri Footwear. I measured one foot using the website camera tool:\n" +
+      "Category: " + categoryLabel + "\n" +
+      sizeLabel + "\n" +
       "Foot: " + measurement.length.toFixed(1) + " cm long, " +
       measurement.width.toFixed(1) + " cm wide" +
-      "\\nPlease confirm the suitable size for the footwear style I am interested in.";
+      "\nPlease confirm the suitable size for the footwear style I am interested in.";
     window.open("https://wa.me/" + "918300029513" + "?text=" + encodeURIComponent(message), "_blank", "noopener");
   }
 
