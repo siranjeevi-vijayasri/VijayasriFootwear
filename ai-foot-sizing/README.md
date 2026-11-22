@@ -16,6 +16,10 @@ The website sends a captured image to the AI service only when FOOT_AI_API_URL i
 
 This repository contains the training and inference pipeline, not a trained Vijayasri model. A suitable consented, annotated dataset is required before training. The API returns HTTP 503 until models/foot_segmentation.ts is installed. Do not describe the prototype as accurate or enable it for production sizing until independent tests pass.
 
+## Prepare annotations offline
+
+Open `annotate.html` in a modern browser on your own computer. It runs locally in the browser: select a foot photo, click around the visible foot outline, finish the polygon, and export a black-background/white-foot PNG mask. It does not upload or store the source image. Save each mask under the matching split's `masks/` folder with the exact same filename stem as its image. Review every outline carefully, especially the ankle boundary, heel and toes.
+
 ## Train
 
 Python 3.11 is recommended.
