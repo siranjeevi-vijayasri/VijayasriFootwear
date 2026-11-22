@@ -52,10 +52,16 @@ src="https://www.facebook.com/tr?id=1154054433959918&ev=PageView&noscript=1"
     <button type="button" class="btn btn-green" id="openFootMeasure">Measure with my camera</button>
     <p class="fit-finder-privacy">Your photo stays on your device. The tool calculates measurements in your browser and does not upload or save the photo.</p>
   </div>
-  <div class="fit-finder-steps" aria-label="How the measurement works">
-    <div><span>01</span><strong>Place one foot</strong><small>Stand barefoot on an A4 sheet on a flat floor.</small></div>
-    <div><span>02</span><strong>Capture from above</strong><small>Keep the whole sheet and foot inside the camera view.</small></div>
-    <div><span>03</span><strong>Mark six points</strong><small>Tap the paper edge, heel, toe and widest part of your foot.</small></div>
+  <div class="fit-finder-guide">
+    <figure class="fit-finder-visual">
+      <img src="assets/foot-measurement-orientation.svg" alt="Illustration: use A4 portrait or vertical orientation, 210 millimetres across and 297 millimetres long. Do not use landscape orientation. Place one foot fully on the sheet and photograph directly from above.">
+      <figcaption>Portrait means vertical: 210 mm across the top and 297 mm from top to bottom. Do not turn the sheet sideways.</figcaption>
+    </figure>
+    <div class="fit-finder-steps" aria-label="How the measurement works">
+      <div><span>01</span><strong>Place one foot</strong><small>Stand barefoot on an A4 sheet on a flat floor.</small></div>
+      <div><span>02</span><strong>Capture from above</strong><small>Keep the whole sheet and foot inside the camera view.</small></div>
+      <div><span>03</span><strong>Mark six points</strong><small>Tap the paper edge, heel, toe and widest part of your foot.</small></div>
+    </div>
   </div>
 </section>
 
@@ -71,7 +77,8 @@ src="https://www.facebook.com/tr?id=1154054433959918&ev=PageView&noscript=1"
       <button type="button" id="closeFootMeasure" class="foot-measure-close" aria-label="Close measurement">×</button>
     </div>
     <div id="footMeasureIntro" class="foot-measure-stage">
-      <p>For the reference, use one plain A4 sheet in portrait orientation (210 mm wide × 297 mm long). Place one bare foot on it on a flat floor. If one foot is noticeably larger, measure that foot.</p>
+      <p>Use one plain A4 sheet in portrait (vertical) orientation. Place one bare foot on it; measure the larger foot if one is noticeably bigger.</p>
+      <img class="foot-measure-guide-image" src="assets/foot-measurement-orientation.svg" alt="Use the A4 sheet vertically, not horizontally. Keep the full foot on the sheet and take the photo directly from above.">
       <ol>
         <li>Position the phone camera directly above the sheet, not at an angle.</li>
         <li>Make sure the whole sheet and your foot are visible in good light.</li>
