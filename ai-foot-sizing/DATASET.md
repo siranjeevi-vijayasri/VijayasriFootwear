@@ -3,10 +3,17 @@
 ## Required layout
 
     dataset/
-      images/
-        sample-0001.jpg
-      masks/
-        sample-0001.png
+      train/
+        images/
+          sample-0001.jpg
+        masks/
+          sample-0001.png
+      val/
+        images/
+        masks/
+      test/
+        images/
+        masks/
 
 Every image must have a same-named PNG mask. Mask pixels are black (0) for background and white (255) for the visible foot.
 
@@ -22,7 +29,7 @@ Every image must have a same-named PNG mask. Mask pixels are black (0) for backg
 
 ## Dataset split and leakage
 
-Keep a subject-level split: all images from one person must stay in only one of train, validation or test. Never put photos of the same person across different splits. Maintain a separate held-out test set from devices and participants not used during training.
+Create train, val and test folders before training. Keep a subject-level split: all images from one person must stay in only one folder. Never put photos of the same person across different splits. The training script reads train and val only; keep test untouched for final evaluation.
 
 ## Validation gates
 

@@ -228,7 +228,7 @@
       video.srcObject = stream;
       await video.play();
       showStage("camera");
-      cameraHelp.textContent = "Measure one foot. Keep the entire A4 sheet and your foot visible.";
+      cameraHelp.textContent = "Measure one foot. Keep the entire A4 sheet and your foot visible. Point your toes toward the top short edge of the portrait sheet and your heel toward the bottom.";
     } catch (error) {
       const reason = error && error.name === "NotAllowedError"
         ? "Camera permission was denied. Allow camera access in your browser settings and try again."

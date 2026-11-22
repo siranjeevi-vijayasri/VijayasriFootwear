@@ -24,7 +24,7 @@ Python 3.11 is recommended.
     python -m venv .venv
     source .venv/bin/activate
     pip install -r requirements.txt
-    # Prepare dataset/ using DATASET.md
+    # Prepare dataset/train and dataset/val using DATASET.md
     python train.py --data dataset --epochs 35 --batch-size 4 --output models
 
 The first run downloads the public Torchvision DeepLabV3-ResNet50 backbone weights. Training fine-tunes a two-class foot/background segmentation head. The exported TorchScript model is models/foot_segmentation.ts.

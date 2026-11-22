@@ -5,7 +5,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 from PIL import Image, ImageOps
-from torch.utils.data import DataLoader, Dataset, random_split
+from torch.utils.data import DataLoader, Dataset
 from torchvision.models.segmentation import DeepLabV3_ResNet50_Weights, deeplabv3_resnet50
 
 SIZE = 512
@@ -57,7 +57,7 @@ def dice_score(logits, targets):
 
 def build_model(pretrained=True):
     weights = DeepLabV3_ResNet50_Weights.DEFAULT if pretrained else None
-    model = deeplabv3_resnet50(weights=weights)
+    model = deeplabv3_resnet50(weights=weights, aux_loss=True)
     old = model.classifier[-1]
     model.classifier[-1] = nn.Conv2d(old.in_channels, 2, kernel_size=1)
     return model
@@ -75,14 +75,11 @@ def main():
     torch.manual_seed(42)
     random.seed(42)
     np.random.seed(42)
-    dataset = FootDataset(args.data, augment=True)
-    validation_size = max(1, int(len(dataset) * 0.2))
-    training_size = len(dataset) - validation_size
-    if training_size < 2:
-        raise RuntimeError("Add more labelled examples. At least 10 paired examples are required for a prototype run.")
-    train_set, validation_set = random_split(dataset, [training_size, validation_size],
-                                             generator=torch.Generator().manual_seed(42))
-    validation_set.dataset.augment = False
+    data_root = Path(args.data)
+    train_set = FootDataset(data_root / "train", augment=True)
+    validation_set = FootDataset(data_root / "val", augment=False)
+    if len(train_set) < 10 or len(validation_set) < 3:
+        raise RuntimeError("Use subject-separated dataset/train and dataset/val folders with at least 10 train and 3 validation image-mask pairs.")
     train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=True, num_workers=args.workers)
     validation_loader = DataLoader(validation_set, batch_size=args.batch_size, shuffle=False, num_workers=args.workers)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
