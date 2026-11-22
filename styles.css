@@ -657,6 +657,21 @@ body.foot-measure-open{overflow:hidden}
 .foot-measure-full-guide{display:block;width:100%;height:auto;max-height:68vh;object-fit:contain;margin:12px auto;border:1px solid #dce5d9;border-radius:12px;background:#fbf8ef}
 @media(max-width:560px){.foot-measure-full-guide{max-height:62vh}}
 
+/* Prominent result card shown after the customer confirms a size. */
+.manual-size-result{display:grid;grid-template-columns:76px minmax(150px,1fr) minmax(180px,1.2fr);gap:16px;align-items:center;margin-top:14px;padding:18px;border:2px solid #75b843;border-radius:16px;background:linear-gradient(110deg,#f1f8e8 0%,#fbfff6 100%);box-shadow:0 5px 16px rgba(38,83,48,.10);animation:manualSizeResultIn .22s ease-out}
+.manual-size-result[hidden]{display:none!important}
+.manual-size-result-icon{display:grid;place-items:center;width:68px;height:68px;border-radius:50%;background:#dcefc8;color:#145b35}
+.manual-size-result-icon svg{width:48px;height:48px;fill:none;stroke:currentColor;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+.manual-size-result-main{display:grid;gap:6px;justify-items:start}
+.manual-size-result-label{color:#31533d;font-size:12px;font-weight:800;line-height:1.35}
+.manual-size-result-value{display:grid;place-items:center;min-width:82px;min-height:76px;padding:0 18px;border-radius:14px;background:#155632;color:#fff;font-size:48px;font-weight:900;line-height:1}
+.manual-size-result-details{display:grid;gap:5px;padding-left:16px;border-left:1px solid #c7dfb3;color:#36533e;font-size:12px;line-height:1.45}
+.manual-size-result-length{font-size:14px;font-weight:800;color:#204b30}
+.manual-size-result-note{color:#596b5d}
+.manual-size-result-match{font-weight:700;color:#27643a}
+@keyframes manualSizeResultIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:600px){.manual-size-result{grid-template-columns:56px minmax(0,1fr);gap:12px;padding:14px}.manual-size-result-icon{width:54px;height:54px}.manual-size-result-icon svg{width:38px;height:38px}.manual-size-result-value{min-width:68px;min-height:62px;font-size:40px}.manual-size-result-details{grid-column:1/-1;padding:10px 0 0;border-left:0;border-top:1px solid #c7dfb3}}
+
 
 /* Hybrid AI foot-sizing review controls */
 .foot-ai-status{margin:10px 0;padding:10px 12px;border:1px solid #d8e5d3;border-radius:9px;background:#f5f9f0;color:#526b55!important;font-size:11px!important;line-height:1.5!important}
