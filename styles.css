@@ -711,3 +711,10 @@ body.foot-measure-open{overflow:hidden}
 @media(max-width:760px){.fit-finder{grid-template-columns:1fr;gap:25px}.fit-finder-steps{grid-template-columns:1fr}.fit-finder{padding-inline:22px}}
 @media(max-width:560px){.foot-measure-backdrop{padding:6px}.foot-measure-dialog{max-height:calc(100dvh - 12px);padding:16px;border-radius:14px}.foot-measure-actions{align-items:stretch;flex-direction:column}.foot-measure-actions .btn,.foot-measure-stage>.btn{width:100%}.foot-measure-results{grid-template-columns:1fr 1fr}.foot-measure-result-card{padding:12px}.foot-measure-result-card strong{font-size:22px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* Visual orientation guide for customers */
+.fit-finder-guide{min-width:0}
+.fit-finder-visual{margin:0 0 12px;padding:10px;border:1px solid #d8e2d5;border-radius:16px;background:#fff}
+.fit-finder-visual img{display:block;width:100%;height:auto}
+.fit-finder-visual figcaption{padding:8px 5px 2px;color:#58655c;font-size:11px;line-height:1.55;text-align:center}
+.foot-measure-guide-image{display:block;width:100%;height:auto;max-height:230px;object-fit:contain;margin:12px 0;border:1px solid #dce5d9;border-radius:12px;background:#fff}

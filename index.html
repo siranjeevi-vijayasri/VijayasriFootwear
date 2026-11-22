@@ -34,7 +34,7 @@ src="https://www.facebook.com/tr?id=1154054433959918&ev=PageView&noscript=1"
     <p class="hero-overline">A little sparkle. A lot of comfort.</p>
     <h1>Diwali Dhamaka<br><em>for every step.</em></h1>
     <p class="hero-description">Celebrate Deepavali with fresh styles for the whole family. Browse your favourite footwear, add your picks to the cart, and send your order enquiry straight to us on WhatsApp.</p>
-    <div class="hero-actions"><a class="btn btn-green" href="#catalogue">Explore the catalogue <span aria-hidden="true">↓</span></a><a class="text-link" href="#fit-finder">Measure your feet ↗</a><a class="text-link" href="#contact">Visit our store ↗</a></div>
+    <div class="hero-actions"><a class="btn btn-green" href="#catalogue">Explore the catalogue <span aria-hidden="true">↓</span></a><a class="text-link" href="#fit-finder">Measure your foot ↗</a><a class="text-link" href="#contact">Visit our store ↗</a></div>
     <div class="hero-trust"><span>✨ Festive favourites</span><i></i><span>🪔 Family styles</span><i></i><span>💛 Local service</span></div>
   </div>
   <div class="everyday-gallery" aria-label="Footwear highlights">
@@ -47,15 +47,21 @@ src="https://www.facebook.com/tr?id=1154054433959918&ev=PageView&noscript=1"
 <section class="fit-finder section" id="fit-finder">
   <div class="fit-finder-copy">
     <span class="eyebrow">CAMERA-ASSISTED FIT GUIDE</span>
-    <h2>Measure your feet before choosing your next pair.</h2>
-    <p>Use your phone camera with a standard A4 sheet to estimate your foot length and width. Measure both feet and share the results with our team for size guidance.</p>
+    <h2>Measure one foot before choosing your next pair.</h2>
+    <p>Use your phone camera with a standard A4 sheet to estimate one foot's length and width. Share the result with our team for size guidance.</p>
     <button type="button" class="btn btn-green" id="openFootMeasure">Measure with my camera</button>
     <p class="fit-finder-privacy">Your photo stays on your device. The tool calculates measurements in your browser and does not upload or save the photo.</p>
   </div>
-  <div class="fit-finder-steps" aria-label="How the measurement works">
-    <div><span>01</span><strong>Place your foot</strong><small>Stand barefoot on an A4 sheet on a flat floor.</small></div>
-    <div><span>02</span><strong>Capture from above</strong><small>Keep the whole sheet and foot inside the camera view.</small></div>
-    <div><span>03</span><strong>Mark six points</strong><small>Tap the paper edge, heel, toe and widest part of your foot.</small></div>
+  <div class="fit-finder-guide">
+    <figure class="fit-finder-visual">
+      <img src="assets/foot-measurement-orientation.svg" alt="Illustration: use A4 portrait or vertical orientation, 210 millimetres across and 297 millimetres long. Do not use landscape orientation. Place one foot fully on the sheet and photograph directly from above.">
+      <figcaption>Portrait means vertical: 210 mm across the top and 297 mm from top to bottom. Do not turn the sheet sideways.</figcaption>
+    </figure>
+    <div class="fit-finder-steps" aria-label="How the measurement works">
+      <div><span>01</span><strong>Place one foot</strong><small>Stand barefoot on an A4 sheet on a flat floor.</small></div>
+      <div><span>02</span><strong>Capture from above</strong><small>Keep the whole sheet and foot inside the camera view.</small></div>
+      <div><span>03</span><strong>Mark six points</strong><small>Tap the paper edge, heel, toe and widest part of your foot.</small></div>
+    </div>
   </div>
 </section>
 
@@ -67,12 +73,12 @@ src="https://www.facebook.com/tr?id=1154054433959918&ev=PageView&noscript=1"
 <div class="foot-measure-backdrop" id="footMeasureModal" hidden>
   <section class="foot-measure-dialog" role="dialog" aria-modal="true" aria-labelledby="footMeasureTitle">
     <div class="foot-measure-heading">
-      <div><span class="eyebrow">Vijayasri Footwear · Fit guide</span><h2 id="footMeasureTitle">Measure your foot</h2></div>
+      <div><span class="eyebrow">Vijayasri Footwear · Fit guide</span><h2 id="footMeasureTitle">Measure one foot</h2></div>
       <button type="button" id="closeFootMeasure" class="foot-measure-close" aria-label="Close measurement">×</button>
     </div>
     <div id="footMeasureIntro" class="foot-measure-stage">
-      <p class="foot-measure-side" id="footMeasureSide">Left foot</p>
-      <p>For the reference, use one plain A4 sheet in portrait orientation (210 mm wide × 297 mm long). Place your bare foot on it on a flat floor. Keep your heel and longest toe within the sheet.</p>
+      <p>Use one plain A4 sheet in portrait (vertical) orientation. Place one bare foot on it; measure the larger foot if one is noticeably bigger.</p>
+      <img class="foot-measure-guide-image" src="assets/foot-measurement-orientation.svg" alt="Use the A4 sheet vertically, not horizontally. Keep the full foot on the sheet and take the photo directly from above.">
       <ol>
         <li>Position the phone camera directly above the sheet, not at an angle.</li>
         <li>Make sure the whole sheet and your foot are visible in good light.</li>
@@ -95,11 +101,10 @@ src="https://www.facebook.com/tr?id=1154054433959918&ev=PageView&noscript=1"
       </div>
     </div>
     <div id="footResultStage" class="foot-measure-stage" hidden>
-      <p class="foot-measure-instruction">Your approximate measurements</p>
+      <p class="foot-measure-instruction">Your approximate foot measurements</p>
       <div id="footMeasurementResults" class="foot-measure-results"></div>
-      <p class="foot-measure-warning">Use the longer foot measurement when choosing a size. These measurements are a guide, not a guaranteed fit or an automatic brand-size conversion.</p>
+      <p class="foot-measure-warning">Use this measurement as a starting point and confirm sizing with our shop team. Brand and style fit can vary.</p>
       <div class="foot-measure-actions">
-        <button type="button" class="btn btn-outline" id="measureRightFoot" hidden>Measure right foot</button>
         <button type="button" class="btn btn-green" id="shareFootMeasurements">Share measurement on WhatsApp</button>
       </div>
     </div>
