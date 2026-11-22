@@ -99,7 +99,6 @@
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.detail || data.error || "AI measurement service is unavailable.");
       if (!data.suggested_points || !data.mask_png_base64) throw new Error("The AI service returned an incomplete result.");
-      if (Number(data.confidence) < 0.55) throw new Error("The AI is not confident enough about this foot outline. Please mark the points manually.");
       aiSuggestions = data.suggested_points;
       aiMaskImage = new Image();
       aiMaskImage.onload = () => {

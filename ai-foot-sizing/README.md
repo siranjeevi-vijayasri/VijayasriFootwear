@@ -35,7 +35,7 @@ The first run downloads the public Torchvision DeepLabV3-ResNet50 backbone weigh
 
 Health: GET /health
 
-Inference: POST /predict with multipart field image containing JPG, PNG or WebP. The response includes a transparent mask overlay, provisional normalized landmark coordinates, model version and confidence.
+Inference: POST /predict with multipart field image containing JPG, PNG or WebP. The response includes a transparent mask overlay, provisional normalized landmark coordinates, model version and mask score.
 
 ## API and customer privacy
 

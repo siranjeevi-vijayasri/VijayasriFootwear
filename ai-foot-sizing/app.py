@@ -134,7 +134,7 @@ async def predict(image: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail="Could not prepare the AI overlay.")
     # No uploaded photo or derived mask is written to disk or retained by this request.
     return {"model": "vijayasri-foot-segmentation", "model_version": "0.1.0",
-            "confidence": round(confidence, 4), "suggested_points": suggested_points,
+            "mask_score": round(confidence, 4), "suggested_points": suggested_points,
             "mask_png_base64": base64.b64encode(encoded.tobytes()).decode("ascii"),
             "image_dimensions": {"width": original_width, "height": original_height},
             "notice": "AI suggestions are provisional. Customer confirmation and A4 calibration are required."}
