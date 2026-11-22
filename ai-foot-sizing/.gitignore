@@ -1,0 +1,8 @@
+__pycache__/
+.venv/
+dataset/
+models/
+*.pt
+*.pth
+*.ts
+.pytest_cache/
