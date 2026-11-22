@@ -2,9 +2,15 @@
 
 An independent, first-party foot segmentation and landmark suggestion pipeline for Vijayasri Footwear. This is not Onefit code, a Onefit integration, or a trained production model.
 
+## Model strategy: transfer learning
+
+We will start from the public Torchvision DeepLabV3-ResNet50 pretrained computer-vision backbone, replace its final classifier with a two-class foot/background head, and fine-tune the network using our own consented and annotated Vijayasri images. This is faster and more practical than training the entire vision model from random initialization with a small retail dataset.
+
+The pretrained weights are a starting point only. The fine-tuned checkpoint and deployed model are specific to this project's foot-silhouette task. No Onefit service or code is used.
+
 ## Current scope
 
-1. Train a binary foot-silhouette segmentation model using consented, annotated Vijayasri dataset images.
+1. Fine-tune a foot-silhouette segmentation model using consented, annotated Vijayasri dataset images.
 2. Serve the trained TorchScript model through a small FastAPI inference service.
 3. Derive provisional toe, heel and widest-side landmark suggestions from the segmented outline.
 4. Let the customer review and correct every suggested landmark in the existing camera UI.
@@ -15,6 +21,10 @@ The website sends a captured image to the AI service only when FOOT_AI_API_URL i
 ## Important: model weights are not included
 
 This repository contains the training and inference pipeline, not a trained Vijayasri model. A suitable consented, annotated dataset is required before training. The API returns HTTP 503 until models/foot_segmentation.ts is installed. Do not describe the prototype as accurate or enable it for production sizing until independent tests pass.
+
+## Start small — progressive dataset plan
+
+We do not need to collect 200–500 images before starting. Begin with 20–30 distinct-foot images to verify annotation quality, training and inference. This is only a pipeline pilot. Expand to 50–75, then 100–150 images as we improve diversity and validate errors. Continue toward a few hundred diverse, consented images before making public sizing-accuracy claims. See DATASET.md for subject-level splitting and validation requirements.
 
 ## Prepare annotations offline
 
@@ -31,7 +41,7 @@ Python 3.11 is recommended.
     # Prepare dataset/train and dataset/val using DATASET.md
     python train.py --data dataset --epochs 35 --batch-size 4 --output models
 
-The first run downloads the public Torchvision DeepLabV3-ResNet50 backbone weights. Training fine-tunes a two-class foot/background segmentation head. The exported TorchScript model is models/foot_segmentation.ts.
+The first run downloads the public Torchvision DeepLabV3-ResNet50 backbone weights. The training script replaces the final classifier for two classes (background and foot) and fine-tunes the model on the Vijayasri masks. The exported TorchScript model is models/foot_segmentation.ts.
 
 ## Run the API
 
