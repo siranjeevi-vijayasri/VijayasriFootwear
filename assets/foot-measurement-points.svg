@@ -17,6 +17,8 @@
 <g font-family="Arial,sans-serif" font-size="26" font-weight="700" text-anchor="middle">
  <circle cx="155" cy="135" r="28" fill="#1769d2" stroke="#fff" stroke-width="6"/><text x="155" y="144" fill="#fff">1</text>
  <circle cx="515" cy="135" r="28" fill="#1769d2" stroke="#fff" stroke-width="6"/><text x="515" y="144" fill="#fff">2</text>
+ <!-- Measurement groups: length is heel-to-toe (3 to 4); width is side-to-side (5 to 6). -->
+ <path d="M575 205 V620" stroke="#e87912" stroke-width="5" stroke-dasharray="12 10" opacity=".0"/>
  <!-- heel, toe, widest side points -->
  <circle cx="350" cy="620" r="28" fill="#e87912" stroke="#fff" stroke-width="6"/><text x="350" y="629" fill="#fff">3</text>
  <circle cx="391" cy="205" r="28" fill="#e87912" stroke="#fff" stroke-width="6"/><text x="391" y="214" fill="#fff">4</text>
@@ -31,11 +33,13 @@
 <text x="740" y="261" font-family="Arial,sans-serif" font-size="23" fill="#263a50">Top-right corner</text>
 <rect x="650" y="305" width="500" height="355" rx="22" fill="#fff0dc"/>
 <text x="686" y="350" font-family="Arial,sans-serif" font-size="27" font-weight="700" fill="#a85b13">Points on your foot</text>
+<rect x="670" y="365" width="455" height="54" rx="12" fill="#fce1c1"/><text x="690" y="400" font-family="Arial,sans-serif" font-size="23" font-weight="700" fill="#984d0d">3 → 4  FOOT LENGTH (heel to toe)</text>
 <g font-family="Arial,sans-serif" font-size="23" fill="#3e392f">
  <circle cx="700" cy="404" r="22" fill="#e87912"/><text x="700" y="412" text-anchor="middle" font-weight="700" fill="#fff">3</text><text x="740" y="412">Back of your heel</text>
  <circle cx="700" cy="460" r="22" fill="#e87912"/><text x="700" y="468" text-anchor="middle" font-weight="700" fill="#fff">4</text><text x="740" y="468">Tip of your longest toe</text>
- <circle cx="700" cy="516" r="22" fill="#e87912"/><text x="700" y="524" text-anchor="middle" font-weight="700" fill="#fff">5</text><text x="740" y="524">One side at the widest point</text>
- <circle cx="700" cy="572" r="22" fill="#e87912"/><text x="700" y="580" text-anchor="middle" font-weight="700" fill="#fff">6</text><text x="740" y="580">Opposite side, same level</text>
+ <rect x="670" y="492" width="455" height="48" rx="12" fill="#fce1c1"/><text x="690" y="524" font-family="Arial,sans-serif" font-size="23" font-weight="700" fill="#984d0d">5 → 6  FOOT WIDTH (side to side)</text>
+ <circle cx="700" cy="566" r="22" fill="#e87912"/><text x="700" y="574" text-anchor="middle" font-weight="700" fill="#fff">5</text><text x="740" y="574">First side at the widest point</text>
+ <circle cx="700" cy="622" r="22" fill="#e87912"/><text x="700" y="630" text-anchor="middle" font-weight="700" fill="#fff">6</text><text x="740" y="630">Opposite side, same level</text>
 </g>
-<text x="686" y="626" font-family="Arial,sans-serif" font-size="18" fill="#6c5a45">Tap the actual edges of your foot, not the paper.</text>
+<text x="686" y="658" font-family="Arial,sans-serif" font-size="18" fill="#6c5a45">Tap the actual edges of your foot, not the paper.</text>
 </svg>
