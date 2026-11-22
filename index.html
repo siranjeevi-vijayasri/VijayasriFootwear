@@ -127,8 +127,21 @@ src="https://www.facebook.com/tr?id=1154054433959918&ev=PageView&noscript=1"
     </div>
     <div id="footPhotoStage" class="foot-measure-stage" hidden>
       <p class="foot-measure-instruction" id="footMeasureInstruction">Tap the first reference point.</p>
-      <p class="foot-measure-point-hint">Use the numbered example above if you are unsure where to tap.</p>
-      <canvas id="footMeasureCanvas" aria-label="Captured foot photo. Tap the requested measurement points."></canvas>
+      <p class="foot-measure-point-hint">AI assistance is experimental. Review every suggested point before calculating your size.</p>
+      <p class="foot-ai-status" id="footAiStatus" role="status" aria-live="polite">AI assistance is not connected yet. You can continue with manual point marking.</p>
+      <canvas id="footMeasureCanvas" aria-label="Captured foot photo with AI-assisted landmark suggestions. Tap the requested measurement points."></canvas>
+      <div id="footAiReviewControls" class="foot-ai-review" hidden>
+        <label for="footAiPointSelect">Correct a suggested point (optional)</label>
+        <select id="footAiPointSelect">
+          <option value="2">3 · Tip of longest toe</option>
+          <option value="3">4 · Back of heel</option>
+          <option value="4">5 · Widest point on right side</option>
+          <option value="5">6 · Widest point on left side</option>
+        </select>
+        <small>Select a point, then tap its correct location on the photo. Repeat if needed.</small>
+        <button type="button" class="btn btn-green" id="applyFootAiPoints">Use these points and calculate</button>
+        <button type="button" class="btn btn-outline" id="switchFootManual">Mark all points manually</button>
+      </div>
       <div class="foot-measure-actions">
         <button type="button" class="btn btn-outline" id="undoFootPoint">Undo last point</button>
         <button type="button" class="btn btn-outline" id="retakeFootPhoto">Retake photo</button>
@@ -145,5 +158,5 @@ src="https://www.facebook.com/tr?id=1154054433959918&ev=PageView&noscript=1"
     <p class="foot-measure-error" id="footMeasureError" role="alert" hidden></p>
   </section>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="foot-measurement.js"></script><script src="config.js"></script><script src="app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="foot-measurement.js"></script><script src="app.js"></script>
 </body></html>
