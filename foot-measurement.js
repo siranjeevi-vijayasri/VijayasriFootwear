@@ -7,7 +7,6 @@
   const undoButton = document.getElementById("undoFootPoint");
   const retakeButton = document.getElementById("retakeFootPhoto");
   const shareButton = document.getElementById("shareFootMeasurements");
-  const measureRightButton = document.getElementById("measureRightFoot");
   const video = document.getElementById("footCameraVideo");
   const canvas = document.getElementById("footMeasureCanvas");
   const instruction = document.getElementById("footMeasureInstruction");
@@ -16,7 +15,6 @@
   const cameraStage = document.getElementById("footCameraStage");
   const photoStage = document.getElementById("footPhotoStage");
   const resultStage = document.getElementById("footResultStage");
-  const sideLabel = document.getElementById("footMeasureSide");
   const resultCards = document.getElementById("footMeasurementResults");
   const cameraHelp = document.getElementById("footCameraHelp");
 
@@ -34,11 +32,9 @@
   let stream = null;
   let photo = null;
   let points = [];
-  let currentSide = "left";
-  const measurements = {};
+  let measurement = null;
 
   const distance = (a, b) => Math.hypot(b.x - a.x, b.y - a.y);
-  const sideName = () => currentSide === "left" ? "left" : "right";
 
   function showError(message) {
     if (!errorBox) return;
@@ -63,12 +59,11 @@
   }
 
   function openModal() {
-    currentSide = "left";
-    Object.keys(measurements).forEach(key => delete measurements[key]);
+    measurement = null;
+    points = [];
+    photo = null;
     resultCards.innerHTML = "";
-    measureRightButton.hidden = true;
     shareButton.textContent = "Share measurement on WhatsApp";
-    sideLabel.textContent = "Left foot";
     showError("");
     showStage("intro");
     modal.hidden = false;
@@ -96,7 +91,7 @@
       video.srcObject = stream;
       await video.play();
       showStage("camera");
-      cameraHelp.textContent = "Measuring your " + sideName() + " foot. Keep the entire A4 sheet visible.";
+      cameraHelp.textContent = "Measure one foot. Keep the entire A4 sheet and your foot visible.";
     } catch (error) {
       const reason = error && error.name === "NotAllowedError"
         ? "Camera permission was denied. Allow camera access in your browser settings and try again."
@@ -179,41 +174,27 @@
       instruction.textContent = pointsForMeasurement[0];
       return;
     }
-    measurements[currentSide] = {
+    measurement = {
       length: Math.round(lengthCm * 10) / 10,
       width: Math.round(widthCm * 10) / 10
     };
-    renderResults();
+    renderResult();
     showStage("result");
   }
 
-  function renderResults() {
-    const order = ["left", "right"].filter(side => measurements[side]);
-    resultCards.innerHTML = order.map(side => {
-      const item = measurements[side];
-      const label = side === "left" ? "Left foot" : "Right foot";
-      return '<article class="foot-measure-result-card"><span>' + label + '</span><strong>' + item.length.toFixed(1) + ' cm</strong><small>Length · ' + item.width.toFixed(1) + ' cm wide</small></article>';
-    }).join("");
-    measureRightButton.hidden = Boolean(measurements.right);
-    shareButton.textContent = order.length === 2 ? "Share both measurements on WhatsApp" : "Share measurement on WhatsApp";
+  function renderResult() {
+    resultCards.innerHTML =
+      '<article class="foot-measure-result-card"><span>Foot measurement</span><strong>' +
+      measurement.length.toFixed(1) + ' cm</strong><small>Length · ' +
+      measurement.width.toFixed(1) + ' cm wide</small></article>';
+    shareButton.textContent = "Share measurement on WhatsApp";
   }
 
-  function beginOtherFoot() {
-    currentSide = "right";
-    sideLabel.textContent = "Right foot";
-    showError("");
-    showStage("intro");
-  }
-
-  function shareMeasurements() {
-    const left = measurements.left;
-    const right = measurements.right;
-    if (!left && !right) return;
-    const rows = [];
-    if (left) rows.push("Left foot: " + left.length.toFixed(1) + " cm long, " + left.width.toFixed(1) + " cm wide");
-    if (right) rows.push("Right foot: " + right.length.toFixed(1) + " cm long, " + right.width.toFixed(1) + " cm wide");
-    const message = "Hello Vijayasri Footwear. I measured my feet using the website camera tool:\n" +
-      rows.join("\n") +
+  function shareMeasurement() {
+    if (!measurement) return;
+    const message = "Hello Vijayasri Footwear. I measured one foot using the website camera tool:\n" +
+      "Foot: " + measurement.length.toFixed(1) + " cm long, " +
+      measurement.width.toFixed(1) + " cm wide" +
       "\nPlease help me choose the suitable size for the footwear style I am interested in.";
     window.open("https://wa.me/" + "918300029513" + "?text=" + encodeURIComponent(message), "_blank", "noopener");
   }
@@ -232,8 +213,7 @@
     showError("");
   });
   retakeButton?.addEventListener("click", startCamera);
-  measureRightButton?.addEventListener("click", beginOtherFoot);
-  shareButton?.addEventListener("click", shareMeasurements);
+  shareButton?.addEventListener("click", shareMeasurement);
   canvas.addEventListener("pointerdown", event => {
     if (!photo || points.length >= pointsForMeasurement.length) return;
     const rect = canvas.getBoundingClientRect();
