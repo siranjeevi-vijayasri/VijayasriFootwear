@@ -73,6 +73,20 @@ src="https://www.facebook.com/tr?id=1154054433959918&ev=PageView&noscript=1"
         <button type="button" class="btn btn-outline" id="clearManualSizeFilter">Clear size</button>
       </div>
       <p id="manualSizeFeedback" class="manual-size-feedback" role="status" aria-live="polite">Select your category and size to filter the catalogue.</p>
+      <div id="manualSizeResult" class="manual-size-result" role="status" aria-live="polite" hidden>
+        <div class="manual-size-result-icon" aria-hidden="true">
+          <svg viewBox="0 0 64 64" focusable="false"><path d="M11 39c6-2 10-8 13-17 1-4 4-6 8-4l8 8c4 4 8 6 14 7 5 1 8 4 8 9v5c0 4-3 7-7 7H16c-7 0-11-4-11-10 0-2 2-4 6-5Z"/><path d="M23 22l7 8 8 2M14 45h42M43 40h5"/></svg>
+        </div>
+        <div class="manual-size-result-main">
+          <span class="manual-size-result-label">Your estimated UK / India size</span>
+          <strong id="manualSizeResultValue" class="manual-size-result-value">9</strong>
+        </div>
+        <div class="manual-size-result-details">
+          <span id="manualSizeResultLength" class="manual-size-result-length"></span>
+          <span class="manual-size-result-note">Brand and style fit may vary.</span>
+          <span class="manual-size-result-match">Showing products with this size listed.</span>
+        </div>
+      </div>
     </div>
 
   </div>
