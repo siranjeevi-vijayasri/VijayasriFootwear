@@ -19,6 +19,14 @@
   const audienceFilter = document.getElementById('audienceFilter');
   const typeFilter = document.getElementById('typeFilter');
   const sizeFilter = document.getElementById('sizeFilter');
+  const manualSizeCategory = document.getElementById('manualSizeCategory');
+  const manualSizeMethod = document.getElementById('manualSizeMethod');
+  const manualUkSize = document.getElementById('manualUkSize');
+  const manualUkSizeField = document.getElementById('manualUkSizeField');
+  const manualCmField = document.getElementById('manualCmField');
+  const manualFootLength = document.getElementById('manualFootLength');
+  const manualSizeFeedback = document.getElementById('manualSizeFeedback');
+  let manualSizeSelection = null;
   const resetFilters = document.getElementById('resetFilters');
   document.getElementById('year').textContent = new Date().getFullYear();
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -138,6 +146,91 @@
   function productSizes(p) {
     return [...new Set(String(p.sizes || '').split(/[，,;|/]+/).map(s => s.trim()).filter(Boolean))];
   }
+  const childrenSizeRows = [
+    [120, 3.5], [123, 4], [127, 4.5], [130, 5], [133, 5.5],
+    [138, 6], [142, 6.5], [146, 7], [150, 7.5], [154, 8],
+    [157, 8.5], [160, 9], [166, 9.5], [169, 10], [173, 10.5],
+    [176, 11], [179, 11.5], [185, 12], [188, 12.5], [192, 13],
+    [195, 13.5], [200, 1], [204, 1.5], [210, 2], [213, 2.5],
+    [217, 3], [220, 3.5], [226, 4], [230, 4.5], [236, 5]
+  ];
+  function estimateManualUkSize(lengthCm, category) {
+    const lengthMm = lengthCm * 10;
+    if (category === 'adult') {
+      if (lengthMm < 211.7 || lengthMm > 321.8) return null;
+      const raw = ((lengthMm + (2 * 8.47)) / 8.47) - 25;
+      return Math.round(raw * 2) / 2;
+    }
+    if (category === 'children') {
+      if (lengthMm < childrenSizeRows[0][0] || lengthMm > childrenSizeRows[childrenSizeRows.length - 1][0]) return null;
+      return childrenSizeRows.reduce((best, row) =>
+        Math.abs(row[0] - lengthMm) < Math.abs(best[0] - lengthMm) ? row : best
+      , childrenSizeRows[0])[1];
+    }
+    return null;
+  }
+  function normalizedSize(value) {
+    const match = String(value ?? '').match(/(\d+(?:\.5)?)/);
+    return match ? String(Number(match[1])) : String(value ?? '').trim().toLowerCase();
+  }
+  function productHasSize(p, size) {
+    const target = normalizedSize(size);
+    return productSizes(p).some(value => normalizedSize(value) === target);
+  }
+  function populateManualSizeOptions() {
+    if (!manualUkSize || !manualSizeCategory) return;
+    const category = manualSizeCategory.value;
+    const values = [];
+    const first = category === 'children' ? 1 : 3;
+    const last = category === 'children' ? 13.5 : 13;
+    for (let value = first; value <= last; value += 0.5) values.push(String(value));
+    manualUkSize.innerHTML = '<option value="">Choose your size</option>' +
+      values.map(value => '<option value="' + value + '">' + value + '</option>').join('');
+  }
+  function syncManualSizeMethod() {
+    const useCm = manualSizeMethod?.value === 'cm';
+    if (manualUkSizeField) manualUkSizeField.hidden = useCm;
+    if (manualCmField) manualCmField.hidden = !useCm;
+  }
+  function applyManualSizeSelection() {
+    if (!manualSizeCategory || !manualSizeMethod || !manualSizeFeedback) return;
+    const category = manualSizeCategory.value;
+    let size = null;
+    let message = '';
+    if (manualSizeMethod.value === 'uk') {
+      size = manualUkSize?.value ? Number(manualUkSize.value) : null;
+      if (size == null || !Number.isFinite(size)) {
+        manualSizeFeedback.textContent = 'Please choose your UK / India shoe size.';
+        manualUkSize?.focus();
+        return;
+      }
+      message = (category === 'children' ? 'Children’s' : 'Adult') + ' footwear · UK / India size ' + size + '.';
+    } else {
+      const length = Number(manualFootLength?.value);
+      if (!manualFootLength?.value || !Number.isFinite(length) || length < 8 || length > 33) {
+        manualSizeFeedback.textContent = 'Please enter a valid foot length between 8 and 33 cm.';
+        manualFootLength?.focus();
+        return;
+      }
+      size = estimateManualUkSize(length, category);
+      if (size == null) {
+        manualSizeFeedback.textContent = 'We could not estimate a size from that length. Please check the measurement or choose a UK / India size directly.';
+        return;
+      }
+      message = length.toFixed(1) + ' cm is approximately UK / India size ' + size + '. Brand and style fit may vary.';
+    }
+    manualSizeSelection = { category, size: String(size) };
+    manualSizeFeedback.textContent = message + ' Showing products with this size listed.';
+    render();
+    document.getElementById('catalogue')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  function clearManualSizeSelection() {
+    manualSizeSelection = null;
+    if (manualUkSize) manualUkSize.value = '';
+    if (manualFootLength) manualFootLength.value = '';
+    if (manualSizeFeedback) manualSizeFeedback.textContent = 'Size filter cleared. Browse all available sizes.';
+    render();
+  }
   function setOptions(select, values, placeholder, selected = '') {
     const unique = [...new Set(values.filter(Boolean))].sort((a,b) => a.localeCompare(b, undefined, {numeric:true, sensitivity:'base'}));
     select.innerHTML = '<option value="">' + esc(placeholder) + '</option>' + unique.map(v => '<option value="' + esc(v) + '">' + esc(v) + '</option>').join('');
@@ -162,7 +255,13 @@
       return (!brand || String(p.brand || '').trim() === brand) &&
         (!audience || productAudience(p) === audience) &&
         (!type || productType(p) === type) &&
-        (!size || productSizes(p).includes(size)) && text.includes(q);
+        (!size || productSizes(p).includes(size)) &&
+        (!manualSizeSelection || (
+          productHasSize(p, manualSizeSelection.size) &&
+          (manualSizeSelection.category === 'children'
+            ? productAudience(p) === 'Kids'
+            : ['Men', 'Women', 'Unisex'].includes(productAudience(p)))
+        )) && text.includes(q);
     });
     grid.innerHTML = shown.map(productCard).join('');
     empty.hidden = shown.length > 0;
@@ -230,6 +329,12 @@
     else if (event.key === '0') resetZoom();
   });
 
+  populateManualSizeOptions();
+  syncManualSizeMethod();
+  manualSizeCategory?.addEventListener('change', populateManualSizeOptions);
+  manualSizeMethod?.addEventListener('change', syncManualSizeMethod);
+  document.getElementById('applyManualSizeFilter')?.addEventListener('click', applyManualSizeSelection);
+  document.getElementById('clearManualSizeFilter')?.addEventListener('click', clearManualSizeSelection);
   document.getElementById('search')?.addEventListener('input', render);
   brandFilter?.addEventListener('change', () => { audienceFilter.value = ''; typeFilter.value = ''; sizeFilter.value = ''; updateFilters(); render(); });
   audienceFilter?.addEventListener('change', () => { typeFilter.value = ''; sizeFilter.value = ''; updateFilters(); render(); });
@@ -237,6 +342,10 @@
   sizeFilter?.addEventListener('change', render);
   resetFilters?.addEventListener('click', () => {
     brandFilter.value = ''; audienceFilter.value = ''; typeFilter.value = ''; sizeFilter.value = '';
+    manualSizeSelection = null;
+    if (manualUkSize) manualUkSize.value = '';
+    if (manualFootLength) manualFootLength.value = '';
+    if (manualSizeFeedback) manualSizeFeedback.textContent = 'Size filter cleared. Browse all available sizes.';
     updateFilters(); render();
   });
   async function load() {
