@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+<title id="title">Numbered foot measurement camera points</title>
+<desc id="desc">Tap points in this order: 1 top-left A4 corner, 2 top-right A4 corner, 3 heel, 4 longest toe, 5 left side at the widest part, 6 opposite side at the same widest part.</desc>
+<defs>
+ <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#fbfcf7"/><stop offset="1" stop-color="#eef5ec"/></linearGradient>
+ <linearGradient id="paper" x2="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#f1f4f8"/></linearGradient>
+ <linearGradient id="skin" x2="0" y2="1"><stop stop-color="#e8b493"/><stop offset="1" stop-color="#c98162"/></linearGradient>
+ <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#304436" flood-opacity=".13"/></filter>
+</defs>
+<rect x="10" y="10" width="1180" height="740" rx="34" fill="url(#bg)" stroke="#dce7d8" stroke-width="3"/>
+<text x="52" y="72" font-family="Arial,sans-serif" font-size="34" font-weight="700" fill="#244735">Tap the six points in this order</text>
+<rect x="70" y="110" width="530" height="590" rx="24" fill="#e9dfd0"/>
+<rect x="155" y="135" width="360" height="535" rx="7" fill="url(#paper)" stroke="#aab6c4" stroke-width="4" filter="url(#shadow)"/>
+<path d="M300 590 C262 565 252 516 263 452 C272 398 260 347 251 299 C241 250 251 214 273 195 C292 178 313 184 324 205 C331 170 355 159 374 178 C389 191 392 210 391 230 C402 198 426 191 444 208 C460 223 458 245 452 265 C475 247 497 260 501 281 C506 307 491 334 480 360 C464 397 472 450 465 501 C459 553 437 601 397 619 C365 633 326 619 300 590Z" fill="url(#skin)" stroke="#a96850" stroke-width="5" filter="url(#shadow)"/>
+<path d="M280 280 C310 303 333 312 369 310 M272 360 C310 381 361 386 453 360" fill="none" stroke="#b9775e" stroke-width="4" opacity=".35"/>
+<!-- paper corners -->
+<g font-family="Arial,sans-serif" font-size="26" font-weight="700" text-anchor="middle">
+ <circle cx="155" cy="135" r="28" fill="#1769d2" stroke="#fff" stroke-width="6"/><text x="155" y="144" fill="#fff">1</text>
+ <circle cx="515" cy="135" r="28" fill="#1769d2" stroke="#fff" stroke-width="6"/><text x="515" y="144" fill="#fff">2</text>
+ <!-- heel, toe, widest side points -->
+ <circle cx="350" cy="620" r="28" fill="#e87912" stroke="#fff" stroke-width="6"/><text x="350" y="629" fill="#fff">3</text>
+ <circle cx="391" cy="205" r="28" fill="#e87912" stroke="#fff" stroke-width="6"/><text x="391" y="214" fill="#fff">4</text>
+ <circle cx="267" cy="390" r="28" fill="#e87912" stroke="#fff" stroke-width="6"/><text x="267" y="399" fill="#fff">5</text>
+ <circle cx="466" cy="390" r="28" fill="#e87912" stroke="#fff" stroke-width="6"/><text x="466" y="399" fill="#fff">6</text>
+</g>
+<rect x="650" y="112" width="500" height="170" rx="22" fill="#e5f0ff"/>
+<text x="686" y="157" font-family="Arial,sans-serif" font-size="27" font-weight="700" fill="#1e5eb5">A4 paper corners</text>
+<circle cx="700" cy="207" r="22" fill="#1769d2"/><text x="700" y="216" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="700" fill="#fff">1</text>
+<text x="740" y="215" font-family="Arial,sans-serif" font-size="23" fill="#263a50">Top-left corner</text>
+<circle cx="700" cy="253" r="22" fill="#1769d2"/><text x="700" y="262" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="700" fill="#fff">2</text>
+<text x="740" y="261" font-family="Arial,sans-serif" font-size="23" fill="#263a50">Top-right corner</text>
+<rect x="650" y="305" width="500" height="355" rx="22" fill="#fff0dc"/>
+<text x="686" y="350" font-family="Arial,sans-serif" font-size="27" font-weight="700" fill="#a85b13">Points on your foot</text>
+<g font-family="Arial,sans-serif" font-size="23" fill="#3e392f">
+ <circle cx="700" cy="404" r="22" fill="#e87912"/><text x="700" y="412" text-anchor="middle" font-weight="700" fill="#fff">3</text><text x="740" y="412">Back of your heel</text>
+ <circle cx="700" cy="460" r="22" fill="#e87912"/><text x="700" y="468" text-anchor="middle" font-weight="700" fill="#fff">4</text><text x="740" y="468">Tip of your longest toe</text>
+ <circle cx="700" cy="516" r="22" fill="#e87912"/><text x="700" y="524" text-anchor="middle" font-weight="700" fill="#fff">5</text><text x="740" y="524">One side at the widest point</text>
+ <circle cx="700" cy="572" r="22" fill="#e87912"/><text x="700" y="580" text-anchor="middle" font-weight="700" fill="#fff">6</text><text x="740" y="580">Opposite side, same level</text>
+</g>
+<text x="686" y="626" font-family="Arial,sans-serif" font-size="18" fill="#6c5a45">Tap the actual edges of your foot, not the paper.</text>
+</svg>

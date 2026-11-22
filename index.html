@@ -114,8 +114,9 @@ src="https://www.facebook.com/tr?id=1154054433959918&ev=PageView&noscript=1"
       <ol>
         <li>Position the phone camera directly above the sheet, not at an angle.</li>
         <li>Make sure the whole sheet and your foot are visible in good light.</li>
-        <li>After capturing, tap the two top paper corners, your heel, longest toe and both sides at the widest part of your foot.</li>
+        <li>After capturing, follow the numbered guide: paper corners first, then heel, longest toe and both sides at the widest point.</li>
       </ol>
+      <img class="foot-measure-points-guide" src="assets/foot-measurement-points.svg" alt="Point guide: 1 and 2 are the top corners of the A4 sheet; 3 is the heel; 4 is the longest toe; 5 and 6 are the two sides at the widest part of the foot.">
       <p class="foot-measure-warning">This is an approximate home measurement. Product sizing varies by brand and style, so please confirm the size with our shop team.</p>
       <button type="button" class="btn btn-green" id="startFootCamera">Open camera</button>
     </div>
@@ -126,6 +127,7 @@ src="https://www.facebook.com/tr?id=1154054433959918&ev=PageView&noscript=1"
     </div>
     <div id="footPhotoStage" class="foot-measure-stage" hidden>
       <p class="foot-measure-instruction" id="footMeasureInstruction">Tap the first reference point.</p>
+      <p class="foot-measure-point-hint">Use the numbered example above if you are unsure where to tap.</p>
       <canvas id="footMeasureCanvas" aria-label="Captured foot photo. Tap the requested measurement points."></canvas>
       <div class="foot-measure-actions">
         <button type="button" class="btn btn-outline" id="undoFootPoint">Undo last point</button>
