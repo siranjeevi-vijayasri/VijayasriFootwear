@@ -182,8 +182,8 @@
     const category = manualSizeCategory.value;
     const values = [];
     const first = category === 'children' ? 1 : 3;
-    const last = category === 'children' ? 13.5 : 13;
-    for (let value = first; value <= last; value += 0.5) values.push(String(value));
+    const last = 12;
+    for (let value = first; value <= last; value += 1) values.push(String(value));
     manualUkSize.innerHTML = '<option value="">Choose your size</option>' +
       values.map(value => '<option value="' + value + '">' + value + '</option>').join('');
   }
@@ -245,7 +245,11 @@
     const byAudience = byBrand.filter(p => !audienceFilter.value || productAudience(p) === audienceFilter.value);
     setOptions(typeFilter, byAudience.map(productType), 'All types', type);
     const byType = byAudience.filter(p => !typeFilter.value || productType(p) === typeFilter.value);
-    setOptions(sizeFilter, byType.flatMap(productSizes), 'All sizes', size);
+    const wholeSizesOnly = byType.flatMap(productSizes).filter(value => {
+      const parsed = Number(normalizedSize(value));
+      return Number.isInteger(parsed) && parsed >= 1 && parsed <= 12;
+    });
+    setOptions(sizeFilter, wholeSizesOnly, 'All sizes', size);
   }
   function render() {
     const q = (document.getElementById('search')?.value || '').trim().toLowerCase();
