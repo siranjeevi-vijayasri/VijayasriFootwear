@@ -122,7 +122,7 @@ src="https://www.facebook.com/tr?id=1154054433959918&ev=PageView&noscript=1"
       <button type="button" id="closeFootMeasure" class="foot-measure-close" aria-label="Close measurement">×</button>
     </div>
     <div id="footMeasureIntro" class="foot-measure-stage">
-      Place one plain A4 sheet flat on the floor in portrait orientation. Keep one bare foot beside it, parallel to the paper, with the heel and longest toe visible. For this first test, only one foot is measured.
+      <p>Place one plain A4 sheet flat on the floor in portrait orientation. Keep one bare foot beside it, parallel to the paper, with heel and longest toe clearly visible. This first test measures one foot only.</p>
       <label class="foot-size-category-label" for="footSizeCategory">Which size chart should we use?</label>
       <select id="footSizeCategory" class="foot-size-category">
         <option value="">Choose a size chart</option>
@@ -135,7 +135,7 @@ src="https://www.facebook.com/tr?id=1154054433959918&ev=PageView&noscript=1"
       <button type="button" class="btn btn-green" id="startFootCamera">Open camera</button>
     </div>
     <div id="footCameraStage" class="foot-measure-stage" hidden>
-      <p id="footCameraHelp" class="foot-measure-instruction">Keep the complete A4 sheet inside the guide, with one foot beside it.</p>
+      <p id="footCameraHelp" class="foot-measure-instruction">Fit the entire A4 sheet inside the guide; keep one foot beside it.</p>
       <div class="foot-camera-viewport">
         <video id="footCameraVideo" autoplay muted playsinline></video>
         <div class="a4-camera-overlay" aria-hidden="true">
@@ -143,15 +143,15 @@ src="https://www.facebook.com/tr?id=1154054433959918&ev=PageView&noscript=1"
             <span class="a4-frame-label">FIT A4 SHEET INSIDE</span>
             <div class="a4-cm-ruler"><span>0</span><span>5</span><span>10</span><span>15</span><span>20</span><span>25</span><span>29.7 cm</span></div>
           </div>
-          <div class="a4-foot-guide">Keep one foot beside the sheet, parallel to its long edge</div>
+          <div class="a4-foot-guide">One foot beside paper, parallel to its long edge</div>
         </div>
       </div>
-      <p class="a4-camera-tip">Move the phone until the whole A4 sheet fits the guide. The ruler is a framing guide only; the physical A4 sheet is the calibration reference.</p>
+      <p class="a4-camera-tip">Move the phone until the complete A4 sheet fits the guide. The on-screen CM ruler is a framing aid only; the captured A4 sheet is the physical calibration reference.</p>
       <button type="button" class="btn btn-green" id="captureFootPhoto">Capture foot photo</button>
     </div>
     <div id="footPhotoStage" class="foot-measure-stage" hidden>
       <p class="foot-measure-instruction" id="footMeasureInstruction">Tap the first reference point.</p>
-      <p class="foot-measure-point-hint">The on-screen CM ruler helps frame the paper. The physical A4 sheet calibrates the image; you will only need to mark the paper edge, toe and heel.</p>
+      <p class="foot-measure-point-hint">AI assistance is experimental. Review every suggested point before calculating your size.</p>
       <p class="foot-ai-status" id="footAiStatus" role="status" aria-live="polite">AI assistance is not connected yet. You can continue with manual point marking.</p>
       <canvas id="footMeasureCanvas" aria-label="Captured foot photo with AI-assisted landmark suggestions. Tap the requested measurement points."></canvas>
       <div id="footAiReviewControls" class="foot-ai-review" hidden>
