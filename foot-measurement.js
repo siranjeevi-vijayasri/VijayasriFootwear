@@ -221,12 +221,12 @@
       stopCamera();
       stream = await navigator.mediaDevices.getUserMedia({
         audio: false,
-        video: { facingMode: { ideal: "environment" }, width: { ideal: 1080 }, height: { ideal: 1920 }, aspectRatio: { ideal: 9 / 16 } }
+        video: { facingMode: { ideal: "environment" }, width: { ideal: 1920 }, height: { ideal: 1080 }, aspectRatio: { ideal: 16 / 9 } }
       });
       video.srcObject = stream;
       await video.play();
       showStage("camera");
-      cameraHelp.textContent = "Portrait mode is recommended. Place A4 flat in portrait orientation and one foot beside it, parallel to the long edge. Fit the complete sheet and foot inside the guide. Landscape capture is also supported.";
+      cameraHelp.textContent = "Landscape mode only. Place the A4 sheet flat in portrait orientation and one foot beside it, parallel to the long edge. Keep the complete sheet and foot visible in the uncropped camera frame. Tap the two ends of the 21 cm short edge to calibrate.";
     } catch (error) {
       const reason = error && error.name === "NotAllowedError"
         ? "Camera permission was denied. Allow camera access in your browser settings and try again."
@@ -308,7 +308,7 @@
 
   function finishMeasurement() {
     const paperEdgePixels = distance(points[0], points[1]);
-    if (!paperEdgePixels || paperEdgePixels < 40 || points.length !== 4) {
+    if (!paperEdgePixels || paperEdgePixels < 40 || points.length < 4) {
       showError("The A4 edge or foot points were unclear. Retake with the full sheet and one foot visible.");
       points = [];
       drawPhoto();
