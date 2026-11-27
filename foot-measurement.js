@@ -393,11 +393,12 @@
       x: (event.clientX - rect.left) * canvas.width / rect.width,
       y: (event.clientY - rect.top) * canvas.height / rect.height
     };
-    if (aiReviewMode && points.length === 6) {
-      points[aiSelectedPoint] = point;
+    if (aiReviewMode && points.length === 4) {
+      const targetIndex = aiSelectedPoint === 0 ? 2 : aiSelectedPoint === 1 ? 3 : aiSelectedPoint;
+      points[targetIndex] = point;
       drawPhoto();
       showError("");
-      instruction.textContent = "Point " + (aiSelectedPoint + 1) + " adjusted. Review the other points or calculate your measurement.";
+      instruction.textContent = "The selected foot point has been adjusted. Review the other point or confirm.";
       return;
     }
     points.push(point);
