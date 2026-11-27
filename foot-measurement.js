@@ -27,13 +27,12 @@
 
   if (!modal || !openButton || !video || !canvas) return;
 
+  // First test: one foot, length only. A4 short edge = 210 mm.
   const pointsForMeasurement = [
-    "Point 1: tap the LEFT end of the A4 sheet's TOP short edge (210 mm wide).",
-    "Point 2: tap the RIGHT end of that same top edge.",
-    "Point 3: tap the tip of your longest toe.",
-    "Point 4: tap the back of your heel.",
-    "Point 5: tap the widest point on the RIGHT side of your foot.",
-    "Point 6: tap the widest point on the LEFT side of your foot."
+    "Tap the LEFT end of the A4 sheet's top short edge (21 cm).",
+    "Tap the RIGHT end of the same short edge.",
+    "Tap the tip of your longest toe.",
+    "Tap the back of your heel."
   ];
 
   let stream = null;
@@ -222,12 +221,12 @@
       stopCamera();
       stream = await navigator.mediaDevices.getUserMedia({
         audio: false,
-        video: { facingMode: { ideal: "environment" }, width: { ideal: 1920 }, height: { ideal: 1080 } }
+        video: { facingMode: { ideal: "environment" }, width: { ideal: 1080 }, height: { ideal: 1920 }, aspectRatio: { ideal: 9 / 16 } }
       });
       video.srcObject = stream;
       await video.play();
       showStage("camera");
-      cameraHelp.textContent = "Measure one foot. Keep the entire A4 sheet and your foot visible. Point your toes toward the top short edge of the portrait sheet and your heel toward the bottom.";
+      cameraHelp.textContent = "Portrait mode is recommended. Place A4 flat in portrait orientation and one foot beside it, parallel to the long edge. Fit the complete sheet and foot inside the guide. Landscape capture is also supported.";
     } catch (error) {
       const reason = error && error.name === "NotAllowedError"
         ? "Camera permission was denied. Allow camera access in your browser settings and try again."
@@ -308,19 +307,18 @@
   }
 
   function finishMeasurement() {
-    const paperWidthPixels = distance(points[0], points[1]);
-    if (!paperWidthPixels || paperWidthPixels < 60) {
-      showError("The paper edge was too small or unclear. Retake the photo with the A4 sheet closer and fully visible.");
+    const paperEdgePixels = distance(points[0], points[1]);
+    if (!paperEdgePixels || paperEdgePixels < 40 || points.length !== 4) {
+      showError("The A4 edge or foot points were unclear. Retake with the full sheet and one foot visible.");
       points = [];
       drawPhoto();
       instruction.textContent = pointsForMeasurement[0];
       return;
     }
-    const millimetresPerPixel = 210 / paperWidthPixels;
-    const lengthCm = distance(points[2], points[3]) * millimetresPerPixel / 10;
-    const widthCm = distance(points[4], points[5]) * millimetresPerPixel / 10;
-    if (lengthCm < 8 || lengthCm > 33 || widthCm < 3 || widthCm > 16) {
-      showError("The marked points produced an unusual measurement. Check the paper-edge and foot points, then try again.");
+    const mmPerPixel = 210 / paperEdgePixels;
+    const lengthCm = distance(points[2], points[3]) * mmPerPixel / 10;
+    if (lengthCm < 8 || lengthCm > 33) {
+      showError("The measured foot length looks unusual. Check the A4 edge, toe and heel points, then try again.");
       points = [];
       drawPhoto();
       instruction.textContent = pointsForMeasurement[0];
@@ -328,7 +326,7 @@
     }
     measurement = {
       length: Math.round(lengthCm * 10) / 10,
-      width: Math.round(widthCm * 10) / 10,
+      width: null,
       category: sizeCategorySelect.value,
       size: estimateUkIndiaSize(lengthCm, sizeCategorySelect.value)
     };
@@ -344,8 +342,7 @@
       : '<article class="foot-measure-result-card foot-size-highlight"><span>UK / India size</span><strong>Ask our team</strong><small>This measurement is outside the selected size chart range.</small></article>';
     const measurementCard =
       '<article class="foot-measure-result-card"><span>Your foot measurement</span><strong>' +
-      measurement.length.toFixed(1) + ' cm</strong><small>Length · ' +
-      measurement.width.toFixed(1) + ' cm wide</small></article>';
+      measurement.length.toFixed(1) + ' cm</strong><small>Single-foot length · width is not measured in this test</small></article>';
     resultCards.innerHTML = sizeCard + measurementCard;
     shareButton.textContent = "Share measurement on WhatsApp";
   }
@@ -359,8 +356,7 @@
     const message = "Hello Vijayasri Footwear. I measured one foot using the website camera tool:\n" +
       "Category: " + categoryLabel + "\n" +
       sizeLabel + "\n" +
-      "Foot: " + measurement.length.toFixed(1) + " cm long, " +
-      measurement.width.toFixed(1) + " cm wide" +
+      "Foot length: " + measurement.length.toFixed(1) + " cm" +
       "\nPlease confirm the suitable size for the footwear style I am interested in.";
     window.open("https://wa.me/" + "918300029513" + "?text=" + encodeURIComponent(message), "_blank", "noopener");
   }
@@ -397,11 +393,12 @@
       x: (event.clientX - rect.left) * canvas.width / rect.width,
       y: (event.clientY - rect.top) * canvas.height / rect.height
     };
-    if (aiReviewMode && points.length === 6) {
-      points[aiSelectedPoint] = point;
+    if (aiReviewMode && points.length === 4) {
+      const targetIndex = aiSelectedPoint === 0 ? 2 : aiSelectedPoint === 1 ? 3 : aiSelectedPoint;
+      points[targetIndex] = point;
       drawPhoto();
       showError("");
-      instruction.textContent = "Point " + (aiSelectedPoint + 1) + " adjusted. Review the other points or calculate your measurement.";
+      instruction.textContent = "The selected foot point has been adjusted. Review the other point or confirm.";
       return;
     }
     points.push(point);
