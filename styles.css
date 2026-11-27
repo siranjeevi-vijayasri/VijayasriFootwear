@@ -687,7 +687,7 @@ body.foot-measure-open{overflow:hidden}
 
 /* A4-fit camera guide: responsive visual framing aid, not a screen-calibrated ruler. */
 .foot-camera-viewport{position:relative;width:100%;overflow:hidden;border-radius:12px;background:#101510}
-#footCameraVideo{display:block;width:100%;height:min(58dvh,620px);aspect-ratio:3/4;object-fit:cover;border-radius:12px}
+#footCameraVideo{display:block;width:100%;height:min(58dvh,620px);aspect-ratio:16/9;object-fit:contain;border-radius:12px}
 .a4-camera-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:7% 10%;pointer-events:none}
 .a4-alignment-frame{position:relative;width:min(70%,340px);height:84%;border:2px dashed #eff9df;border-radius:8px;box-shadow:0 0 0 999px rgba(0,0,0,.12)}
 .a4-frame-label{position:absolute;top:8px;left:50%;transform:translateX(-50%);white-space:nowrap;padding:6px 9px;border-radius:20px;background:rgba(27,65,43,.94);color:#fff;font-size:10px;font-weight:800;letter-spacing:.06em}
@@ -697,5 +697,5 @@ body.foot-measure-open{overflow:hidden}
 .a4-cm-ruler span:before{content:"";position:absolute;left:0;top:50%;width:6px;border-top:1px solid #eaf6d9}
 .a4-foot-guide{position:absolute;bottom:7px;left:8px;right:8px;padding:7px;border-radius:7px;background:rgba(27,65,43,.9);color:white;text-align:center;font-size:10px;font-weight:700}
 .a4-camera-tip{margin:8px 0 12px!important;color:#68756b!important;font-size:11px!important;line-height:1.5!important}
-@media(orientation:landscape){#footCameraVideo{height:min(48dvh,460px);aspect-ratio:4/3}.a4-alignment-frame{height:78%;width:min(36%,340px)}}
-@media(max-width:560px){#footCameraVideo{height:min(54dvh,560px)}.a4-alignment-frame{width:69%;height:82%}}
+@media(orientation:landscape){#footCameraVideo{height:min(48dvh,460px);aspect-ratio:16/9}.a4-alignment-frame{height:78%;width:min(56%,520px)}}
+@media(max-width:560px){#footCameraVideo{height:min(54dvh,560px)}.a4-alignment-frame{width:70%;height:78%}}
