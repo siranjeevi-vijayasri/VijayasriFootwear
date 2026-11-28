@@ -226,7 +226,7 @@
       video.srcObject = stream;
       await video.play();
       showStage("camera");
-      cameraHelp.textContent = "Landscape mode only. Place the A4 sheet flat in portrait orientation and one foot beside it, parallel to the long edge. Keep the complete sheet and foot visible in the uncropped camera frame. Tap the two ends of the 21 cm short edge to calibrate.";
+      cameraHelp.textContent = "Use landscape mode and the wide capture area. Keep the complete A4 sheet and foot comfortably inside the frame, with space around them. Avoid digital zoom and tight framing. Hold the phone still, wait briefly, then capture. The frozen image is used for measurement; calibration uses the A4 edge.";
     } catch (error) {
       const reason = error && error.name === "NotAllowedError"
         ? "Camera permission was denied. Allow camera access in your browser settings and try again."
